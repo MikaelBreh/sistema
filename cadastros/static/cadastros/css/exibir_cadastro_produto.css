@@ -1,0 +1,49 @@
+.div-table{
+    padding-top: 40px;
+}
+
+
+table {
+    margin-left: auto;
+    margin-right: auto;
+    width: 70%;
+    border-collapse: collapse;
+}
+
+th {
+  padding-top: 40px;
+  text-align: left;
+  color: #888888;
+  font-size: 15px;
+}
+
+td {
+    text-align: left;
+    font-size: 18px;
+}
+
+
+.button-editar-produto{
+    padding-left: 15%;
+    padding-top: 6.4rem;
+}
+
+.editar-button{
+    width: 150px;
+    padding: 15px 15px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #494949;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 15px;
+    background-color: #5d0377;
+    color: white;
+    overflow: inherit;
+}
+
+.editar-button:hover {
+    background-color: #8b0598;
+    cursor: pointer;
+}
+

@@ -1,0 +1,72 @@
+{% extends 'side_menu.html' %}
+{% load static %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'cadastros/css/exibir_cadastro_produto.css' %}">
+{% endblock %}
+
+
+{% block content %}
+
+
+<body>
+
+
+<div class="div-table">
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Descrição</th>
+            <th>Codigo</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        <tr>
+            <td>{{produto.name}}</td>
+            <td>{{produto.product_code}}</td>
+        </tr>
+    </tbody>
+
+    <thead>
+        <tr>
+            <th>Codigo de Barras</th>
+            <th>Dun 14 - codigo caixas</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        <tr>
+            <td>{{produto.product_bar_code}}</td>
+            <td>{{produto.box_bar_code}}</td>
+        </tr>
+    </tbody>
+
+    <thead>
+        <tr>
+            <th>NCM</th>
+            <th>CEST</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        <tr>
+            <td>{{produto.ncm}}</td>
+            <td>{{produto.cest}}</td>
+        </tr>
+    </tbody>
+</table>
+
+
+</div>
+
+<div class="button-editar-produto">
+    <a href="/cadastro/editar_cadastro_produto/{{produto.id}}"><button class="editar-button">Editar</button></a>
+</div>
+
+</body>
+
+
+{% endblock content %}

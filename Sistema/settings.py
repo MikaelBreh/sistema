@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # app Cadastros
     'cadastros.apps.CadastrosConfig',
+    # app Vendas
+    'vendas.apps.VendasConfig',
 ]
 
 MIDDLEWARE = [

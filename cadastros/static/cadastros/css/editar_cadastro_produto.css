@@ -1,0 +1,23 @@
+.button_cadastrar_button{
+    padding-left: 15%;
+    padding-top: 2.5rem;
+}
+
+.cadastrar_button{
+    width: 20%;
+    padding: 15px 15px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #494949;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 15px;
+    background-color: #5d0377;
+    color: white;
+    overflow: inherit;
+}
+
+.cadastrar_button:hover {
+    background-color: #8b0598;
+    cursor: pointer;
+}

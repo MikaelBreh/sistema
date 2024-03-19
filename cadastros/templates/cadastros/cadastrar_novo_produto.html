@@ -1,0 +1,92 @@
+{% extends 'side_menu.html' %}
+{% load static %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'cadastros/css/cadastrar_novo_produto.css' %}">
+{% endblock %}
+
+
+{% block content %}
+
+
+<body>
+
+<div class="div-table">
+
+        <h1 class="titulo_tela">Cadastrar Novo Produto</h1>
+
+<!-- Seu template Django -->
+<form method="POST" action="">
+
+    {% csrf_token %}
+
+    <table>
+        <thead>
+            <tr>
+                <th>Descrição</th>
+                <th>Codigo</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr>
+                <td>{{form.name}}</td>
+                <td>{{form.product_code}}</td>
+            </tr>
+        </tbody>
+
+        <thead>
+            <tr>
+                <th>Codigo de Barras</th>
+                <th>Dun 14 - codigo caixas</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr>
+                <td>{{form.product_bar_code}}</td>
+                <td>{{form.box_bar_code}}</td>
+            </tr>
+        </tbody>
+
+        <thead>
+            <tr>
+                <th>NCM</th>
+                <th>CEST</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr>
+                <td>{{form.ncm}}</td>
+                <td>{{form.cest}}</td>
+            </tr>
+        </tbody>
+
+        <thead>
+            <tr>
+                <th>Categoria</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{form.category}}</td>
+            </tr>
+        </tbody>
+
+    </table>
+
+    <div class="button_cadastrar_button">
+        <button class="cadastrar_button" type="submit">Enviar</button>
+    </div>
+
+</form>
+
+</div>
+
+
+
+</body>
+
+
+{% endblock content %}

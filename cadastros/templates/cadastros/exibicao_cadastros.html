@@ -1,0 +1,54 @@
+{% extends 'side_menu.html' %}
+{% load static %}
+{% load custom_filters %}
+
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'cadastros/css/lista_produtos.css' %}">
+{% endblock %}
+
+
+{% block content %}
+
+<div class="titulo-botoes">
+    <h2>Lista de {{modulo}}</h2>
+    <a href="/cadastro/cadastrar_novo_produto/"><button class="adicionar-button">Adicionar {{modulo}}</button></a>
+</div>
+
+
+<div class="container-tabela">
+    <div class="container">
+        <table>
+            <thead>
+                <tr class="description-tr">
+                    <th class="description-name">Nome</th>
+                    {% for chave in dicionario %}
+                        <th>{{chave}}</th>
+                    {% endfor %}
+
+                </tr>
+            </thead>
+                <tbody>
+                    {% for valores in valores %}
+                        <tr class="itens-tr">
+                            <td class="product_name">{{ valores.name }}</td>
+
+                            {% for chave, valor in dicionario.items %}
+                                <td>{{ valores|get_item:valor }}</td>
+                            {% endfor %}
+
+                            <td class="td-button">
+                                <a href="/cadastro/exibir_cadastro_produto/?id={{valores.id}}"><button class="acessar-button">Acessar</button></a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+
+                </tbody>
+
+        </table>
+    </div>
+
+
+</div>
+
+{% endblock content %}

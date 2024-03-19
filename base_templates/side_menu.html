@@ -7,6 +7,7 @@
     <meta charset="UTF-8">
     <title> Base Site </title>
 
+    {% block head %}{% endblock head %}
 
     <!-- Boxiocns CDN Link -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -319,18 +320,19 @@ main{
         </li>
         <li>
             <div class="iocn-link">
-                <a href="#">
+                <a href="{% url 'home_cadastros' %}">
                     <i class="bi bi-person-plus"></i>
                     <span class="link_name">Cadastros</span>
                 </a>
                 <i class="bi bi-caret-down"></i>
             </div>
             <ul class="sub-menu">
-                <li><a class="link_name" href="#">Cadastros</a></li>
-                <li><a href="#">Produtos</a></li>
-                <li><a href="#">Materias de trabalho</a></li>
-                <li><a href="#">Clientes e Fornecedores</a></li>
-                <li><a href="#">Vendedores</a></li>
+                <li><a class="link_name" href="{% url 'cadastros_produtos' %}">Cadastros</a></li>
+                <li><a href="{% url 'cadastros_produtos' %}">Produtos</a></li>
+                <li><a href="{% url 'cadastro_materiais_de_trabalho' %}">Materias de trabalho</a></li>
+                <li><a href="{% url 'cadastros_fornecedores' %}">Fornecedores</a></li>
+                <li><a href="{% url 'cadastros_clientes' %}">Clientes</a></li>
+                <li><a href="{% url 'cadastros_vendedores' %}">Vendedores</a></li>
             </ul>
         </li>
 
@@ -366,6 +368,24 @@ main{
                 <li><a href="#">Criar Ordem de Prod.</a></li>
                 <li><a href="#">Estoque M.E & M.P</a></li>
                 <li><a href="#">Estoque Produto Final</a></li>
+            </ul>
+        </li>
+
+
+        <li>
+            <div class="iocn-link">
+                <a href="{% url 'vendas_home' %}">
+                    <i class="bi bi-cash-coin"></i>
+                    <span class="link_name">Vendas</span>
+                </a>
+                <i class="bi bi-caret-down"></i>
+            </div>
+            <ul class="sub-menu">
+                <li><a class="link_name" href="#">Vendas</a></li>
+                <li><a href="#">Proposta Comercial</a></li>
+                <li><a href="#">Pedido de Venda</a></li>
+                <li><a href="#">Saida Venda</a></li>
+                <li><a href="#">Comissoes</a></li>
             </ul>
         </li>
 
