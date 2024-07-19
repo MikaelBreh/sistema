@@ -2,7 +2,11 @@
 {% load static %}
 
 {% block head %}
-    <link rel="stylesheet" href="{% static 'cadastros/css/lista_produtos.css' %}">
+    <link rel="stylesheet" href="">
+
+        <script src="{% static 'vendas/js/criar_pedido_funcoes/adicionar_inputs_produtos_quantidades_precos.js' %}"></script>
+        <script src="{% static 'vendas/js/criar_pedido_funcoes/calcular_valores_quantidades_pedido.js' %}"></script>
+
 {% endblock %}
 
 
@@ -11,7 +15,102 @@
 
 
 
-<h2>Pagina de venda</h2>
+<h2>Vamos inicialmente Criar uma venda.</h2>
+
+<p class="lead">
+    Preencha todas as informações abaixo para criar um novo Pedido.
+</p>
+
+
+<form id="pedido_form" action="" method="POST">
+    {% csrf_token %}
+
+    <input type="text" id="cliente_input" name="cliente_input" list="nomes_clientes" placeholder="Selecione um Cliente" class="form_control">
+    <datalist id="nomes_clientes">
+        {% for cliente in clientes %}
+            <option value="{{ cliente.name }}" data-id="{{ cliente.id }}" data-cnpj="{{ cliente.cnpj }}" data-endereco="{{ cliente.rua }} - {{ cliente.numero }} - {{ cliente.cidade }} - {{ cliente.estado }} - {{ cliente.cep }}" data-ie="{{ cliente.ie }}">
+        {% endfor %}
+    </datalist>
+
+    <input type="hidden" id="cliente_id" name="cliente_id" value="">
+    <div id="info_cliente"></div>
+
+    <h3 class="subtitle_h3">Crie seu Pedido:</h3>
+    <p class="descricao-p">Preencha apenas os campos que forem necessários para o seu pedido</p>
+
+    <div id="inputs_container"></div>
+    <button type="button" class="add-product_button" onclick="adicionarInput()">Adicionar Produto</button>
+
+   <datalist id="nomes_produtos">
+    {% for produto in produtos %}
+        <option value="{{ produto.nome }}" data-id="{{ produto.id }}" data-preco="{{ produto.preco }}" data-codigo="{{ produto.product_code }}">
+    {% endfor %}
+    </datalist>
+
+
+    <button type="button" class="calcular-button" onclick="calcularTotal()">Calcular Total</button>
+
+    <p id="total_pedido">Total do Pedido: R$ 0.00</p>
+    <p id="quantidade_total">Quantidade Total: 0</p>
+</form>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('cliente_input').addEventListener('input', function() {
+            var selectedOption = document.querySelector('option[value="' + this.value + '"]');
+            if (selectedOption) {
+                var id = selectedOption.getAttribute('data-id');
+                var cnpj = selectedOption.getAttribute('data-cnpj');
+                var endereco = selectedOption.getAttribute('data-endereco');
+                var inscricao_estadual = selectedOption.getAttribute('data-ie');
+                document.getElementById('info_cliente').innerHTML = "<p>CNPJ: " + cnpj + " - Inscrição Estadual: " + inscricao_estadual + "</p><p>Endereço: " + endereco + "</p>";
+                document.getElementById('cliente_id').value = id;
+
+                // Fetch produtos do cliente
+                fetch(`api/produtos_cliente/${id}/`)
+                    .then(response => response.json())
+                    .then(data => {
+                        var datalist = document.getElementById('nomes_produtos');
+                        datalist.innerHTML = '';
+                        data.forEach(function(produto) {
+                            var option = document.createElement('option');
+                            option.value = produto.nome;
+                            option.setAttribute('data-id', produto.id);
+                            option.setAttribute('data-preco', produto.preco);
+                            datalist.appendChild(option);
+                        });
+                    });
+            } else {
+                document.getElementById('info_cliente').innerHTML = "";
+                document.getElementById('cliente_id').value = "";
+            }
+        });
+    });
+
+    function adicionarInput() {
+        var container = document.getElementById("inputs_container");
+        var novoInput = document.createElement("div");
+        novoInput.innerHTML = `
+            <input type="text" placeholder="Cod" class="cod_input" name="cod_produto" readonly>
+            <input type="text" list="nomes_produtos" placeholder="Selecione um Produto" class="produto_input" name="nome_produto">
+            <input type="number" placeholder="Quantidade" class="quantidade_input" name="quantidade_produto">
+            <input type="number" placeholder="Preço" class="preco_input" name="preco_produto" readonly>
+        `;
+        container.appendChild(novoInput);
+
+        novoInput.querySelector('.produto_input').addEventListener('input', function() {
+            var selectedOption = document.querySelector('#nomes_produtos option[value="' + this.value + '"]');
+            if (selectedOption) {
+                var preco = selectedOption.getAttribute('data-preco');
+                this.nextElementSibling.nextElementSibling.value = preco; // Preenche o campo de preço automaticamente
+            }
+        });
+    }
+
+</script>
+
+
+
 
 
 

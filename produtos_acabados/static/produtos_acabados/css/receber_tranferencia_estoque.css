@@ -1,0 +1,134 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+    margin-top: 20px;
+}
+
+form {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+table th, table td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+table th {
+    background-color: #f2f2f2;
+}
+
+table tr:hover {
+    background-color: #f9f9f9;
+}
+
+.product-container {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+}
+
+.product-row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #8d06b6;
+    padding-bottom: 20px;
+}
+
+.product-name-lot,
+.product-quantities,
+.product-dates {
+    flex: 1 1 50%;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+}
+
+.product-name-lot p,
+.product-quantities p,
+.product-dates p {
+    margin: 0 5px;
+}
+
+.product-name-lot input,
+.product-quantities input,
+.product-dates input {
+    padding: 10px;
+    margin: 5px 5px 15px 5px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.product-name-lot input.nome_produto {
+    flex: 3;
+}
+
+.product-name-lot input.lote_produto {
+    flex: 1;
+}
+
+.product-quantities input,
+.product-dates input {
+    flex: 1;
+}
+
+.product-container p {
+    margin: 0;
+    padding: 0;
+    color: #666;
+}
+
+.enviar_button {
+    display: block;
+    width: 100%;
+    padding: 15px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.enviar_button:hover {
+    background-color: #45a049;
+}
+
+@media (max-width: 600px) {
+    table th, table td {
+        font-size: 14px;
+    }
+
+    .product-row {
+        flex-direction: column;
+    }
+
+    .product-name-lot, .product-quantities, .product-dates {
+        flex: 1 1 100%;
+    }
+
+    .product-name-lot input,
+    .product-quantities input,
+    .product-dates input {
+        flex: 1 1 100%;
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+}

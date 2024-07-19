@@ -42,6 +42,8 @@ INSTALLED_APPS = [
     'cadastros.apps.CadastrosConfig',
     # app Vendas
     'vendas.apps.VendasConfig',
+    # app Estoque Produtos Acabados
+    'produtos_acabados.apps.ProdutosAcabadosConfig',
 ]
 
 MIDDLEWARE = [

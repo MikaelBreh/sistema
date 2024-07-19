@@ -12,7 +12,17 @@
 
 <div class="titulo-botoes">
     <h2>Lista de {{modulo}}</h2>
-<!--    <a href="/cadastro/cadastrar_novo_produto/"><button class="adicionar-button">Adicionar {{modulo}}</button></a>-->
+
+    {% if modulo == 'Produtos' %}
+
+    <!--    <a href="/cadastro/cadastrar_novo_produto/"><button class="adicionar-button">Adicionar {{modulo}}</button></a>-->
+
+    {% elif modulo == 'Clientes' %}
+
+    <a href="/cadastro/cadastrar_novo_cliente/"><button class="adicionar-button">Adicionar {{modulo}}</button></a>
+
+    {% endif %}
+
 </div>
 
 
@@ -37,10 +47,21 @@
                                 <td>{{ valores|get_item:valor }}</td>
                             {% endfor %}
 
-                            <td class="td-button">
-                                <a href="/cadastro/exibir_cadastro_produto/?id={{valores.id}}"><button class="acessar-button">Acessar</button></a>
-                            </td>
-                        </tr>
+                                {% if modulo == 'Produtos' %}
+
+                                    <td class="td-button">
+                                        <a href="/cadastro/exibir_cadastro_produto/?id={{valores.id}}"><button class="acessar-button">Acessar</button></a>
+                                    </td>
+                                </tr>
+
+                                {% elif modulo == 'Clientes' %}
+
+                                    <td class="td-button">
+                                        <a href="/cadastro/exibir_cadastro_cliente/?id={{valores.id}}"><button class="acessar-button">Acessar</button></a>
+                                    </td>
+                                </tr>
+
+                                {% endif %}
                     {% endfor %}
 
                 </tbody>

@@ -1,0 +1,150 @@
+.button_cadastrar_button{
+    display: flex;
+    margin-bottom: 20px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #ffffff;
+    border: 2px solid #a53be7;
+    border-radius: 5px;
+    background-color: #8d06b6;
+    padding: 8px 10px;
+    min-height: 20px;
+}
+
+.button_cadastrar_button:hover{
+    background-color: #62337e;
+    color: white;
+}
+
+.title-h1{
+    text-align: center;
+    color: #595959;
+    padding-bottom: 20px;
+}
+
+
+.titulo-botoes {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 30px;
+}
+
+.titulo-botoes a {
+    text-decoration: none;
+    color: #a53be7;
+    font-size: 16px;
+}
+
+.adicionar-button {
+    font-size: 14px;
+    max-width: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    background-color: #a53be7;
+    padding: 8px 10px;
+    min-height: 20px;
+}
+
+.container-tabela {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    width: 100%;
+    color: #11101d;
+    display: flex;
+    justify-content: center;
+    border-radius: 5px;
+}
+
+.container table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.container table tr th {
+    height: 56px;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: .25px;
+    text-align: center;
+    padding: 0 10px;
+    background-color: rgba(143, 143, 143, 0.13);
+}
+
+.container table tr .description-name {
+    text-align: left;
+}
+
+.container table tr.itens-tr td {
+    border-bottom: 1px solid black;
+    padding: 0 10px;
+    text-align: center;
+    vertical-align: middle; /* Alinhamento vertical */
+}
+
+.container table tr.itens-tr .product_name {
+    text-align: center; /* Alinhamento horizontal */
+}
+
+.container table tr.itens-tr {
+    height: 60px;
+}
+
+.container table tr td .acessar-button {
+    font-size: 14px;
+    max-width: 90px;
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #a53be7;
+    border: 2px solid #a53be7;
+    border-radius: 5px;
+    background-color: transparent;
+    padding: 8px 10px;
+    min-height: 20px;
+}
+
+.acessar-button-transf {
+    font-size: 14px;
+    max-width: 120px;
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #a53be7;
+    border: 2px solid #a53be7;
+    border-radius: 5px;
+    background-color: transparent;
+    min-height: 20px;
+}
+
+.link-botao{
+    text-decoration: none;
+    color: #a53be7;
+}
+
+
+.container table tr td .acessar-button:hover, .acessar-button-transf:hover {
+    background-color: #a53be7;
+    color: white;
+}
+
+.page-item {
+    list-style: none;
+}

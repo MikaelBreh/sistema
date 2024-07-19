@@ -1,0 +1,98 @@
+{% extends 'side_menu.html' %}
+{% load static %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'cadastros/css/cadastrar_novo_produto.css' %}">
+{% endblock %}
+
+
+{% block content %}
+
+
+<body>
+
+<div class="div-table">
+
+        <h1 class="titulo_tela">Cadastrar Novo Cliente</h1>
+
+<!-- Seu template Django -->
+<form method="POST" action="">
+
+    {% csrf_token %}
+
+    <table>
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Regime</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr>
+                <td>{{form.name}}</td>
+                <td>{{form.regime}}</td>
+            </tr>
+        </tbody>
+
+        <thead>
+            <tr>
+                <th>CNPJ</th>
+                <th>Inscrição Estadual</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr>
+                <td>{{form.cnpj}}</td>
+                <td>{{form.ie}}</td>
+            </tr>
+        </tbody>
+
+        <thead>
+            <tr>
+                <th>CEP</th>
+                <th>Estado</th>
+                <th>Cidade</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr>
+                <td>{{form.cep}}</td>
+                <td>{{form.estado}}</td>
+                <td>{{form.cidade}}</td>
+            </tr>
+        </tbody>
+
+        <thead>
+            <tr>
+                <th>Rua</th>
+                <th>Numero</th>
+                <th>Complemento</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{form.rua}}</td>
+                <td>{{form.numero}}</td>
+                <td>{{form.complemento}}</td>
+            </tr>
+        </tbody>
+
+    </table>
+
+    <div class="button_cadastrar_button">
+        <button class="cadastrar_button" type="submit">Enviar</button>
+    </div>
+
+</form>
+
+</div>
+
+
+
+</body>
+
+
+{% endblock content %}

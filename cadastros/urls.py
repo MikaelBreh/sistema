@@ -9,10 +9,13 @@ urlpatterns = [
     # codigo, porem para clientes e vendedores.
     path('produtos/', views.exbicao_cadastros_produtos_lista, {'modulo': 'Produtos'}, name='cadastros_produtos'),
     path('clientes/', views.exbicao_cadastros_produtos_lista, {'modulo': 'Clientes'}, name='cadastros_clientes'),
-    path('vendedores/', views.exbicao_cadastros_produtos_lista, {'modulo': 'Vendedores'}, name='cadastros_vendedores'),
+    #   path('vendedores/', views.exbicao_cadastros_produtos_lista, {'modulo': 'Vendedores'}, name='cadastros_vendedores'),
 
 
     path('exibir_cadastro_produto/', views.exibir_cadastro_produto, name='exibir_cadastro_produto'),
+    path('exibir_cadastro_cliente/', views.exibir_cadastro_cliente, name='exibir_cadastro_cliente'),
+
+    path('cadastrar_novo_cliente/', views.ClienteCreate.as_view(), name='cadastrar_novo_cliente'),
 
 
     # path('materiais_de_trabalho/', views.exbicao_cadastros_produtos_lista, {'modulo': 'Materiais de Trabalho'},

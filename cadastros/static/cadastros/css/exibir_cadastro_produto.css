@@ -23,14 +23,14 @@ td {
 }
 
 
-.button-editar-produto{
+.button-pattern{
     padding-left: 15%;
-    padding-top: 6.4rem;
+    padding-top: 0.4rem;
 }
 
-.editar-button{
+.button-pattern_final{
     width: 150px;
-    padding: 15px 15px;
+
     margin: 8px 0;
     display: inline-block;
     border: 1px solid #494949;
@@ -42,7 +42,7 @@ td {
     overflow: inherit;
 }
 
-.editar-button:hover {
+.button-pattern_final:hover {
     background-color: #8b0598;
     cursor: pointer;
 }

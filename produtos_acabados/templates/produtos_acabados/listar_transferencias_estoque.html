@@ -1,0 +1,61 @@
+{% extends 'side_menu.html' %}
+{% load static %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'produtos_acabados/css/lista_produtos.css' %}">
+{% endblock %}
+
+
+{% block content %}
+
+<h1 class="title-h1">Transferencias de estoque</h1>
+
+{% if opcao == 'saida' %}
+    <a href="{% url 'entrada_produtos_acabados' %}"><button class="button_cadastrar_button">Adiconar Nova Transferencia de Estoque</button></a>
+
+{% endif %}
+
+<div class="container-tabela">
+    <div class="container">
+        <table>
+            <thead>
+                <tr class="description-tr">
+                    <th class="description-name">Numero da Transferencia</th>
+                    <th class="description-name">Data de Saida</th>
+                    <th class="description-name">Quantidade de Pallets</th>
+                    <th class="description-name">Conferente Saida</th>
+                    <th class="description-name">Acessar</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for valores in transferencias %}
+                    <tr class="itens-tr">
+                        <td class="product_name">{{ valores.numero_transferencia }}</td>
+                        <td class="product_name">{{ valores.data_saida|date:"d/m/Y" }}</td>
+                        <td class="product_name">{{ valores.quantidade_pallets }}</td>
+                        <td class="product_name">{{ valores.conferente }}</td>
+
+                        {% if opcao == 'saida' %}
+                            <td class="td-button">
+                                <a class="link-botao" href="/produtos_acabados/exibir_transferencias_estoque/?id={{valores.numero_transferencia}}"><button class="acessar-button">Acessar</button></a>
+                            </td>
+                        {% elif opcao == 'entrada' %}
+                            <td class="td-button">
+                                    <a class="link-botao" href="/produtos_acabados/receber_transferencia_estoque/?id={{valores.numero_transferencia}}"><button class="acessar-button-transf">Receber Transferencia</button></a>
+                                </td>
+                        {% endif %}
+
+                    </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+    </div>
+
+
+</div>
+
+
+{% endblock content %}

@@ -72,10 +72,28 @@ def exibir_cadastro_produto(request):
     if request.method == 'GET':
         id = request.GET.get('id')
         product = Products.objects.get(id=id)
+        print(product)
         return render(request, 'cadastros/exibir_cadastro_produto.html', {'produto': product})
 
     return render(request, 'cadastros/exibir_cadastro_produto.html')
 
+
+def exibir_cadastro_cliente(request):
+
+    if request.method == 'GET':
+        id = request.GET.get('id')
+        cliente = Clientes.objects.get(id=id)
+        print(cliente)
+        return render(request, 'cadastros/exibir_cadastro_cliente.html', {'cliente': cliente})
+
+    return render(request, 'cadastros/exibir_cadastro_cliente.html')
+
+
+class ClienteCreate(CreateView):
+    model = Clientes
+    fields = ['name', 'regime', 'cnpj', 'ie', 'cep', 'estado', 'cidade', 'rua', 'numero', 'complemento']
+    template_name = 'cadastros/cadastrar_novo_cliente.html'
+    success_url = '/cadastro/clientes/'
 
 
 

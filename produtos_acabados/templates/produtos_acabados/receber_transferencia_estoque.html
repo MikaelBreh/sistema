@@ -1,0 +1,105 @@
+{% extends 'side_menu.html' %}
+{% load static %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'produtos_acabados/css/receber_tranferencia_estoque.css' %}">
+{% endblock %}
+
+{% block content %}
+<h1>Aqui vamos fazer a conferencia e receber as transferencias de estoque</h1>
+
+<form id="transferencia-form" method="post">
+    {% csrf_token %}
+    <table>
+        <tr>
+            <th>Numero Transferencia</th>
+            <th>Data Saida</th>
+            <th>Motorista</th>
+            <th>Veiculo</th>
+            <th>Conferente</th>
+            <th>Quantidade Pallets</th>
+        </tr>
+        <tr>
+            <td>{{ transferencia.numero_transferencia }}</td>
+            <td>{{ transferencia.data_saida|date:"d/m/Y" }}</td>
+            <td>{{ transferencia.motorista }}</td>
+            <td>{{ transferencia.veiculo }}</td>
+            <td>{{ transferencia.conferente }}</td>
+            <td>{{ transferencia.quantidade_pallets }}</td>
+        </tr>
+    </table>
+
+    <div class="product-container">
+        {% for produto in produtos %}
+        <div class="product-row" data-quantidade="{{ produto.quantidade_unitaria }}"
+             data-quantidadeCaixa="{{ produto.quantidade_caixa }}"
+             data-dateFab="{{ produto.data_fabricacao|date:'Y-m-d' }}" data-dateValid="{{ produto.validade|date:'Y-m-d' }}">
+
+
+            <div class="product-name-lot">
+                <p>Produto</p>
+                <input type="text" name="produto_input" placeholder="{{ produto.produto }}" readonly class="nome_produto">
+                <p>Unidades</p>
+                <input type="number" name="quantidade_produto" placeholder="Unidades" class="quantidade_produto">
+            </div>
+            <div class="product-quantities">
+                <p>Lote</p>
+                <input type="text" name="lote_produto" placeholder="{{ produto.lote }}" readonly class="lote_produto">
+                <p>Caixas</p>
+                <input type="number" name="quantidade_caixas_produto" placeholder="Caixas" class="quantidade_caixas_produto">
+            </div>
+            <div class="product-dates">
+                <p>Data de Fabricação</p>
+                <input type="date" name="data_fabricacao_produto" placeholder="dd/mm/aaaa" class="data_fabricacao_produto">
+                <p>Data de Validade</p>
+                <input type="date" name="data_validade_produto" placeholder="dd/mm/aaaa" class="data_validade_produto">
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <button type="button" class="enviar_button" onclick="totestando()">Conferir</button>
+</form>
+
+<script>
+    function totestando() {
+        const produtos = document.querySelectorAll('.product-row');
+        let allFieldsFilled = true;
+
+        produtos.forEach((produto) => {
+
+            const quantidadeEsperadUnitaria = produto.dataset.quantidade;
+            const quantidadeEsperadaCaixa = produto.dataset.quantidadecaixa;
+            const dateFabEsperada = produto.dataset.datefab;
+            const dateValidEsperada = produto.dataset.datevalid;
+
+            const quantidade = produto.querySelector('.quantidade_produto').value;
+            const quantidade_caixas = produto.querySelector('.quantidade_caixas_produto').value;
+            const data_fabricacao = produto.querySelector('.data_fabricacao_produto').value;
+            const data_validade = produto.querySelector('.data_validade_produto').value;
+
+            if (!quantidade || !quantidade_caixas || !data_fabricacao || !data_validade) {
+                allFieldsFilled = false;
+            } else if (quantidade != quantidadeEsperadUnitaria) {
+                alert("A quantidade de unidades não confere com a quantidade do produto." + quantidadeEsperadUnitaria + " != " + quantidade);
+                allFieldsFilled = false;
+            } else if (quantidade_caixas != quantidadeEsperadaCaixa) {
+                alert("A quantidade de caixas não confere com a quantidade do produto." + quantidadeEsperadaCaixa + " != " + quantidade_caixas);
+                allFieldsFilled = false;
+            } else if (data_fabricacao != dateFabEsperada) {
+                alert("A data de fabricação não confere com a data do produto." + dateFabEsperada + " != " + data_fabricacao);
+                allFieldsFilled = false;
+            } else if (data_validade != dateValidEsperada) {
+                alert("A data de validade não confere com a data do produto." + dateValidEsperada + " != " + data_validade);
+                allFieldsFilled = false;
+            }
+        });
+
+        if (allFieldsFilled) {
+            document.getElementById('transferencia-form').submit();
+        } else {
+            alert("Por favor, preencha todos os campos obrigatórios corretamente.");
+        }
+    }
+</script>
+{% endblock content %}

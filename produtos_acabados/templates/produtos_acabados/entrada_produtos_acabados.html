@@ -1,0 +1,161 @@
+{% extends 'side_menu.html' %}
+{% load static %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'produtos_acabados/css/entrada_produtos_acabados.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="button-pattern">
+<!-- Botão de Voltar -->
+    <button class="button-pattern_final" onclick="window.history.back()">Voltar</button>
+</div>
+
+<h1>Adicione uma entrada</h1>
+
+<p class="lead">
+    Clique em Adicionar Produto. Após preencha todas as informações abaixo para adicionar uma nova transferência de estoque.
+</p>
+
+
+
+<form id="transferencia_form" action="" method="POST" onsubmit="return validateForm()">
+    {% csrf_token %}
+
+    <input type="text" class="motorista_input" name="motorista_input" placeholder="Motorista" id="motorista">
+    <input type="text" class="veiculo_input" name="veiculo_input" placeholder="Veículo" id="veiculo">
+    <input type="text" class="conferente_input" name="conferente_input" placeholder="Conferente" id="conferente">
+    <input type="number" placeholder="Quant. Pallets" class="quantidade_pallets" name="quantidade_pallets" id="quant_pallets">
+    <input type="text" class="obs_input" name="obs_input" placeholder="Observações">
+
+    <div id="inputs_container"></div>
+    <button type="button" class="add-product_button" onclick="adicionarInputProduto()">Adicionar Produto</button>
+
+    <datalist id="produtos">
+        {% for produto in produtos %}
+            <option value="{{ produto.name }}" data-id="{{ produto.id }}" data-codigo="{{ produto.product_code }}">
+        {% endfor %}
+    </datalist>
+
+    <input type="hidden" id="produto_id" name="produto_id">
+
+    <button type="button" class="validate_button" onclick="adicionarBotaoEnviar()">Validar</button>
+    <div id = "div_botao_enviar"></div>
+
+</form>
+
+<script>
+
+
+    function adicionarBotaoEnviar() {
+        var container = document.getElementById('div_botao_enviar');
+        var botao = document.createElement('button');
+
+        botao.innerHTML = 'Enviar';
+        botao.type = 'submit';
+
+        container.appendChild(botao);
+
+        // Ocultar o botão de validar após criar o botão de enviar
+        var botaoValidar = document.querySelector('.validate_button');
+        botaoValidar.style.display = 'none';
+    }
+
+ function adicionarInputProduto() {
+        var container = document.getElementById('inputs_container');
+        var novo_input = document.createElement('div');
+
+        novo_input.innerHTML = `
+            <div>
+                <input type="text" id="produto_input" name="produto_input" list="produtos"
+                       placeholder="Selecione um Produto" class="form_control">
+                <input type="number" placeholder="Unidades" class="quantidade_input" name="quantidade_produto">
+                <input type="number" placeholder="Caixas" class="quantidade_caixas_input" name="quantidade_caixas_produto">
+                <input type="text" placeholder="Lote" class="lote_input" name="lote_produto">
+                <p class="datas-p">Data de Fabricação</p>
+                <input type="date" placeholder="Data de Fabricação" class="data_fabricacao_input"
+                       name="data_fabricacao_produto">
+                <p class="datas-p">Data de Validade</p>
+                <input type="date" placeholder="Data de Validade" class="data_validade_input"
+                       name="data_validade_produto">
+                <button type="button" class="remove_button" onclick="removerInputProduto(this)">X</button>
+            </div>
+        `;
+
+        container.appendChild(novo_input);
+
+        novo_input.querySelector('#produto_input').addEventListener('input', function() {
+            var selectedOption = document.querySelector('option[value="' + this.value + '"]');
+            document.getElementById('produto_id').value = selectedOption.dataset.id;
+        });
+    }
+
+    function removerInputProduto(botao) {
+        botao.parentNode.remove(); // Remove o elemento pai do botão (a linha de inputs)
+    }
+
+
+        // Chamada da função adicionarInputProduto() após o carregamento da página
+    window.addEventListener('DOMContentLoaded', function() {
+        adicionarInputProduto();
+    });
+
+
+    // validando
+    // Validar formulario de entrada de produtos acabados
+
+
+    function validateForm() {
+        var motorista = document.getElementById("motorista").value;
+        var veiculo = document.getElementById("veiculo").value;
+        var conferente = document.getElementById("conferente").value;
+        var quant_pallets = document.getElementById("quant_pallets").value;
+
+
+        // Validar o campo de nome
+        if (motorista == "" || motorista.length < 4) {
+        alert("Por favor, preencha o campo Motorista Corretamente");
+                return false;
+        } else if (veiculo == "" || veiculo.length < 4){
+        alert("Por favor, preencha o campo Veículo Corretamente");
+                return false;
+        }else if (conferente == "" || conferente.length < 4){
+        alert("Por favor, preencha o campo Conferente Corretamente");
+                return false;
+        }else if (quant_pallets == "" || quant_pallets == 0){
+        alert("Por favor, preencha o campo Quantidade de Pallets Corretamente");
+                return false;
+        }
+
+        // Validar campos de produtos adicionados dinamicamente
+        var inputsProduto = document.querySelectorAll('.quantidade_input, .quantidade_caixas_input, .lote_input, .data_fabricacao_input, .data_validade_input');
+        for (var i = 0; i < inputsProduto.length; i++) {
+            var input = inputsProduto[i];
+            if (input.value === "" && input.type !== "hidden") {
+                alert("Por favor, preencha todos os campos de Produto corretamente.");
+                return false;
+        }
+    }
+        return true;
+    }
+
+
+
+</script>
+{% endblock content %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
