@@ -68,10 +68,14 @@
 
         novo_input.innerHTML = `
             <div>
+                <p class="datas-p">Produto</p>
                 <input type="text" id="produto_input" name="produto_input" list="produtos"
                        placeholder="Selecione um Produto" class="form_control">
+               <p class="datas-p">Quantidade Unitaria</p>
                 <input type="number" placeholder="Unidades" class="quantidade_input" name="quantidade_produto">
+                <p class="datas-p">Quantidade de caixas</p>
                 <input type="number" placeholder="Caixas" class="quantidade_caixas_input" name="quantidade_caixas_produto">
+                <p class="datas-p">Lote</p>
                 <input type="text" placeholder="Lote" class="lote_input" name="lote_produto">
                 <p class="datas-p">Data de Fabricação</p>
                 <input type="date" placeholder="Data de Fabricação" class="data_fabricacao_input"
@@ -79,6 +83,14 @@
                 <p class="datas-p">Data de Validade</p>
                 <input type="date" placeholder="Data de Validade" class="data_validade_input"
                        name="data_validade_produto">
+               <p class="datas-p">Codigo de Barras Unitario</p>
+               <input type="text" placeholder="Codigo de Barras Unitario" class="codigo_barras_input"
+                        name="codigo_barras_produto">
+                <p class="datas-p">Codigo de Barras Caixa</p>
+               <input type="text" placeholder="Codigo de Barras de Caixa" class="codigo_barras_caixa_input"
+                        name="codigo_barras_caixa_produto">
+
+
                 <button type="button" class="remove_button" onclick="removerInputProduto(this)">X</button>
             </div>
         `;
@@ -129,7 +141,8 @@
         }
 
         // Validar campos de produtos adicionados dinamicamente
-        var inputsProduto = document.querySelectorAll('.quantidade_input, .quantidade_caixas_input, .lote_input, .data_fabricacao_input, .data_validade_input');
+        var inputsProduto = document.querySelectorAll('.quantidade_input, .quantidade_caixas_input, .lote_input, ' +
+            '.data_fabricacao_input, .data_validade_input, .codigo_barras_input, .codigo_barras_caixa_input');
         for (var i = 0; i < inputsProduto.length; i++) {
             var input = inputsProduto[i];
             if (input.value === "" && input.type !== "hidden") {

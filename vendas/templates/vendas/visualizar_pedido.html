@@ -1,0 +1,48 @@
+{% extends 'side_menu.html' %}
+{% load static %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'vendas/css/style_visualizar_pedido.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="button-pattern">
+<!-- Botão de Voltar -->
+    <button class="button-pattern_final" onclick="window.history.back()">Voltar</button>
+</div>
+
+<a href="{% url 'editar_pedido' pedido.id %}" class="edit-button">Editar Pedido</a>
+
+<h2>Detalhes do Pedido</h2>
+<p><strong>ID do Pedido:</strong> {{ pedido.id }}</p>
+<p><strong>Cliente:</strong> {{ pedido.cliente.name }}</p>
+<p><strong>Data do Pedido:</strong> {{ pedido.data|date:"d/m/Y - H:i" }}</p>
+
+<table>
+    <thead>
+        <tr>
+            <th>Produto</th>
+            <th>Código do Produto</th>
+            <th>Codigo de Barras</th>
+            <th>Codigo de Barras Caixas</th>
+            <th>Quantidade</th>
+            <th>Quantidade de Caixas</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in itens_pedido %}
+        <tr>
+            <td>{{ item.product_instance.name }}</td>
+            <td>{{ item.product_instance.product_code }}</td>
+            <td>{{ item.product_instance.product_bar_code }}</td>
+            <td>{{ item.product_instance.box_bar_code }}</td>
+            <td>{{ item.quantidade }}</td>
+            <td>{{ item.quantidade_caixas }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+{% endblock %}

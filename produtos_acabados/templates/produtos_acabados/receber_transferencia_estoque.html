@@ -6,6 +6,12 @@
 {% endblock %}
 
 {% block content %}
+
+<div class="button-pattern">
+<!-- Botão de Voltar -->
+    <button class="button-pattern_final" onclick="window.history.back()">Voltar</button>
+</div>
+
 <h1>Aqui vamos fazer a conferencia e receber as transferencias de estoque</h1>
 
 <form id="transferencia-form" method="post">
@@ -33,7 +39,8 @@
         {% for produto in produtos %}
         <div class="product-row" data-quantidade="{{ produto.quantidade_unitaria }}"
              data-quantidadeCaixa="{{ produto.quantidade_caixa }}"
-             data-dateFab="{{ produto.data_fabricacao|date:'Y-m-d' }}" data-dateValid="{{ produto.validade|date:'Y-m-d' }}">
+             data-dateFab="{{ produto.data_fabricacao|date:'Y-m-d' }}" data-dateValid="{{ produto.validade|date:'Y-m-d' }}"
+             data-codigoBarraUnidade="{{ produto.codigo_barra_unidade }}" data-codigoBarraCaixa="{{ produto.codigo_barra_caixa }}">
 
 
             <div class="product-name-lot">
@@ -48,6 +55,14 @@
                 <p>Caixas</p>
                 <input type="number" name="quantidade_caixas_produto" placeholder="Caixas" class="quantidade_caixas_produto">
             </div>
+
+            <div class="product-quantities">
+                <p>Codigo de Barra Unidade</p>
+                <input type="text" name="codigo_barra_unidade" placeholder="Codigo de Barra Unidade" class="codigo_barra_unidade">
+                <p>Codigo de Barra Caixa</p>
+                <input type="text" name="codigo_barra_caixa" placeholder="Codigo de Barras Caixas" class="codigo_barra_caixa">
+            </div>
+
             <div class="product-dates">
                 <p>Data de Fabricação</p>
                 <input type="date" name="data_fabricacao_produto" placeholder="dd/mm/aaaa" class="data_fabricacao_produto">
@@ -72,13 +87,17 @@
             const quantidadeEsperadaCaixa = produto.dataset.quantidadecaixa;
             const dateFabEsperada = produto.dataset.datefab;
             const dateValidEsperada = produto.dataset.datevalid;
+            const codigoBarraUnidadeEsperada = produto.dataset.codigobarraunidade;
+            const codigoBarraCaixaEsperada = produto.dataset.codigobarracaixa;
 
             const quantidade = produto.querySelector('.quantidade_produto').value;
             const quantidade_caixas = produto.querySelector('.quantidade_caixas_produto').value;
             const data_fabricacao = produto.querySelector('.data_fabricacao_produto').value;
             const data_validade = produto.querySelector('.data_validade_produto').value;
+            const codigo_barra_unidade = produto.querySelector('.codigo_barra_unidade').value;
+            const codigo_barra_caixa = produto.querySelector('.codigo_barra_caixa').value;
 
-            if (!quantidade || !quantidade_caixas || !data_fabricacao || !data_validade) {
+            if (!quantidade || !quantidade_caixas || !data_fabricacao || !data_validade || !codigo_barra_unidade || !codigo_barra_caixa) {
                 allFieldsFilled = false;
             } else if (quantidade != quantidadeEsperadUnitaria) {
                 alert("A quantidade de unidades não confere com a quantidade do produto." + quantidadeEsperadUnitaria + " != " + quantidade);
@@ -91,6 +110,12 @@
                 allFieldsFilled = false;
             } else if (data_validade != dateValidEsperada) {
                 alert("A data de validade não confere com a data do produto." + dateValidEsperada + " != " + data_validade);
+                allFieldsFilled = false;
+            } else if (codigo_barra_unidade != codigoBarraUnidadeEsperada) {
+                alert("O código de barras da unidade não confere com o código do produto." + codigoBarraUnidadeEsperada + " != " + codigo_barra_unidade);
+                allFieldsFilled = false;
+            } else if (codigo_barra_caixa != codigoBarraCaixaEsperada) {
+                alert("O código de barras da caixa não confere com o código do produto." + codigoBarraCaixaEsperada + " != " + codigo_barra_caixa);
                 allFieldsFilled = false;
             }
         });

@@ -1,0 +1,57 @@
+{% extends 'side_menu.html' %}
+{% load static %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'produtos_acabados/css/lista_estoque_produtos.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Lista de Produtos</h1>
+    <form method="get" action="{% url 'lista_produtos_estoque' %}">
+        <input type="text" name="q" placeholder="Buscar por produto, lote ou código de barra" value="">
+        <button type="submit">Buscar</button>
+    </form>
+    <table class="product-list">
+        <thead>
+            <tr>
+                <th>Produto</th>
+                <th>Quantidade Unitária</th>
+                <th>Lote</th>
+                <th>Data de Validade</th>
+                <th>Código de Barra (Unidade)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for produto in page_obj %}
+                <tr>
+                    <td>{{ produto.produto.name }}</td>
+                    <td>{{ produto.quantidade_unitaria }}</td>
+                    <td>{{ produto.lote }}</td>
+                    <td>{{ produto.validade }}</td>
+                    <td>{{ produto.codigo_barra_unidade }}</td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="5">Nenhum produto encontrado.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div class="pagination">
+        <span class="step-links">
+            {% if page_obj.has_previous %}
+                <a href="?page=1&{% if query %}q={{ query }}{% endif %}">Primeira</a>
+                <a href="?page={{ page_obj.previous_page_number }}&{% if query %}q={{ query }}{% endif %}">Anterior</a>
+            {% endif %}
+            <span class="current">
+                Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}.
+            </span>
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}&{% if query %}q={{ query }}{% endif %}">Próxima</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}&{% if query %}q={{ query }}{% endif %}">Última</a>
+            {% endif %}
+        </span>
+    </div>
+</div>
+{% endblock content %}

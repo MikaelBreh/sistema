@@ -1,0 +1,176 @@
+.titulo-botoes {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 30px;
+}
+
+.titulo-botoes a {
+    text-decoration: none;
+    color: #a53be7;
+    font-size: 16px;
+}
+
+.novo-button {
+    font-size: 14px;
+    max-width: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    background-color: #5d0377;
+    padding: 8px 10px;
+    min-height: 20px;
+}
+
+.novo-button:hover {
+    background-color: #7f2fb7;
+}
+
+.adicionar-button {
+    font-size: 14px;
+    max-width: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    background-color: #a53be7;
+    padding: 8px 10px;
+    min-height: 20px;
+}
+
+.container-tabela {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    width: 100%;
+    color: #11101d;
+    display: flex;
+    justify-content: center;
+    border-radius: 5px;
+}
+
+.container table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.container table tr th {
+    height: 56px;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: .25px;
+    text-align: center;
+    padding: 0 10px;
+    background-color: rgba(143, 143, 143, 0.13);
+}
+
+.container table tr .description-name {
+    text-align: left;
+}
+
+.container table tr.itens-tr td {
+    border-bottom: 1px solid black;
+    padding: 0 10px;
+    text-align: center;
+}
+
+.container table tr.itens-tr .product_name {
+    text-align: left;
+}
+
+.container table tr.itens-tr {
+    height: 60px;
+}
+
+.td-button {
+    text-align: left;
+}
+
+.button-container {
+    display: flex;
+    gap: 10px; /* Espaço entre os botões */
+}
+
+.container table tr td .acessar-button {
+    font-size: 14px;
+    max-width: 120px; /* Altere o tamanho máximo se necessário */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #a53be7;
+    border: 2px solid #a53be7;
+    border-radius: 5px;
+    background-color: transparent;
+    padding: 8px 10px;
+    min-height: 20px;
+}
+
+.container table tr td .acessar-button:hover {
+    background-color: #a53be7;
+    color: white;
+}
+
+.page-item {
+    list-style: none;
+}
+
+.search-form {
+    display: flex;
+    width: 40%;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-top: 3%;
+}
+
+.search-form input[type="text"] {
+    padding: 10px;
+    font-size: 14px;
+    width: 85%;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.search-form button {
+    padding: 10px 20px;
+    font-size: 14px;
+    background-color: #a53be7;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.search-form button:hover {
+    background-color: #7f2fb7;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.pagination .step-links a,
+.pagination .step-links span {
+    margin: 0 5px;
+    text-decoration: none;
+    color: #a53be7;
+}
+
+.pagination .step-links a:hover {
+    text-decoration: underline;
+}

@@ -1,0 +1,94 @@
+{% extends 'side_menu.html' %}
+{% load static %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'vendas/css/listagem_pedidos.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="titulo-botoes">
+    <form method="GET" action="{% url 'listar_pedidos' %}" class="search-form">
+        <input type="text" name="search" placeholder="Buscar por cliente" value="{{ request.GET.search }}">
+        <button type="submit">Buscar</button>
+    </form>
+    {% if opcao != 'gestao' %}
+        <a href="{% url 'criar_pedido_separacao' %}"><button class="novo-button">Novo Pedido</button></a>
+    {% endif %}
+</div>
+
+<div class="container-tabela">
+    <div class="container">
+        <table>
+            <thead>
+                <tr class="description-tr">
+                    <th class="description-name">Número Pedido</th>
+                    <th class="description-name">Cliente</th>
+                    <th class="description-quantidade">Data de Criação</th>
+                    <th class="description-action">Ação</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for valores in pedidos %}
+                    <tr class="itens-tr">
+                        <td class="id_pedido">{{ valores.id }}</td>
+                        <td class="product_name">{{ valores.cliente }}</td>
+                        <td class="product_quantity">{{ valores.data|date:"d/m/Y - H:i" }}</td>
+                        <td class="td-button">
+                            {% if opcao == 'gestao' %}
+                                <div class="button-container">
+                                    <button class="acessar-button" onclick="aprovarPedido({{ valores.id }}, '{{ valores.cliente }}')">Aprovar</button>
+                                    <a href="/vendas/visualizar_pedido/{{ valores.id }}"><button class="acessar-button">Acessar</button></a>
+                                </div>
+                            {% else %}
+                                <a href="/vendas/visualizar_pedido/{{ valores.id }}"><button class="acessar-button">Acessar</button></a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Paginação fora do contêiner da tabela -->
+<div class="pagination">
+    <span class="step-links">
+        {% if pedidos.has_previous %}
+            <a href="?page=1&search={{ request.GET.search }}">&laquo; primeira</a>
+            <a href="?page={{ pedidos.previous_page_number }}&search={{ request.GET.search }}">anterior</a>
+        {% endif %}
+        <span class="current">
+            Página {{ pedidos.number }} de {{ pedidos.paginator.num_pages }}.
+        </span>
+        {% if pedidos.has_next %}
+            <a href="?page={{ pedidos.next_page_number }}&search={{ request.GET.search }}">próxima</a>
+            <a href="?page={{ pedidos.paginator.num_pages }}&search={{ request.GET.search }}">última &raquo;</a>
+        {% endif %}
+    </span>
+</div>
+
+<script>
+function aprovarPedido(pedidoId, clienteNome) {
+    if (confirm(`Tem certeza que deseja aprovar o pedido ${pedidoId} do cliente ${clienteNome}?`)) {
+        fetch(`/vendas/aprovar_pedido/${pedidoId}/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({ aprovado: true })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Pedido aprovado com sucesso!');
+                location.reload();
+            } else {
+                alert('Erro ao aprovar o pedido.');
+            }
+        });
+    }
+}
+</script>
+
+{% endblock content %}

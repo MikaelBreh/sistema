@@ -346,30 +346,30 @@ main{
             </div>
             <ul class="sub-menu">
                 <li><a class="link_name" href="#">Produtos Acabados</a></li>
-                <li><a href="{% url 'listar_transferencias_estoque' %}">Entrada P.A</a></li>
+                <li><a href="{% url 'listar_transferencias_estoque' %}">Lançar Entrada P.A</a></li>
                 <li><a href="{% url 'listar_transferecias_para_conferencia' %}">Conferencia Entrada P.A</a></li>
-                <li><a href="#">Estoque P.A</a></li>
+                <li><a href="{% url 'entradas_recebidas_estoque' %}">Entradas Conferidas P.A</a></li>
+                <li><a href="{% url 'lista_produtos_estoque' %}">Estoque P.A</a></li>
                 <li><a href="#">Necessidade Estoque P.A</a></li>
             </ul>
         </li>
 
 
-<!--        <li>-->
-<!--            <div class="iocn-link">-->
-<!--                <a href="#">-->
-<!--                    <i class="bi bi-boxes"></i>-->
-<!--                    <span class="link_name">Produção</span>-->
-<!--                </a>-->
-<!--                <i class="bi bi-caret-down"></i>-->
-<!--            </div>-->
-<!--            <ul class="sub-menu">-->
-<!--                <li><a class="link_name" href="#">Produção</a></li>-->
-<!--                <li><a href="#">Criar Reserva de estoque</a></li>-->
-<!--                <li><a href="#">Criar Ordem de Prod.</a></li>-->
-<!--                <li><a href="#">Estoque M.E & M.P</a></li>-->
-<!--                <li><a href="#">Estoque Produto Final</a></li>-->
-<!--            </ul>-->
-<!--        </li>-->
+        <li>
+            <div class="iocn-link">
+                <a href="#">
+                    <i class="bi bi-box-seam-fill"></i>
+                    <span class="link_name">Separação</span>
+                </a>
+                <i class="bi bi-caret-down"></i>
+            </div>
+            <ul class="sub-menu">
+                <li><a class="link_name" href="#">Separação</a></li>
+                <li><a href="#">Não Separado</a></li>
+                <li><a href="#">Separando</a></li>
+                <li><a href="#">Finalizados</a></li>
+            </ul>
+        </li>
 
 
         <li>
@@ -382,7 +382,8 @@ main{
             </div>
             <ul class="sub-menu">
                 <li><a class="link_name" href="#">Vendas</a></li>
-<!--                <li><a href="#">Proposta Comercial</a></li>-->
+                <li><a href="{% url 'listar_pedidos' %}">Pedido de Separação</a></li>
+                <li><a href="{% url 'listar_pedidos_para_gestao' %}">Gestão Pedido Separação</a></li>
                 <li><a href="{% url 'vendas_home' %}">Pedido de Venda</a></li>
 <!--                <li><a href="#">Saida Venda</a></li>-->
 <!--                <li><a href="#">Comissoes</a></li>-->

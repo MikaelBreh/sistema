@@ -8,7 +8,7 @@
 
 {% block content %}
 
-<h1 class="title-h1">Transferencias de estoque</h1>
+<h1 class="title-h1">Transferencias de estoque {{opcao}}</h1>
 
 {% if opcao == 'saida' %}
     <a href="{% url 'entrada_produtos_acabados' %}"><button class="button_cadastrar_button">Adiconar Nova Transferencia de Estoque</button></a>
@@ -35,10 +35,16 @@
                         <td class="product_name">{{ valores.quantidade_pallets }}</td>
                         <td class="product_name">{{ valores.conferente }}</td>
 
-                        {% if opcao == 'saida' %}
+                        {% if opcao == 'saida'%}
                             <td class="td-button">
                                 <a class="link-botao" href="/produtos_acabados/exibir_transferencias_estoque/?id={{valores.numero_transferencia}}"><button class="acessar-button">Acessar</button></a>
                             </td>
+
+                        {% elif opcao == 'recebida'%}
+                            <td class="td-button">
+                                <a class="link-botao" href="/produtos_acabados/exibir_transferencias_estoque/?id={{valores.numero_transferencia}}"><button class="acessar-button">Acessar</button></a>
+                            </td>
+
                         {% elif opcao == 'entrada' %}
                             <td class="td-button">
                                     <a class="link-botao" href="/produtos_acabados/receber_transferencia_estoque/?id={{valores.numero_transferencia}}"><button class="acessar-button-transf">Receber Transferencia</button></a>

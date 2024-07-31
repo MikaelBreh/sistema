@@ -1,0 +1,197 @@
+/* Basic Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+    line-height: 1.6;
+}
+
+
+
+h2, h3 {
+    text-align: center;
+}
+
+.lead {
+    font-size: 1.2em;
+    text-align: center;
+    margin-bottom: 1.5em;
+}
+
+form {
+    max-width: 1200px;
+    margin: 2em auto;
+    padding: 1em 2em;
+    background: #fff;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+#input_titles {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5em;
+    font-weight: bold;
+}
+
+#input_titles span {
+    width: 20%; /* Ajuste conforme necessário */
+    text-align: center;
+}
+
+#inputs_container .produto-linha {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5em;
+}
+
+#inputs_container .produto-linha input {
+    width: 20%; /* Ajuste conforme necessário */
+}
+
+#inputs_container .produto-linha input.produto_input {
+    width: 20%;
+}
+
+#inputs_container .produto-linha input.codigo_produto_input,
+#inputs_container .produto-linha input.quantidade_caixa_input,
+#inputs_container .produto-linha input.quantidade_input,
+#inputs_container .produto-linha input.quantidade_caixas_calculada {
+    width: 20%;
+}
+
+#inputs_container .produto-linha .icone-erro {
+    font-size: 1.2em;
+    color: red;
+}
+
+
+input[type="text"],
+input[type="number"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 0.5em;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1em;
+}
+
+input[type="text"][readonly],
+input[type="number"][readonly] {
+    background-color: #e9ecef;
+    color: #6c757d;
+}
+
+button {
+    padding: 10px 15px;
+    background-color: #007bff;
+    border: none;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+.add-product_button,
+.calcular-button,
+.finalizar-button {
+    width: 100%;
+    margin-top: 1em;
+}
+
+.finalizar-button{
+    background-color: #a60101;
+}
+
+#info_cliente p {
+    margin: 0.5em 0;
+}
+
+.subtitle_h3 {
+    margin-top: 1.5em;
+}
+
+.descricao-p {
+    margin-bottom: 1em;
+}
+
+#inputs_container .produto-linha {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5em;
+}
+
+#inputs_container .produto-linha input {
+    margin-right: 1em;
+}
+
+#inputs_container .produto-linha input.produto_input {
+    width: 30%;
+}
+
+#inputs_container .produto-linha input.codigo_produto_input,
+#inputs_container .produto-linha input.quantidade_caixa_input,
+#inputs_container .produto-linha input.quantidade_input,
+#inputs_container .produto-linha input.quantidade_caixas_calculada {
+    width: 15%;
+}
+
+#inputs_container .produto-linha .icone-erro {
+    font-size: 1.2em;
+    color: red;
+}
+
+#quantidade_total, #caixas_total {
+    text-align: center;
+    margin-top: 1em;
+}
+
+@media (max-width: 768px) {
+    #inputs_container .produto-linha {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    #inputs_container .produto-linha input {
+        width: 100%;
+        margin-right: 0;
+        margin-bottom: 0.5em;
+    }
+
+    #inputs_container .produto-linha .icone-erro {
+        margin-top: 0.5em;
+    }
+
+        #input_titles {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    #inputs_container .produto-linha {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    #input_titles span,
+    #inputs_container .produto-linha input {
+        width: 100%;
+        margin-bottom: 0.5em;
+    }
+
+    #inputs_container .produto-linha .icone-erro {
+        margin-top: 0.5em;
+    }
+}
+
+

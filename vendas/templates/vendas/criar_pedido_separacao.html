@@ -1,0 +1,58 @@
+{% extends 'side_menu.html' %}
+{% load static %}
+
+{% block head %}
+        <link rel="stylesheet" href="{% static 'vendas/css/style_criar_pedido_separacao.css' %}">
+        <script src="{% static 'vendas/js/criar_pedido_separacao_funcoes/adicionar_inputs_produtos_quantidades_precos.js' %}"></script>
+        <script src="{% static 'vendas/js/criar_pedido_separacao_funcoes/calcular_valores_quantidades_pedido.js' %}"></script>
+        <script src="{% static 'vendas/js/criar_pedido_separacao_funcoes/exibir_info_cliente_tela.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+
+<div class="button-pattern">
+<!-- Botão de Voltar -->
+    <button class="button-pattern_final" onclick="window.history.back()">Voltar</button>
+</div>
+
+<h2>Vamos inicialmente Criar uma venda.</h2>
+<p class="lead">Preencha todas as informações abaixo para criar um novo Pedido.</p>
+
+<form id="pedido_form" action="" method="POST">
+    {% csrf_token %}
+    <input type="text" id="cliente_input" name="cliente_input" list="nomes_clientes" placeholder="Selecione um Cliente" class="form_control">
+    <datalist id="nomes_clientes">
+        {% for cliente in clientes %}
+            <option value="{{ cliente.name }}" data-id="{{ cliente.id }}" data-cnpj="{{ cliente.cnpj }}" data-endereco="{{ cliente.rua }} - {{ cliente.numero }} - {{ cliente.cidade }} - {{ cliente.estado }} - {{ cliente.cep }}" data-ie="{{ cliente.ie }}">
+        {% endfor %}
+    </datalist>
+    <input type="hidden" id="cliente_id" name="cliente_id" value="">
+    <div id="info_cliente"></div>
+
+    <h3 class="subtitle_h3">Crie seu Pedido:</h3>
+    <p class="descricao-p">Preencha apenas os campos que forem necessários para o seu pedido</p>
+
+    <div id="input_titles">
+        <span>Produto</span>
+        <span>Código do Produto</span>
+        <span>Quantidade da Caixa</span>
+        <span>Quantidade</span>
+        <span>Quantidade de Caixas</span>
+    </div>
+    <div id="inputs_container"></div>
+
+    <button type="button" class="add-product_button" onclick="adicionarInput()">Adicionar Produto</button>
+    <datalist id="nomes_produtos">
+        {% for produto in produtos %}
+            <option value="{{ produto.name }}" data-code="{{ produto.product_code }}" data-box-quantity="{{ produto.box_quantity }}">
+        {% endfor %}
+    </datalist>
+    <button type="button" class="calcular-button" onclick="calcularTotal()">Calcular Total</button>
+
+    <button type="submit" class="finalizar-button">Salvar Pedido</button>
+
+    <p id="quantidade_total"></p>
+    <p id="caixas_total"></p>
+
+</form>
+{% endblock content %}

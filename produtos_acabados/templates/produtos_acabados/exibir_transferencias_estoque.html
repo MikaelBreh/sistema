@@ -45,6 +45,8 @@
                 <th class="description-name">Quantidade Unit.</th>
                 <th class="description-name">Quantidade Caixa</th>
                 <th class="description-name">Lote</th>
+                <th class="description-name">Codigo de Barras</th>
+                <th class="description-name">Codigo de Caixa</th>
                 <th class="description-name">Data Fabricação</th>
                 <th class="description-name">Validade</th>
             </tr>
@@ -56,6 +58,8 @@
                 <td class="product_name">{{ valores.quantidade_unitaria }}</td>
                 <td class="product_name">{{ valores.quantidade_caixa }}</td>
                 <td class="product_name">{{ valores.lote }}</td>
+                <td class="product_name">{{ valores.codigo_barra_unidade }}</td>
+                <td class="product_name">{{ valores.codigo_barra_caixa }}</td>
                 <td class="product_name">{{ valores.data_fabricacao|date:"d/m/Y" }}</td>
                 <td class="product_name">{{ valores.validade|date:"d/m/Y" }}</td>
             </tr>
