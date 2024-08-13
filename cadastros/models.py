@@ -8,6 +8,7 @@ from django.contrib.contenttypes.fields import GenericRelation
 class Products(models.Model):
     CATEGORY_CHOICES = [
         ('fabricado', 'Fabricado'),
+        ('misto', 'Misto'),
         ('kit', 'Kit'),
         ('kit_variavel', 'Kit Variável'),
         ('materia_prima', 'Matéria Prima'),

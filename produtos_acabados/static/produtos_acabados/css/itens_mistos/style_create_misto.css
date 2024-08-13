@@ -1,0 +1,115 @@
+/* style_create_misto.css */
+
+/* Estilização geral para o container */
+.container {
+    width: 60%;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilização dos títulos das seções */
+h1, h2 {
+    text-align: center;
+    color: #333;
+}
+
+/* Estilização dos rótulos */
+.datas-p {
+    font-weight: bold;
+    margin: 10px 0 5px;
+    color: #555;
+}
+
+/* Estilização dos inputs */
+.form_control {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+/* Estilização dos botões */
+.button-pattern_final,
+.add-product_button,
+.remove_button {
+    background-color: #5cb85c;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.button-pattern_final:hover,
+.add-product_button:hover,
+.remove_button:hover {
+    background-color: #4cae4c;
+}
+
+
+/* Estilização do layout dos componentes */
+.field-container {
+    display: inline-block;
+    width: 30%;
+    margin-right: 1%;
+}
+
+#inputs_container div {
+    width: 100%;
+
+    display: flex;
+    gap: 16px;
+
+}
+
+.field_input{
+    flex-grow: 1;
+}
+
+#inputs_container .field-container {
+    margin-right: 10px;
+}
+
+.remove_button {
+    background-color: #d9534f;
+    margin-left: 10px;
+}
+
+.remove_button:hover {
+    background-color: #c9302c;
+}
+
+/* Estilização do botão de voltar */
+.button-pattern {
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+.button-pattern_final {
+    background-color: #0275d8;
+}
+
+.button-pattern_final:hover {
+    background-color: #025aa5;
+}
+
+.buttons{
+    display: flex;
+    justify-content: space-between;
+    padding-top: 5%;
+}
+
+
+.button-save{
+    background-color: #8d06b6;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}

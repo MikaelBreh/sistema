@@ -13,4 +13,9 @@ urlpatterns = [
     path('entradas_recebidas_estoque/', views.listar_transferencias_recebidas, name='entradas_recebidas_estoque'),
     path('estoque_produtos_pa/', lista_produtos_estoque, name='lista_produtos_estoque'),
 
+    path('create-misto-item/', views.create_misto_item, name='create_misto_item'),
+    path('listar_mistos_criados/', views.list_item_misto, name='list_misto_item'),
+    path('visualizar_misto_item/<int:misto_pk>/', views.visualizar_misto_item, name='visualizar_misto_item'),
+
+
 ]

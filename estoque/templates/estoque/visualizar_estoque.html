@@ -1,0 +1,96 @@
+{% extends 'side_menu.html' %}
+{% load static %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'css/style_view_estoque.css' %}">
+{% endblock %}
+
+
+{% block content %}
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualização de Estoque</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+            cursor: pointer;
+        }
+        th.sortable:after {
+            content: ' ⬍';
+            font-size: 0.8em;
+        }
+    </style>
+</head>
+<body>
+    <h1>Visualização de Estoque</h1>
+
+    <!-- Formulário de Busca e Filtro -->
+    <form method="GET" action="">
+        <input type="text" name="search" placeholder="Buscar por produto..." value="{{ search_query }}">
+        <label>
+            <input type="checkbox" name="necessidade" value="true" {% if show_only_necessity %}checked{% endif %}> Mostrar apenas produtos com necessidade
+        </label>
+        <button type="submit">Buscar</button>
+    </form>
+
+    <table>
+        <thead>
+            <tr>
+                <th class="sortable" onclick="sortTable('produto')">Produto</th>
+                <th class="sortable" onclick="sortTable('estoque_atual')">Estoque Atual</th>
+                <th class="sortable" onclick="sortTable('necessidade_pedidos')">Necessidade de Pedidos</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in estoque %}
+            <tr>
+                <td class="products_name">{{ item.produto.name }}</td>
+                <td>{{ item.estoque_atual }}</td>
+                <td>{{ item.necessidade_pedidos }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Paginação -->
+    <div class="pagination_div">
+        <span>Página {{ estoque.number }} de {{ estoque.paginator.num_pages }}</span>
+        <div>
+            {% if estoque.has_previous %}
+                <a href="?page={{ estoque.previous_page_number }}&search={{ search_query }}&necessidade={{ show_only_necessity }}&order_by={{ order_by }}">Anterior</a>
+            {% endif %}
+            {% if estoque.has_next %}
+                <a href="?page={{ estoque.next_page_number }}&search={{ search_query }}&necessidade={{ show_only_necessity }}&order_by={{ order_by }}">Próxima</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        function sortTable(order_by) {
+            const params = new URLSearchParams(window.location.search);
+            const current_order = params.get('order_by');
+            params.set('order_by', order_by === current_order ? '-' + order_by : order_by);
+            window.location.search = params.toString();
+        }
+    </script>
+</body>
+</html>
+
+
+
+{% endblock %}

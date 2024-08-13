@@ -1,7 +1,9 @@
 from django.contrib import admin
 
-from produtos_acabados.models import TransferenciaEstoqueSaidaInfo, TransferenciaEstoqueSaidaProdutos
+from .models import TransferenciaEstoqueSaidaInfo, TransferenciaEstoqueSaidaProdutos, MistoItem, MistoComponent
 
 # Register your models here.
 admin.site.register(TransferenciaEstoqueSaidaInfo)
 admin.site.register(TransferenciaEstoqueSaidaProdutos)
+admin.site.register(MistoItem)
+admin.site.register(MistoComponent)

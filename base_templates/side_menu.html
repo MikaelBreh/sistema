@@ -261,7 +261,7 @@ header .up-menu{
 }
 
 .home-content{
-    padding-left: 50px;
+
 }
 
 
@@ -269,39 +269,75 @@ header .up-menu{
     font-size: 26px;
     font-weight: 600;
 }
-@media (max-width: 400px) {
+@media (max-width: 480px) {
     .sidebar.close .nav-links li .sub-menu{
         display: none;
     }
     .sidebar{
-        width: 78px;
+        display: none;
     }
     .sidebar.close{
-        width: 0;
+        display: none;
     }
     .home-section{
-        left: 78px;
-        width: calc(100% - 78px);
-        z-index: 100;
+        display: none;
     }
     .sidebar.close ~ .home-section{
-        width: 100%;
-        left: 0;
+        display: none;
     }
+
+    .menu_up_mobile{
+        padding-bottom: 8%;
+    }
+
+    .menu-mobile{
+        display: block;
+        background-color: #a53be7;
+        color: white;
+        text-align: center;
+        padding: 2%;
+    }
+
+    .menu-mobile a{
+        padding: 1.5%;
+        color: white;
+        text-decoration: underline;
+
+}}
+
+
+@media screen and (min-width: 769px) and (max-width: 2000px) {
+
+    main{
+        padding-left: 20vh;
+        padding-right: 20vh;
+    }
+
+    .menu-mobile{
+        display: none;
+
+    }
+
+
 }
+
 
 .home-content{
     background-color: #cccbfa;
 }
 
-main{
-    padding-left: 20vh;
-    padding-right: 20vh;
-}
     </style>
 
 </head>
 <body>
+
+<div class="menu_up_mobile">
+    <div class="menu-mobile">
+        <a href="{% url 'expedicao_list' %}">Não Separado</a>
+        <a href="{% url 'expedicao_separando_list_view' %}" >Separando</a>
+        <a>Finalizados</a>
+    </div>
+</div>
 
 <div class="sidebar close">
     <div class="logo-details">
@@ -351,6 +387,8 @@ main{
                 <li><a href="{% url 'entradas_recebidas_estoque' %}">Entradas Conferidas P.A</a></li>
                 <li><a href="{% url 'lista_produtos_estoque' %}">Estoque P.A</a></li>
                 <li><a href="#">Necessidade Estoque P.A</a></li>
+                <li><a href="{% url 'list_misto_item' %}">Itens Mistos</a></li>
+
             </ul>
         </li>
 
@@ -358,18 +396,35 @@ main{
         <li>
             <div class="iocn-link">
                 <a href="#">
-                    <i class="bi bi-box-seam-fill"></i>
+                    <i class="bi bi-cart-check"></i>
                     <span class="link_name">Separação</span>
                 </a>
                 <i class="bi bi-caret-down"></i>
             </div>
             <ul class="sub-menu">
                 <li><a class="link_name" href="#">Separação</a></li>
-                <li><a href="#">Não Separado</a></li>
-                <li><a href="#">Separando</a></li>
+                <li><a href="{% url 'expedicao_list' %}">Não Separado</a></li>
+                <li><a href="{% url 'expedicao_separando_list_view' %}">Separando</a></li>
                 <li><a href="#">Finalizados</a></li>
             </ul>
         </li>
+
+
+        <li>
+            <div class="iocn-link">
+                <a href="{% url 'vendas_home' %}">
+                    <i class="bi bi-box-seam-fill"></i>
+                    <span class="link_name">Estoque</span>
+                </a>
+                <i class="bi bi-caret-down"></i>
+            </div>
+            <ul class="sub-menu">
+                <li><a class="link_name" href="#">Estoque</a></li>
+                <li><a href="">Estoque Atual</a></li>
+                <li><a href="">Estoque Lotes</a></li>
+            </ul>
+        </li>
+
 
 
         <li>

@@ -5,33 +5,27 @@ from produtos_acabados.models import TransferenciaEstoqueSaidaProdutos
 
 
 def product_bar_code_is_valid(codigo_barra, nome_produto):
+    produtos = Products.objects.filter(product_bar_code=codigo_barra)
 
-    try:
-        produto = Products.objects.get(product_bar_code=codigo_barra)
-
-        if produto.name == nome_produto:
-            return True
-
-        else:
-            return False
-
-    except ObjectDoesNotExist:
-        return None
+    if produtos.exists():
+        for produto in produtos:
+            if produto.name == nome_produto:
+                return True
+        return False  # Nenhum dos produtos com o código de barra tem o nome esperado
+    else:
+        return None  # Não foi encontrado nenhum produto com esse código de barra
 
 
 def box_bar_code_is_valid(codigo_barra_caixa, nome_produto):
+    produtos = Products.objects.filter(box_bar_code=codigo_barra_caixa)
 
-    try:
-        produto = Products.objects.get(box_bar_code=codigo_barra_caixa)
-
-        if produto.name == nome_produto:
-            return True
-
-        else:
-            return False
-
-    except ObjectDoesNotExist:
-        return None
+    if produtos.exists():
+        for produto in produtos:
+            if produto.name == nome_produto:
+                return True
+        return False  # Nenhum dos produtos com o código de barra tem o nome esperado
+    else:
+        return None  # Não foi encontrado nenhum produto com esse código de barra
 
 
 def verificar_duplicidade_lote(lote_input, nome_produto):

@@ -1,0 +1,51 @@
+/* Estilização do botão de voltar */
+.button-pattern {
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+.button-pattern_final {
+    background-color: #0275d8;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.button-pattern_final:hover {
+    background-color: #025aa5;
+}
+
+
+h2, h3 {
+    text-align: center;
+}
+
+h3 {
+    color: #5b5b5b;
+}
+
+.subtitle_p {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding-left: 20%;
+    padding-right: 20%;
+}
+
+.table {
+    margin-top: 5%;
+    display: flex;
+    justify-content: center; /* Centraliza a tabela horizontalmente */
+}
+
+table {
+    border-collapse: collapse; /* Remove espaçamento entre bordas */
+}
+
+.table tr, .table th, .table td {
+    border: 1px solid black; /* Adiciona borda nas linhas e células */
+    padding: 8px; /* Adiciona espaçamento interno nas células */
+    text-align: center; /* Centraliza o texto dentro das células */
+}

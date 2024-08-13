@@ -1,0 +1,44 @@
+{% extends 'side_menu.html' %}
+{% load static %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'produtos_acabados/css/itens_mistos/style_view.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="button-pattern">
+    <!-- Botão de Voltar -->
+    <button class="button-pattern_final" onclick="window.history.back()">Voltar</button>
+</div>
+
+<div class="title">
+    <h2>Produto Misto Criado: {{misto_item.produto_nome}}</h2>
+    <h3>Produto Misto Pertence: {{misto_item.produto_misto}}</h3>
+    <div class="subtitle_p">
+        <p class="text">Quantidade Criada: <strong> {{misto_item.quantidade_unitaria}}</strong></p>
+        <p class="text">Lote: <strong> {{misto_item.lote}}</strong></p>
+        <p class="text">Data Criação: <strong> {{misto_item.date|date:"d/m/Y"}}</strong></p>
+    </div>
+
+</div>
+
+
+<div class="table">
+    <table>
+        <tr>
+            <th>Produto</th>
+            <th>Lote Usado</th>
+            <th>Quantidade na Caixa</th>
+        </tr>
+        {% for item in componentes %}
+            <tr>
+                <td>{{item.produto}}</td>
+                <td>{{item.lote}}</td>
+                <td>{{item.quantidade}}</td>
+            </tr>
+        {% endfor %}
+    </table>
+
+
+{% endblock %}

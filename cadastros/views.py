@@ -2,6 +2,8 @@ from django.core.paginator import Paginator
 from django.shortcuts import render
 from django.views.generic import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .models import Products, Clientes, Vendedores
 from cadastros.cadastro_logica.estatico_dicionario_banco_titulos.dict_produtos_exibicao_em_lista import \
@@ -9,6 +11,7 @@ from cadastros.cadastro_logica.estatico_dicionario_banco_titulos.dict_produtos_e
 
 
 # Create your views here.
+@login_required
 def exbicao_cadastros_produtos_lista(request, modulo):
 
     if modulo == 'Produtos':
@@ -61,12 +64,12 @@ def exbicao_cadastros_produtos_lista(request, modulo):
 #     success_url = '/cadastro/'
 
 
-class CampoList(ListView):
+class CampoList(LoginRequiredMixin, ListView):
     model = Products
     template_name = 'cadastros/exibicao_cadastros.html'
 
 
-
+@login_required
 def exibir_cadastro_produto(request):
 
     if request.method == 'GET':
@@ -77,7 +80,7 @@ def exibir_cadastro_produto(request):
 
     return render(request, 'cadastros/exibir_cadastro_produto.html')
 
-
+@login_required
 def exibir_cadastro_cliente(request):
 
     if request.method == 'GET':
@@ -89,7 +92,8 @@ def exibir_cadastro_cliente(request):
     return render(request, 'cadastros/exibir_cadastro_cliente.html')
 
 
-class ClienteCreate(CreateView):
+
+class ClienteCreate(LoginRequiredMixin, CreateView):
     model = Clientes
     fields = ['name', 'regime', 'cnpj', 'ie', 'cep', 'estado', 'cidade', 'rua', 'numero', 'complemento']
     template_name = 'cadastros/cadastrar_novo_cliente.html'

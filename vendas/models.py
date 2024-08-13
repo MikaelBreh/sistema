@@ -21,7 +21,7 @@ class PedidoItem(models.Model):
     pedido = models.ForeignKey(Pedido, related_name='itens', on_delete=models.CASCADE)
 
     # Campos para a relação genérica
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    content_type = models.ForeignKey(ContentType, on_delete=models.PROTECT)
     object_id = models.PositiveIntegerField()
     produto = GenericForeignKey('content_type', 'object_id')
 
@@ -31,3 +31,13 @@ class PedidoItem(models.Model):
     def __str__(self):
         return f"{self.quantidade} of {self.produto}"
 
+
+
+class PedidoSeparacao(models.Model):
+    pedido = models.ForeignKey(Pedido, related_name='separacoes', on_delete=models.CASCADE)
+    item_pedido = models.ForeignKey(PedidoItem, related_name='separacoes', on_delete=models.CASCADE)
+    lote = models.CharField(max_length=50)
+    quantidade = models.PositiveIntegerField()
+
+    def __str__(self):
+        return f"Pedido: {self.pedido} --- Lote {self.lote} - {self.quantidade} unidades do produto {self.item_pedido.produto}"

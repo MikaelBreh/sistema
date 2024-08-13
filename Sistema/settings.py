@@ -44,6 +44,8 @@ INSTALLED_APPS = [
     'vendas.apps.VendasConfig',
     # app Estoque Produtos Acabados
     'produtos_acabados.apps.ProdutosAcabadosConfig',
+    # app de visuzalicao de estoque
+    'estoque.apps.EstoqueConfig'
 ]
 
 MIDDLEWARE = [
@@ -130,3 +132,19 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# settings.py
+
+LOGIN_REDIRECT_URL = '/'  # Redireciona para a página inicial após o login
+# LOGOUT_REDIRECT_URL = '/'  # Redireciona para a página inicial após o logout
+
+
+
+# Tempo em segundos para a sessão expirar após inatividade
+SESSION_COOKIE_AGE = 1800  # 30 minutos
+
+# Opção para encerrar a sessão ao fechar o navegador
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'

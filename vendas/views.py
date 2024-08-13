@@ -1,5 +1,7 @@
 from itertools import chain
 
+from django.contrib import messages
+from django.core.exceptions import ValidationError
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from cadastros.models import Clientes, Products, TabelaPrecoProduto, Products_another_info
@@ -7,20 +9,24 @@ from cadastros.models import Clientes, Products, TabelaPrecoProduto, Products_an
 from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import get_object_or_404
 from django.core.paginator import Paginator
-from django.db.models import Q
+from django.db.models import Q, Exists, OuterRef
 
-from .models import Pedido, PedidoItem
+from .functions.validar_separacao import validar_lote
+from .models import Pedido, PedidoItem, PedidoSeparacao
 
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required
 
 
+@login_required
 def home(request):
     if request.method == 'GET':
         nomes_clientes = Clientes.objects.all()
         return render(request, 'vendas/home.html', {'clientes': nomes_clientes})
 
 
+@login_required
 def get_produtos_cliente(request, cliente_id):
     cliente = get_object_or_404(Clientes, id=cliente_id)
     tabela_preco = cliente.TabelaPreco
@@ -31,7 +37,7 @@ def get_produtos_cliente(request, cliente_id):
     return JsonResponse(produtos_data, safe=False)
 
 
-
+@login_required
 def listar_pedidos(request, *args, **kwargs):
     opcao = kwargs.get('opcao')
     search_query = request.GET.get('search', '')
@@ -49,7 +55,7 @@ def listar_pedidos(request, *args, **kwargs):
     return render(request, 'vendas/listagem_pedidos.html', {'pedidos': page_obj, 'opcao': opcao})
 
 
-
+@login_required
 def criar_pedido_separacao(request):
     if request.method == 'POST':
         cliente_id = request.POST.get('cliente_id')
@@ -108,8 +114,7 @@ def criar_pedido_separacao(request):
                       {'clientes': nomes_clientes_all, 'produtos': nome_produtos_all})
 
 
-
-
+@login_required
 def visualizar_pedido(request, pedido_id):
     pedido = get_object_or_404(Pedido, id=pedido_id)
     itens_pedido = PedidoItem.objects.filter(pedido=pedido)
@@ -123,6 +128,7 @@ def visualizar_pedido(request, pedido_id):
     return render(request, 'vendas/visualizar_pedido.html', {'pedido': pedido, 'itens_pedido': itens_pedido})
 
 
+@login_required
 def editar_pedido(request, pedido_id):
     pedido = get_object_or_404(Pedido, id=pedido_id)
 
@@ -183,6 +189,8 @@ def editar_pedido(request, pedido_id):
         return render(request, 'vendas/editar_pedido.html',
                       {'pedido': pedido, 'clientes': nomes_clientes_all, 'produtos': nome_produtos_all, 'itens_pedido': itens_pedido})
 
+
+@login_required
 @csrf_exempt
 def aprovar_pedido(request, pedido_id):
     if request.method == 'POST':
@@ -194,6 +202,197 @@ def aprovar_pedido(request, pedido_id):
         except Pedido.DoesNotExist:
             return JsonResponse({'success': False, 'error': 'Pedido não encontrado.'})
     return JsonResponse({'success': False, 'error': 'Método não permitido.'})
+
+
+
+
+
+
+# EXPEDICAO -- AQUI COMECA A PARTE DA SEPARACAO DE PEDIDOS
+
+
+@login_required
+def expedicao_list(request):
+    search_query = request.GET.get('search', '')
+
+    # Subquery para verificar se o pedido tem separação
+    separacoes_existem = PedidoSeparacao.objects.filter(pedido=OuterRef('pk'))
+
+    if search_query:
+        pedidos = Pedido.objects.filter(
+            Q(cliente__name__icontains=search_query) &
+            Q(aprovado=True) &
+            ~Exists(separacoes_existem)  # Filtro para pedidos sem separação
+        )
+    else:
+        pedidos = Pedido.objects.filter(
+            Q(aprovado=True) &
+            ~Exists(separacoes_existem)  # Filtro para pedidos sem separação
+        )
+
+    paginator = Paginator(pedidos, 10)  # Mostra 10 pedidos por página
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'vendas/expedicao_list.html', {'pedidos': page_obj})
+
+
+@login_required
+def expedicao_separando_list_view(request):
+    search_query = request.GET.get('search', '')
+
+    # Subquery para verificar se o pedido tem separação
+    separacoes_existem = PedidoSeparacao.objects.filter(pedido=OuterRef('pk'))
+
+    if search_query:
+        pedidos = Pedido.objects.filter(
+            Q(cliente__name__icontains=search_query) &
+            Q(aprovado=True) &
+            Exists(separacoes_existem)
+        )
+    else:
+        pedidos = Pedido.objects.filter(
+            Q(aprovado=True) &
+            Exists(separacoes_existem)
+        )
+
+    paginator = Paginator(pedidos, 10)  # Mostra 10 pedidos por página
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'vendas/expedicao_list.html', {'pedidos': page_obj, 'separando': True})
+
+
+@login_required
+def expedicao_separar(request, pedido_id):
+    pedido = get_object_or_404(Pedido, id=pedido_id)
+
+    if request.method == 'POST':
+        try:
+            for item in pedido.itens.all():
+                lotes = request.POST.getlist(f'lotes_{item.id}')
+                quantidades = request.POST.getlist(f'quantidades_{item.id}')
+                total_quantidade = 0  # Controle do total de quantidades para cada item
+
+                for lote, quantidade in zip(lotes, quantidades):
+                    if lote and quantidade:
+                        try:
+                            # Valida o lote e o produto correspondente
+                            lote_produto = validar_lote(lote, item)
+                        except ValueError as e:
+                            # Adiciona a mensagem de erro
+                            messages.error(request, str(e))
+                            # Recarrega a página com a mensagem de erro
+                            return render(request, 'vendas/expedicao_separar.html', {'pedido': pedido})
+
+                        # Acumula a quantidade separada
+                        quantidade_int = int(quantidade)
+                        total_quantidade += quantidade_int
+
+                        if total_quantidade > item.quantidade:
+                            raise ValidationError(
+                                f"A quantidade separada para {item.produto.name} excede a quantidade do pedido."
+                            )
+
+                        # Cria o registro na tabela PedidoSeparacao
+                        PedidoSeparacao.objects.create(
+                            pedido=pedido,
+                            item_pedido=item,
+                            lote=lote,
+                            quantidade=quantidade_int
+                        )
+
+            messages.success(request, "Pedido salvo com sucesso!")
+            # Se tudo der certo, salvar e mostar novamente a tela de separacao
+            return redirect('expedicao_separar_editar', pedido_id=pedido_id)
+
+        except ValidationError as e:
+            # Captura a exceção de validação e adiciona uma mensagem de erro
+            messages.error(request, str(e))
+
+    # Recarrega a página com a mensagem de erro (se houver)
+    return render(request, 'vendas/expedicao_separar.html', {'pedido': pedido})
+
+
+@login_required
+def expedicao_ver(request, pedido_id):
+    pedido = get_object_or_404(Pedido, id=pedido_id)
+    return render(request, 'vendas/expedicao_ver.html', {'pedido': pedido})
+
+
+@login_required
+def expedicao_ver_separacao(request, pedido_id):
+    pedido = get_object_or_404(Pedido, id=pedido_id)
+    separacoes = PedidoSeparacao.objects.filter(pedido=pedido)
+
+    return render(request, 'vendas/expedicao_ver_separacao.html', {
+        'pedido': pedido,
+        'separacoes': separacoes
+    })
+
+
+@login_required
+def expedicao_separar_editar(request, pedido_id):
+    pedido = get_object_or_404(Pedido, id=pedido_id)
+    separacoes = PedidoSeparacao.objects.filter(pedido=pedido).select_related('item_pedido')
+
+    if request.method == 'POST':
+        try:
+            for item in pedido.itens.all():
+                lotes = request.POST.getlist(f'lotes_{item.id}')
+                quantidades = request.POST.getlist(f'quantidades_{item.id}')
+
+                # Excluir todas as separações anteriores desse item
+                PedidoSeparacao.objects.filter(pedido=pedido, item_pedido=item).delete()
+
+                total_quantidade = 0  # Controle do total de quantidades para cada item
+
+                for lote, quantidade in zip(lotes, quantidades):
+                    if lote and quantidade:
+                        try:
+                            # Valida o lote e o produto correspondente
+                            lote_produto = validar_lote(lote, item)
+                        except ValueError as e:
+                            # Adiciona a mensagem de erro
+                            messages.error(request, str(e))
+                            # Recarrega a página com a mensagem de erro
+                            return render(request, 'vendas/expedicao_separar_editar.html', {
+                                'pedido': pedido,
+                                'separacoes': separacoes,
+                            })
+
+                        # Acumula a quantidade separada
+                        quantidade_int = int(quantidade)
+                        total_quantidade += quantidade_int
+
+                        if total_quantidade > item.quantidade:
+                            raise ValidationError(
+                                f"A quantidade separada para {item.produto.name} excede a quantidade do pedido."
+                            )
+
+                        # Salvar as novas separações
+                        PedidoSeparacao.objects.create(
+                            pedido=pedido,
+                            item_pedido=item,
+                            quantidade=quantidade_int,
+                            lote=lote
+                        )
+
+            # Adiciona mensagem de sucesso e redireciona
+            messages.success(request, 'Separação do pedido atualizada com sucesso.')
+            return redirect('expedicao_separar_editar', pedido_id=pedido_id)
+
+        except ValidationError as e:
+            # Captura a exceção de validação e adiciona uma mensagem de erro
+            messages.error(request, str(e))
+
+    return render(request, 'vendas/expedicao_separar_editar.html', {
+        'pedido': pedido,
+        'separacoes': separacoes,
+    })
+
+
+
 
 
 

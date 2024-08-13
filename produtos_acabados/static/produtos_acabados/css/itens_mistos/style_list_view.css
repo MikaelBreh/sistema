@@ -1,0 +1,131 @@
+/* style_list_view.css */
+
+/* Estilização geral para o container */
+.container {
+    width: 100%;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilização dos títulos das seções */
+h1, h2, h3 {
+    text-align: center;
+    color: #333;
+    padding-bottom: 20px;
+}
+
+/* Estilização das listas de itens mistos */
+.misto-list {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: row;
+}
+
+
+.misto-item h2 {
+    margin: 0 0 10px;
+    color: #007bff;
+}
+
+/* Estilização dos detalhes dos componentes */
+.misto-item ul {
+    list-style: none;
+    padding: 0;
+}
+
+.misto-item li {
+    padding: 10px 0;
+    border-bottom: 1px solid #ddd;
+}
+
+.misto-item li:last-child {
+    border-bottom: none;
+}
+
+/* Estilização do botão de voltar */
+.button-pattern {
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+.button-pattern_final {
+    background-color: #0275d8;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.button-pattern_final:hover {
+    background-color: #025aa5;
+}
+
+.botao_criar_div{
+    text-align: right;
+    margin-bottom: 20px;
+}
+
+.botao_criar .link-botao{
+    background-color: #8d06b6;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.botao_criar{
+    border: none;
+}
+
+.botao_criar .link-botao:hover{
+    background-color: #6a047f;
+}
+
+
+th{
+    text-align: left;
+    padding-top: 20px;
+    padding-left: 10px;
+    padding-bottom: 30px;
+}
+
+table {
+    border-spacing: 0;
+    border-collapse: collapse; /* Certifique-se de que as bordas se fundam */
+}
+
+table tr:not(:last-child) td {
+    border-bottom: #9f9f9f 1px solid;
+}
+
+table td {
+    padding: 10px;
+}
+
+.td-button {
+    text-align: center;
+}
+
+.link-botao {
+    display: inline-block;
+    background-color: #0275d8;
+    color: white;
+    padding: 10px 30px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: center;
+    font-size: 14px;
+    text-decoration: none;
+}
+
+.link-botao a {
+    color: white;
+}
+

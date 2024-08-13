@@ -1,0 +1,75 @@
+{% extends 'side_menu.html' %}
+{% load static %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'vendas/css/expedicao_separar.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="button-pattern">
+    <button class="button-pattern_final" onclick="window.history.back()">Voltar</button>
+</div>
+
+<h2 class="title">Pedido Separado</h2>
+<h3 class="subtitle">{{ pedido.id }}  -  {{ pedido.cliente }}</h3>
+
+<form method="POST">
+    {% csrf_token %}
+
+    {% for item in pedido.itens.all %}
+        <div class="produto-linha">
+            <div class="container">
+                <div class="Produto item-product"><p>{{ item.produto.name }}</p></div>
+                <div class="Codigo-Barra item-product"><p>COD BARRAS: {{ item.produto.product_bar_code }}</p></div>
+                <div class="Codigo-Caixa item-product"><p>COD CX: {{ item.produto.box_bar_code }}</p></div>
+                <div class="Quantidade item-product"><p>QUANTIDADE: <strong class="strong"> {{ item.quantidade }} </strong> </p></div>
+                <div class="Quantidade-Caixa item-product"><p>QUANT CAIXAS: <strong class="strong"> {{ item.quantidade_caixas }} </strong> </p></div>
+            </div>
+
+            <div id="lotes_{{ item.id }}">
+                {% for separacao in separacoes %}
+                    {% if separacao.item_pedido.produto.id == item.produto.id %}
+                        <div class="lote-entry">
+                            <p>Lote:<strong>{{ separacao.lote }}</strong></p>
+                            <p>Quantidade: <strong class="separacao-quantidade">{{ separacao.quantidade }}</strong></p>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+            <div class="remaining-quantidade" id="remaining_{{ item.id }}"></div>
+        </div>
+    {% endfor %}
+</form>
+
+
+
+    <script>
+        function updateRemaining(itemId, totalQuantidade) {
+            var loteDiv = document.getElementById('lotes_' + itemId);
+            var quantidadeElements = loteDiv.querySelectorAll('.separacao-quantidade'); // Seleciona apenas as quantidades
+
+            var totalSeparado = 0;
+
+            quantidadeElements.forEach(function(element) {
+                var quantidade = parseFloat(element.innerText);
+                if (!isNaN(quantidade)) {
+                    totalSeparado += quantidade;
+                }
+            });
+
+            var remaining = totalQuantidade - totalSeparado;
+            document.getElementById('remaining_' + itemId).innerText = 'Restante para separar: ' + remaining;
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            {% for item in pedido.itens.all %}
+                updateRemaining('{{ item.id }}', {{ item.quantidade }});
+            {% endfor %}
+        });
+    </script>
+
+
+
+{% endblock %}

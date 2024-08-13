@@ -1,0 +1,56 @@
+{% extends 'side_menu.html' %}
+{% load static %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'produtos_acabados/css/itens_mistos/style_list_view.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="button-pattern">
+    <!-- Botão de Voltar -->
+    <button class="button-pattern_final" onclick="window.history.back()">Voltar</button>
+</div>
+
+<div class="botao_criar_div">
+    <button class="botao_criar"><a class="link-botao" href="/produtos_acabados/create-misto-item/">Criar Item Misto</a></button>
+</div>
+
+
+
+
+<table class="container">
+        <h1>Visualizar Itens Mistos</h1>
+        <thead>
+            <tr>
+                <th>Nome Produto</th>
+                <th>Lote</th>
+                <th>Quantidade Unitaria</th>
+                <th>Data Criação</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% if misto_items %}
+                {% for item in misto_items %}
+                    <tr>
+                            <td>{{ item.produto_nome }}</td>
+                            <td>{{ item.lote }}</td>
+                            <td>{{ item.quantidade_unitaria }}</td>
+                            <td>{{ item.date|date:"d/m/Y" }}</td>
+                            <td class="td-button">
+                                <a class="link-botao" href="/produtos_acabados/visualizar_misto_item/{{item.id}}">
+                                Ver</a>
+                            </td>
+                    </tr>
+                {% endfor %}
+            {% else %}
+                <p>Nenhum item misto encontrado.</p>
+            {% endif %}
+
+        </tbody>
+    </table>
+
+
+
+{% endblock %}

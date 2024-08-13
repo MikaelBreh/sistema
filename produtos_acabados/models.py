@@ -1,5 +1,10 @@
+import datetime
+
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
-from cadastros.models import Products  # Importe corretamente o modelo Products
+from cadastros.models import Products, Products_another_info  # Importe corretamente o modelo Products
+from django.contrib.contenttypes.fields import GenericRelation, GenericForeignKey
+
 
 class TransferenciaEstoqueSaidaInfo(models.Model):
     numero_transferencia = models.AutoField(primary_key=True)
@@ -29,3 +34,26 @@ class TransferenciaEstoqueSaidaProdutos(models.Model):
         return f'{self.produto.name}  | Lote:  {self.lote}   | Data Transferencia:  {self.numero_transferencia.data_saida}'
 
 
+
+class MistoItem(models.Model):
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    produto_misto = GenericForeignKey('content_type', 'object_id')
+    produto_nome = models.CharField(max_length=70, default='nat')
+    lote = models.CharField(max_length=20)
+    quantidade_unitaria = models.IntegerField()
+    date = models.DateField(auto_now_add=True, blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.produto_misto} - Lote: {self.lote}"
+
+class MistoComponent(models.Model):
+    misto_item = models.ForeignKey(MistoItem, related_name='components', on_delete=models.CASCADE)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, default=1)
+    object_id = models.PositiveIntegerField()
+    produto = GenericForeignKey('content_type', 'object_id')
+    lote = models.CharField(max_length=20)
+    quantidade = models.IntegerField()
+
+    def __str__(self):
+        return f"Componente de {self.misto_item}"
