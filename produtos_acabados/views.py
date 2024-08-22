@@ -161,7 +161,7 @@ def receber_transferencia_estoque(request):
 
         transferencia.validado = True
         transferencia.save()
-        return redirect('entrada_produtos_acabados')
+        return redirect('entradas_recebidas_estoque')
 
 
 @login_required

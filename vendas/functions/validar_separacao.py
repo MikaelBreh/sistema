@@ -1,5 +1,4 @@
 from django.contrib.contenttypes.models import ContentType
-
 from cadastros.models import Products_another_info
 from produtos_acabados.models import TransferenciaEstoqueSaidaProdutos, MistoItem
 
@@ -25,6 +24,8 @@ def validar_lote(lote, item_pedido):
         produtos_alternativos = Products_another_info.objects.filter(produto_pertence=produto_principal)
 
         for produto_alternativo in produtos_alternativos:
+            # Aqui, pegamos a categoria do produto principal associado
+            categoria_produto = produto_alternativo.produto_pertence.category
             content_type_alt = ContentType.objects.get_for_model(produto_alternativo)
             misto_item = MistoItem.objects.filter(
                 content_type=content_type_alt,
@@ -49,6 +50,8 @@ def validar_lote(lote, item_pedido):
     produtos_alternativos = Products_another_info.objects.filter(produto_pertence=produto_principal)
 
     for produto_alternativo in produtos_alternativos:
+        # Aqui, pegamos a categoria do produto principal associado
+        categoria_produto = produto_alternativo.produto_pertence.category
         lote_produto = TransferenciaEstoqueSaidaProdutos.objects.filter(
             produto=produto_alternativo,
             lote=lote

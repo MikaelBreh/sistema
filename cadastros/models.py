@@ -98,7 +98,7 @@ class Clientes(models.Model):
 
     name = models.CharField(max_length=40)
     regime = models.CharField(max_length=10, choices=REGIME_CHOICES)
-    cnpj = models.IntegerField()  # Altere o tipo de campo conforme necessário
+    cnpj = models.CharField(max_length=18) # Altere o tipo de campo conforme necessário
     ie = models.IntegerField()
     cep = models.IntegerField()  # Altere o tipo de campo conforme necessário
     estado = models.CharField(max_length=2)

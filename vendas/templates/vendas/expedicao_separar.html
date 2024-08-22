@@ -9,7 +9,7 @@
 
 <div class="button-pattern">
 <!-- Botão de Voltar -->
-    <button class="button-pattern_final" onclick="window.history.back()">Voltar</button>
+    <button class="button-pattern_final">  <a class="botao" href="{% url 'expedicao_list' %}">Voltar</a></button>
 </div>
 
 {% if messages %}

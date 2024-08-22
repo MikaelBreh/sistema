@@ -16,10 +16,14 @@
 {% endif %}
 
 <div class="titulo-botoes">
-    <form method="GET" action="{% url 'expedicao_list' %}" class="search-form">
-        <input type="text" name="search" placeholder="Buscar por cliente" value="{{ request.GET.search }}">
-        <button class="pesquisar-botao" type="submit">Buscar</button>
-    </form>
+    {% if separando %}
+        <form method="GET" action="{% url 'expedicao_separando_list_view' %}" class="search-form">
+    {% else %}
+        <form method="GET" action="{% url 'expedicao_list' %}" class="search-form">
+    {% endif %}
+            <input type="text" name="search" placeholder="Buscar por cliente" value="{{ request.GET.search }}">
+            <button class="pesquisar-botao" type="submit">Buscar</button>
+        </form>
 </div>
 
 <div class="container-tabela">
