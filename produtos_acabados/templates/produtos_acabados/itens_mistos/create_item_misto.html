@@ -34,6 +34,10 @@
         <p class="datas-p">Quantidade Unitária</p>
         <input type="text" id="quantidade_unitaria" name="quantidade_unitaria" placeholder="Digite a quantidade unitária" class="form_control">
 
+        <p class="datas-p">Quantidade de Caixas</p>
+        <input type="text" id="quantidade_caixas" name="quantidade_caixas" placeholder="Digite a quantidade de Caixas" class="form_control">
+
+
         <h2>Componentes</h2>
         <div class="form-row titles">
             <div class="field-container">
@@ -121,6 +125,14 @@
             event.preventDefault();
             return;
         }
+
+        var quantidadeCaixas = parseFloat(document.getElementById('quantidade_caixas').value);
+        if (isNaN(quantidadeCaixas)) {
+            alert('Quantidade de Caixas inválida.');
+            event.preventDefault();
+            return;
+        }
+
 
         // Verifica se a quantidade unitaria é divisível pela quantidade da caixa
         if (quantidadeUnitaria % quantidadeCaixaProduto !== 0) {

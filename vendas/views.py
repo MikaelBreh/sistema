@@ -248,11 +248,13 @@ def expedicao_separando_list_view(request):
         pedidos = Pedido.objects.filter(
             Q(cliente__name__icontains=search_query) &
             Q(aprovado=True) &
+            Q(finalizado=False) &  # Adiciona filtro para 'finalizado' ser falso
             Exists(separacoes_existem)
         )
     else:
         pedidos = Pedido.objects.filter(
             Q(aprovado=True) &
+            Q(finalizado=False) &  # Adiciona filtro para 'finalizado' ser falso
             Exists(separacoes_existem)
         )
 

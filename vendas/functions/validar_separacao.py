@@ -1,14 +1,18 @@
 from django.contrib.contenttypes.models import ContentType
-from cadastros.models import Products_another_info
+from cadastros.models import Products_another_info, Products
 from produtos_acabados.models import TransferenciaEstoqueSaidaProdutos, MistoItem
 
 def validar_lote(lote, item_pedido):
     produto_principal = item_pedido.produto
 
+    # Se o produto for uma instância de Products_another_info, use o produto associado em vez disso
+    if isinstance(produto_principal, Products_another_info):
+        produto_principal = produto_principal.produto_pertence
+
     # Verificar se o produto principal é um item misto
     if produto_principal.category == 'misto':
         # Identificar o ContentType do produto principal
-        content_type = ContentType.objects.get_for_model(produto_principal)
+        content_type = ContentType.objects.get_for_model(Products)  # Sempre use o modelo Products
 
         # Verificar se o lote existe em MistoItem para o produto principal
         misto_item = MistoItem.objects.filter(
@@ -24,12 +28,9 @@ def validar_lote(lote, item_pedido):
         produtos_alternativos = Products_another_info.objects.filter(produto_pertence=produto_principal)
 
         for produto_alternativo in produtos_alternativos:
-            # Aqui, pegamos a categoria do produto principal associado
-            categoria_produto = produto_alternativo.produto_pertence.category
-            content_type_alt = ContentType.objects.get_for_model(produto_alternativo)
             misto_item = MistoItem.objects.filter(
-                content_type=content_type_alt,
-                object_id=produto_alternativo.id,
+                content_type=content_type,
+                object_id=produto_alternativo.produto_pertence.id,  # Use sempre o produto principal
                 lote=lote
             ).first()
             if misto_item:
@@ -50,10 +51,8 @@ def validar_lote(lote, item_pedido):
     produtos_alternativos = Products_another_info.objects.filter(produto_pertence=produto_principal)
 
     for produto_alternativo in produtos_alternativos:
-        # Aqui, pegamos a categoria do produto principal associado
-        categoria_produto = produto_alternativo.produto_pertence.category
         lote_produto = TransferenciaEstoqueSaidaProdutos.objects.filter(
-            produto=produto_alternativo,
+            produto=produto_alternativo.produto_pertence,  # Use sempre o produto principal
             lote=lote
         ).first()
         if lote_produto:

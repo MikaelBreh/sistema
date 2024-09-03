@@ -1,10 +1,14 @@
 from django.shortcuts import render
-from django.db.models import Sum, F
 from cadastros.models import Products
-from produtos_acabados.models import TransferenciaEstoqueSaidaProdutos, MistoComponent, MistoItem
-from vendas.models import PedidoSeparacao, PedidoItem
+from estoque.functions.calcular_estoque_atual import calcular_estoque_atual
+from estoque.functions.calcular_necessidade_pedidos import verificar_quantidade_faltante, verificar_quantidade_faltante_com_separacao_iniciada
+from estoque.functions.calcular_total_separado import calcular_total_separado
+from vendas.models import PedidoItem
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
+from django.db.models import Sum, F
+
+
 
 
 @login_required
@@ -14,50 +18,38 @@ def visualizar_estoque(request):
     show_only_necessity = request.GET.get('necessidade', 'false') == 'true'
     order_by = request.GET.get('order_by', 'produto')
 
+    # Executar as funções para obter as quantidades faltantes
+    quantidades_faltantes = verificar_quantidade_faltante()
+    quantidades_faltantes_com_separacao_iniciada = verificar_quantidade_faltante_com_separacao_iniciada()
+
     if search_query:
         produtos = produtos.filter(name__icontains=search_query)
 
     estoque = []
 
     for produto in produtos:
-        # Calcular entradas do produto no estoque
-        entradas = TransferenciaEstoqueSaidaProdutos.objects.filter(produto=produto).aggregate(
-            total_entrada=Sum('quantidade_unitaria'))['total_entrada'] or 0
+        # Calcular o estoque atual e total separado
+        estoque_atual = calcular_estoque_atual(produto)
+        total_separado = calcular_total_separado(produto)
 
-        # Calcular saídas devido a itens mistos
-        mistos_componentes = MistoComponent.objects.filter(
-            content_type__model='products', object_id=produto.id
-        ).aggregate(total_misto=Sum('quantidade'))['total_misto'] or 0
+        # Obter quantidades faltantes e quantidades faltantes com separação iniciada
+        quantidade_faltante = quantidades_faltantes.get(produto.name, 0)
+        quantidade_faltante_separacao_iniciada = quantidades_faltantes_com_separacao_iniciada.get(produto.name, 0)
 
-        # Calcular saídas devido a separação de pedidos
-        separacao_pedidos = PedidoSeparacao.objects.filter(
-            item_pedido__content_type__model='products', item_pedido__object_id=produto.id
-        ).aggregate(total_separado=Sum('quantidade'))['total_separado'] or 0
+        # Calcular valores descontados
+        quantidade_faltante = max(quantidade_faltante - estoque_atual, 0)
+        quantidade_faltante_separacao_iniciada = max(quantidade_faltante_separacao_iniciada - estoque_atual, 0)
 
-        # Se for um produto misto, calcular a quantidade restante nos itens mistos
-        if produto.category == 'misto':
-            misto_items = MistoItem.objects.filter(
-                content_type__model='products', object_id=produto.id
-            ).aggregate(total_misto=Sum('quantidade_unitaria'))['total_misto'] or 0
-            estoque_atual = misto_items - separacao_pedidos
-        else:
-            # Calcular o estoque final
-            estoque_atual = entradas - mistos_componentes - separacao_pedidos
-
-        # Calcular a necessidade de pedidos
-        total_necessidade = PedidoItem.objects.filter(
-            content_type__model='products', object_id=produto.id
-        ).annotate(necessidade=F('quantidade') - Sum('separacoes__quantidade')).aggregate(
-            total_necessidade=Sum('necessidade')
-        )['total_necessidade'] or 0
-
-        if show_only_necessity and total_necessidade <= 0:
+        if show_only_necessity and quantidade_faltante <= 0:
             continue
 
         estoque.append({
             'produto': produto,
             'estoque_atual': estoque_atual,
-            'necessidade_pedidos': total_necessidade
+            'separado': total_separado,
+            'necessidade_pedidos': quantidade_faltante,
+            'quantidade_faltante': quantidade_faltante,
+            'quantidade_faltante_separacao_iniciada': quantidade_faltante_separacao_iniciada,
         })
 
     # Ordenação da lista de estoque
@@ -78,4 +70,9 @@ def visualizar_estoque(request):
     return render(request, 'estoque/visualizar_estoque.html',
                   {'estoque': page_obj, 'search_query': search_query, 'show_only_necessity': show_only_necessity,
                    'order_by': order_by})
+
+
+
+
+
 

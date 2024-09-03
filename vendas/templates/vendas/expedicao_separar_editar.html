@@ -39,7 +39,7 @@
 
             <div id="lotes_{{ item.id }}">
                 {% for separacao in separacoes %}
-                    {% if separacao.item_pedido.produto.id == item.produto.id %}
+                    {% if separacao.item_pedido.id == item.id %}
                         <div class="lote-entry">
                             <div class="input1">
                                 <input type="number" name="quantidades_{{ item.id }}" value="{{ separacao.quantidade }}" placeholder="Quantidade" oninput="updateRemaining({{ item.id }}, {{ item.quantidade }})">

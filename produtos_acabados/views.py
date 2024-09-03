@@ -195,39 +195,39 @@ def lista_produtos_estoque(request):
 @login_required
 def create_misto_item(request):
     if request.method == 'GET':
-        produtos_principal = Products.objects.filter(category='misto')
+        produtos_principal = Products.objects.all()
         produtos_misto_another_info = Products_another_info.objects.filter(produto_pertence__category='misto')
-
 
         produtos_geral = Products.objects.filter(category='fabricado')
         produtos_outra_info = Products_another_info.objects.filter(produto_pertence__category='fabricado')
-
 
         # Criar uma lista combinada
         produtos_combinados = list(produtos_principal) + list(produtos_misto_another_info)
 
         # criar uma lista combinada de todos os produtos
-
         produtos_geral_combinados = list(produtos_geral) + list(produtos_outra_info)
 
         return render(request, 'produtos_acabados/itens_mistos/create_item_misto.html',
                       {'produtos': produtos_combinados, 'produtos_geral': produtos_geral_combinados})
 
-
-
     if request.method == 'POST':
+        # Código existente para coletar os valores do formulário
         produto_input = request.POST.get('produto_input')
         lote = request.POST.get('lote')
         quantidade_unitaria = request.POST.get('quantidade_unitaria')
+        quantidade_caixas = request.POST.get('quantidade_caixas')
 
+        # Validações básicas existentes
         if not produto_input:
             return render(request, 'produtos_acabados/erro.html', {'error': 'Produto Misto não informado'})
         elif not lote:
             return render(request, 'produtos_acabados/erro.html', {'error': 'Lote não informado'})
         elif not quantidade_unitaria:
             return render(request, 'produtos_acabados/erro.html', {'error': 'Quantidade unitária não informada'})
+        elif not quantidade_caixas:
+            return render(request, 'produtos_acabados/erro.html', {'error': 'Quantidade Total de caixas não informada'})
 
-        # Tentar encontrar o produto no modelo Products
+        # Validação do Produto
         try:
             produto = Products.objects.get(name=produto_input)
         except Products.DoesNotExist:
@@ -236,16 +236,17 @@ def create_misto_item(request):
             except Products_another_info.DoesNotExist:
                 return render(request, 'produtos_acabados/erro.html', {'error': 'Produto não encontrado'})
 
-        # Criar o MistoItem
+        # Criação do MistoItem
         misto_item = MistoItem.objects.create(
             content_type=ContentType.objects.get_for_model(Products),
             object_id=produto.pk,
             produto_nome=produto_input,
             lote=lote,
-            quantidade_unitaria=int(quantidade_unitaria)
+            quantidade_unitaria=int(quantidade_unitaria),
+            quantidade_de_caixas=int(quantidade_caixas)
         )
 
-        # Coletar e salvar os componentes
+        # Coletar e salvar os componentes com a nova validação
         componentes = []
         produtos_componentes = request.POST.getlist('produto_component')
         lotes_componentes = request.POST.getlist('lote_component')
@@ -265,6 +266,18 @@ def create_misto_item(request):
                     except Products_another_info.DoesNotExist:
                         continue
 
+                # Validação do Lote no banco
+                transferencia_produtos = TransferenciaEstoqueSaidaProdutos.objects.filter(lote=lote_component, produto=produto_geral)
+
+                if not transferencia_produtos.exists():
+                    return render(request, 'produtos_acabados/erro.html', {'error': f'Lote {lote_component} não encontrado'})
+
+                # Verificar se todos os lotes estão validados
+                for transferencia in transferencia_produtos:
+                    if not transferencia.numero_transferencia.validado:
+                        return render(request, 'produtos_acabados/erro.html',
+                                      {'error': f'Lote {lote_component} não está validado'})
+
                 componente = MistoComponent(
                     misto_item=misto_item,
                     content_type=ContentType.objects.get_for_model(Products),
@@ -279,9 +292,11 @@ def create_misto_item(request):
         if componentes:
             MistoComponent.objects.bulk_create(componentes)
 
-        return redirect('list_misto_item')  # Redirecionar para uma página de sucesso ou outra página desejada
+        return redirect('list_misto_item')
 
-    return render(request, 'produtos_acabados/criar_item_misto.html')
+
+
+
 
 
 @login_required

@@ -12,6 +12,8 @@ class Pedido(models.Model):
     cliente = models.ForeignKey(Clientes, on_delete=models.CASCADE)
     data = models.DateTimeField(auto_now_add=True)
     aprovado = models.BooleanField(default=False)
+    finalizado = models.BooleanField(default=False)
+    status = models.IntegerField(default=2)
 
     def __str__(self):
         return f" {self.cliente} de {self.data.strftime('%d/%m/%Y')}"

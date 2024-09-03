@@ -42,6 +42,7 @@ class MistoItem(models.Model):
     produto_nome = models.CharField(max_length=70, default='nat')
     lote = models.CharField(max_length=20)
     quantidade_unitaria = models.IntegerField()
+    quantidade_de_caixas = models.IntegerField(default=1)
     date = models.DateField(auto_now_add=True, blank=True, null=True)
 
     def __str__(self):

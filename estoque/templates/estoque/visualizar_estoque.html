@@ -53,7 +53,10 @@
             <tr>
                 <th class="sortable" onclick="sortTable('produto')">Produto</th>
                 <th class="sortable" onclick="sortTable('estoque_atual')">Estoque Atual</th>
-                <th class="sortable" onclick="sortTable('necessidade_pedidos')">Necessidade de Pedidos</th>
+                <th class="sortable" onclick="sortTable('separado')">Separado</th>
+                <th class="sortable" onclick="sortTable('quantidade_faltante_separacao_iniciada')">Necessidade Pedidos Separados</th>
+                <th class="sortable" onclick="sortTable('quantidade_faltante')">Quantidade Faltante</th>
+
             </tr>
         </thead>
         <tbody>
@@ -61,11 +64,14 @@
             <tr>
                 <td class="products_name">{{ item.produto.name }}</td>
                 <td>{{ item.estoque_atual }}</td>
-                <td>{{ item.necessidade_pedidos }}</td>
+                <td>{{ item.separado }}</td>
+                <td>{{ item.quantidade_faltante_separacao_iniciada }}</td>
+                <td>{{ item.quantidade_faltante }}</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
+
 
     <!-- Paginação -->
     <div class="pagination_div">
