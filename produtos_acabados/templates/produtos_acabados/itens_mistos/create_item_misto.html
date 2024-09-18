@@ -133,6 +133,12 @@
             return;
         }
 
+        if (quantidadeUnitaria / quantidadeCaixaProduto !== quantidadeCaixas) {
+            alert('Quantidade de Caixas deve ser igual à quantidade unitária dividida pela quantidade na caixa do produto.');
+            event.preventDefault();
+            return;
+        }
+
 
         // Verifica se a quantidade unitaria é divisível pela quantidade da caixa
         if (quantidadeUnitaria % quantidadeCaixaProduto !== 0) {

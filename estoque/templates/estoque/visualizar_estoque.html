@@ -56,21 +56,21 @@
                 <th class="sortable" onclick="sortTable('separado')">Separado</th>
                 <th class="sortable" onclick="sortTable('quantidade_faltante_separacao_iniciada')">Necessidade Pedidos Separados</th>
                 <th class="sortable" onclick="sortTable('quantidade_faltante')">Quantidade Faltante</th>
-
             </tr>
         </thead>
         <tbody>
-            {% for item in estoque %}
+            {% for produto, quantidade, quantidades_separadas in produtos_quantidades %}
             <tr>
-                <td class="products_name">{{ item.produto.name }}</td>
-                <td>{{ item.estoque_atual }}</td>
-                <td>{{ item.separado }}</td>
-                <td>{{ item.quantidade_faltante_separacao_iniciada }}</td>
+                <td class="products_name">{{ produto }}</td>
+                <td><a href="{% url 'detalhes_produto' produto %}">{{ quantidade }}</a></td>
+                <td>{{ quantidades_separadas }}</td>
+                <td>{{ item.lista_quantidade_separadas }}</td>
                 <td>{{ item.quantidade_faltante }}</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
+
 
 
     <!-- Paginação -->

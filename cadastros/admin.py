@@ -10,9 +10,17 @@ class TabelaPrecoProdutoInline(admin.TabularInline):
 class TabelaPrecoAdmin(admin.ModelAdmin):
     inlines = [TabelaPrecoProdutoInline]
 
-admin.site.register(Products)
+
+class ProductsAdmin(admin.ModelAdmin):
+    search_fields = ['name', 'product_code', 'product_bar_code']  # Exemplo: nome, cod, codigo barras
+
+class ClientesAdmin(admin.ModelAdmin):
+    search_fields = ['name', 'cnpj', 'cidade']
+
+
+admin.site.register(Products, ProductsAdmin)
 admin.site.register(Products_another_info)
-admin.site.register(Clientes)
+admin.site.register(Clientes, ClientesAdmin)
 admin.site.register(Fornecedores)
 admin.site.register(Materiais_de_Trabalho)
 admin.site.register(Vendedores)

@@ -17,7 +17,7 @@ class TransferenciaEstoqueSaidaInfo(models.Model):
     validado = models.BooleanField(default=False)
 
     def __str__(self):
-        return f'Numero Transferencia: {self.numero_transferencia}  Data: {self.data_saida}'
+        return f'{self.numero_transferencia}'
 
 class TransferenciaEstoqueSaidaProdutos(models.Model):
     numero_transferencia = models.ForeignKey(TransferenciaEstoqueSaidaInfo, on_delete=models.CASCADE)

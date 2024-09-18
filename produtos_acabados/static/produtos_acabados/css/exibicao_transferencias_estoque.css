@@ -1,15 +1,21 @@
-.button-pattern_final{
-    width: 150px;
+.button-pattern {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 20px 0;
+}
 
+.button-pattern_final {
+    width: 150px;
+    padding: 10px 20px;
     margin: 8px 0;
-    display: inline-block;
     border: 1px solid #494949;
     border-radius: 4px;
     box-sizing: border-box;
     font-size: 15px;
     background-color: #5d0377;
     color: white;
-    overflow: inherit;
+    transition: background-color 0.3s ease;
 }
 
 .button-pattern_final:hover {
@@ -17,28 +23,82 @@
     cursor: pointer;
 }
 
-h2{
+.button-add-product {
+    width: 150px;
+    padding: 10px 20px;
+    margin: 8px 0;
+    border: 1px solid #ffffff;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 15px;
+    background-color: #51a1da;
+    color: white;
+    transition: background-color 0.3s ease;
+}
+
+.button-add-product:hover {
+    background-color: #1e90ff;
+    cursor: pointer;
+}
+
+h2 {
     padding-top: 10px;
     padding-bottom: 20px;
+    text-align: center;
+}
+
+.container-tabela {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.infos{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding-bottom: 40px;
+}
+
+.info_cabec{
+    color: #555;
+    font-size: 19px;
 }
 
 table {
-    margin-left: auto;
-    margin-right: auto;
-    width: 95%;
+    width: 100%;
     border-collapse: collapse;
+    background-color: #f9f9f9;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+th, td {
+
+    text-align: center;
+    font-size: 16px;
+    border-bottom: 1px solid #ddd;
 }
 
 th {
-  padding-top: 40px;
-  text-align: left;
-  color: #888888;
-  font-size: 15px;
+    background-color: #f2f2f2;
+    color: #555;
+    font-size: 17px;
+    text-transform: uppercase;
 }
 
 td {
-    text-align: left;
-    font-size: 18px;
+    background-color: #fff;
+    color: #333;
+}
+
+tr:hover {
+    background-color: #f1f1f1;
+}
+
+td.product_name {
+    max-width: 300px; /* Defina um tamanho adequado */
+    white-space: nowrap; /* Evita quebra de linha */
+    overflow: hidden;
+    text-overflow: ellipsis; /* Adiciona reticências se o nome for muito longo */
 }
 
 
@@ -47,9 +107,8 @@ td {
     padding: 20px;
     background-color: #f5f5f5;
     border-radius: 5px;
-    margin-top: 15%;
+    margin: 30px auto;
 }
-
 
 .textarea {
     width: 100%;
@@ -58,7 +117,7 @@ td {
     border: none;
     border-radius: 5px;
     background-color: #efefef;
-    color: #000000;
+    color: #000;
     font-size: 1em;
     resize: none;
 }
@@ -66,5 +125,116 @@ td {
 .note {
     margin-top: 10px;
     font-size: 0.9em;
-    color: #000000;
+    color: #000;
 }
+
+/* Definir a largura das colunas da transferência e da tabela de produtos */
+.table-transfer, .table-products {
+    width: 100%;
+    table-layout: fixed; /* Isso faz com que todas as colunas tenham o mesmo tamanho */
+}
+
+/* Definir a largura das colunas específicas */
+th, td {
+    padding: 5px;
+    font-size: 16px;
+    border-bottom: 1px solid #ddd;
+}
+
+.product{
+    text-align: left;
+}
+
+th:nth-child(1), td:nth-child(1) { /* Coluna Produto */
+    width: 40%;
+    max-width: 350px; /* Define um limite máximo */
+    overflow: hidden;
+    text-overflow: ellipsis; /* Adiciona reticências para textos longos */
+    white-space: nowrap; /* Evita quebra de linha */
+}
+
+th:nth-child(2), td:nth-child(2) { /* Coluna Unidades */
+    width: 5%;
+    max-width: 6vw;
+}
+
+th:nth-child(3), td:nth-child(3) { /* Coluna Caixas */
+    width: 5%;
+    max-width: 5vw;
+}
+
+th:nth-child(4), td:nth-child(4) { /* Coluna Lote */
+    width: 5%;
+    max-width: 7vw;
+}
+
+th:nth-child(5), td:nth-child(5) { /* Coluna Código de Barras */
+    width: 20%;
+}
+
+th:nth-child(6), td:nth-child(6) { /* Coluna Código de Caixa */
+    width: 15%;
+}
+
+th:nth-child(7), td:nth-child(7) { /* Coluna Fabricação */
+    width: 15%;
+}
+
+/* Tooltip para mostrar o texto completo ao passar o mouse */
+td.product_name:hover {
+    overflow: visible;
+    white-space: normal;
+    background-color: #f0f0f0;
+    position: relative;
+    z-index: 1;
+}
+
+/* Ajustar colunas específicas para mostrar só o início */
+td.codigo-barra, td.codigo-caixa, td.data {
+    max-width: 100px; /* Limitar o espaço */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+.table-container {
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    overflow-x: auto;
+}
+
+.table-products {
+    background-color: #f9f9f9;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+th {
+    background-color: #f2f2f2;
+    color: #555;
+    font-size: 17px;
+    text-transform: uppercase;
+}
+
+/* Interatividade ao passar o mouse */
+tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* Adicionando padding no container das informações da transferência */
+.table-transfer th, .table-transfer td {
+    padding: 15px;
+}
+
+/* Ajustar responsividade para telas pequenas */
+@media screen and (max-width: 600px) {
+    th, td {
+        font-size: 14px;
+        padding: 10px;
+    }
+    th:nth-child(1), td:nth-child(1) { /* Coluna Produto */
+        max-width: 150px; /* Ajusta para um tamanho menor em telas pequenas */
+    }
+}
+

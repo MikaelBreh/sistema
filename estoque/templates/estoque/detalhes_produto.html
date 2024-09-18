@@ -1,0 +1,55 @@
+{% extends 'side_menu.html' %}
+{% load static %}
+
+{% block content %}
+    <h1>Detalhes do Produto: {{ produto.name }}</h1>
+
+    <p><strong>Quantidade Total:</strong> {{ quantidade_total }}</p>
+    <p><strong>Quantidade Separadas:</strong> {{ quantidade_separados }}</p>
+
+    <h2>Entradas</h2>
+    <ul>
+        {% for entrada in entradas %}
+            <li>Quantidade: {{ entrada.quantidade_unitaria }}</li>
+        {% empty %}
+            <li>Nenhuma entrada encontrada.</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Mistos Criados</h2>
+    <ul>
+        {% for misto, quantidade in mistos_criados.items %}
+            <li>Misto: {{ misto }} | Quantidade: {{ quantidade }}</li>
+        {% empty %}
+            <li>Nenhum misto criado encontrado.</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Mistos Componentes</h2>
+    <ul>
+        {% for componente, quantidade in mistos_componentes.items %}
+            <li>Componente: {{ componente }} | Quantidade: {{ quantidade }}</li>
+        {% empty %}
+            <li>Nenhum componente misto encontrado.</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Produtos Pedidos Finalizados</h2>
+    <ul>
+        {% for produto, quantidade in produtos_pedidos_finalizados.items %}
+            <li>Produto: {{ produto }} | Quantidade: {{ quantidade }}</li>
+        {% empty %}
+            <li>Nenhum pedido finalizado encontrado.</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Produtos Pedidos Separados</h2>
+    <ul>
+        {% for produto, quantidade in produtos_pedidos_separados.items %}
+            <li>Produto: {{ produto }} | Quantidade: {{ quantidade }}</li>
+        {% empty %}
+            <li>Nenhum pedido separado encontrado.</li>
+        {% endfor %}
+    </ul>
+
+{% endblock %}

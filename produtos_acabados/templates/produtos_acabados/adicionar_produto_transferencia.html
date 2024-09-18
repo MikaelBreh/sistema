@@ -1,0 +1,109 @@
+{% extends 'side_menu.html' %}
+{% load static %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'produtos_acabados/css/entrada_produtos_acabados.css' %}">
+{% endblock %}
+
+{% block content %}
+
+
+<div class="button-pattern">
+    <a href="/produtos_acabados/exibir_transferencias_estoque/?id={{id}}"><button class="button-pattern_final">Voltar</button></a>
+</div>
+
+
+<h1>Adicione um novo produto para a transferencia de estoque de numero: {{id}}</h1>
+
+<p class="lead">
+    Clique em Adicionar Produto. Após preencha todas as informações abaixo para adicionar uma nova transferência de estoque.
+</p>
+
+
+
+<form id="transferencia_form" action="" method="POST" onsubmit="return validateForm()">
+    {% csrf_token %}
+
+
+    <div>
+        <p class="datas-p">Produto</p>
+        <input type="text" id="produto_input" name="produto_input" list="produtos"
+               placeholder="Selecione um Produto" class="form_control">
+       <p class="datas-p">Quantidade Unitaria</p>
+        <input type="number" placeholder="Unidades" class="quantidade_input" name="quantidade_produto">
+        <p class="datas-p">Quantidade de caixas</p>
+        <input type="number" placeholder="Caixas" class="quantidade_caixas_input" name="quantidade_caixas_produto">
+        <p class="datas-p">Lote</p>
+        <input type="text" placeholder="Lote" class="lote_input" name="lote_produto">
+        <p class="datas-p">Data de Fabricação</p>
+        <input type="date" placeholder="Data de Fabricação" class="data_fabricacao_input"
+               name="data_fabricacao_produto">
+        <p class="datas-p">Data de Validade</p>
+        <input type="date" placeholder="Data de Validade" class="data_validade_input"
+               name="data_validade_produto">
+       <p class="datas-p">Codigo de Barras Unitario</p>
+       <input type="text" placeholder="Codigo de Barras Unitario" class="codigo_barras_input"
+                name="codigo_barras_produto">
+        <p class="datas-p">Codigo de Barras Caixa</p>
+       <input type="text" placeholder="Codigo de Barras de Caixa" class="codigo_barras_caixa_input"
+                name="codigo_barras_caixa_produto">
+
+    </div>
+
+    <datalist id="produtos">
+        {% for produto in produtos %}
+            <option value="{{ produto.name }}" data-id="{{ produto.id }}" data-codigo="{{ produto.product_code }}">
+        {% endfor %}
+    </datalist>
+
+    <input type="hidden" id="produto_id" name="produto_id">
+
+    <button type="button" class="validate_button" onclick="adicionarBotaoEnviar()">Validar</button>
+    <div id = "div_botao_enviar"></div>
+
+</form>
+
+
+<script>
+
+
+    function adicionarBotaoEnviar() {
+        var container = document.getElementById('div_botao_enviar');
+        var botao = document.createElement('button');
+
+        botao.innerHTML = 'Enviar';
+        botao.type = 'submit';
+
+        container.appendChild(botao);
+
+        // Ocultar o botão de validar após criar o botão de enviar
+        var botaoValidar = document.querySelector('.validate_button');
+        botaoValidar.style.display = 'none';
+    }
+
+
+
+
+
+    // Validar formulario de entrada de produtos acabados
+    function validateForm() {
+
+        var inputsProduto = document.querySelectorAll('.quantidade_input, .quantidade_caixas_input, .lote_input, ' +
+            '.data_fabricacao_input, .data_validade_input, .codigo_barras_input, .codigo_barras_caixa_input');
+
+        for (var i = 0; i < inputsProduto.length; i++) {
+            var input = inputsProduto[i];
+
+            if (input.value === "" && input.type !== "hidden") {
+                alert("Por favor, preencha todos os campos de Produto corretamente.");
+                return false;
+        }
+    }
+        return true;
+    }
+
+
+
+</script>
+{% endblock content %}
+

@@ -9,14 +9,23 @@ from cadastros.models import Clientes
 
 
 class Pedido(models.Model):
+
+    STATUS_CHOICES = [
+        ('em_aberto', 'Em Aberto'),
+        ('aprovados', 'Aprovados'),
+        ('separando', 'Separando'),
+        ('separacao_finalizada', 'Separação Finalizada'),
+        ('finalizados', 'Finalizados'),
+        ('cancelado', 'Cancelado'),
+    ]
+
     cliente = models.ForeignKey(Clientes, on_delete=models.CASCADE)
     data = models.DateTimeField(auto_now_add=True)
-    aprovado = models.BooleanField(default=False)
-    finalizado = models.BooleanField(default=False)
-    status = models.IntegerField(default=2)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='em_aberto')
+
 
     def __str__(self):
-        return f" {self.cliente} de {self.data.strftime('%d/%m/%Y')}"
+        return f" {self.cliente} de {self.data.strftime('%d/%m/%Y')} - situação: {self.status}"
 
 
 class PedidoItem(models.Model):

@@ -8,60 +8,58 @@
 
 {% block content %}
 
-<div class="button-pattern">
-<!-- Botão de Voltar -->
-    <button class="button-pattern_final" onclick="window.history.back()">Voltar</button>
-</div>
+{% if status == 'n_validado' %}
+    <div class="button-pattern">
+        <a href="{% url 'listar_transferencias_estoque' %}"><button class="button-pattern_final">Voltar</button></a>
+        <a href="/produtos_acabados/adicionar_produto_transferencia/?id={{id}}"><button class="button-add-product">Adicionar Produto</button></a>
+    </div>
+
+{% else %}
+
+    <div class="button-pattern">
+        <a href="{% url 'entradas_recebidas_estoque' %}"><button class="button-pattern_final">Voltar</button></a>
+    </div>
+
+{% endif %}
+
 
 <span><h2>Transferencia de Estoque numero: {{ transferencia.numero_transferencia }} |  Data:  {{transferencia.data_saida|date:"d/m/Y" }}</h2></span>
 
 
+<div class="infos">
+    <h3 class="info_cabec">Motorista: {{transferencia.motorista}}</h3>
+    <h3 class="info_cabec">Veiculo: {{ transferencia.veiculo }}</h3>
+    <h3 class="info_cabec">Conferente: {{ transferencia.conferente }}</h3>
+    <h3 class="info_cabec">quantidade de pallets: {{ transferencia.quantidade_pallets }}</h3>
+</div>
+
 <div class="container-tabela">
     <div class="container">
-        <table>
+        <table class="table_info">
 
-            <thead>
-            <tr class="description-tr">
-                <th class="description-name">Motorista</th>
-                <th class="description-name">Veiculo</th>
-                <th class="description-name">Conferente</th>
-                <th class="description-name">quantidade_pallets</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr class="itens-tr">
-                <td class="product_name">{{ transferencia.motorista }}</td>
-                <td class="product_name">{{ transferencia.veiculo }}</td>
-                <td class="product_name">{{ transferencia.conferente }}</td>
-                <td class="product_name">{{ transferencia.quantidade_pallets }}</td>
-
-            </tr>
-            </tbody>
 
 
             <thead>
             <tr class="description-tr">
                 <th class="description-name">Produto</th>
-                <th class="description-name">Quantidade Unit.</th>
-                <th class="description-name">Quantidade Caixa</th>
+                <th class="description-name">Unid.</th>
+                <th class="description-name">Caixas</th>
                 <th class="description-name">Lote</th>
-                <th class="description-name">Codigo de Barras</th>
-                <th class="description-name">Codigo de Caixa</th>
-                <th class="description-name">Data Fabricação</th>
-                <th class="description-name">Validade</th>
+                <th class="description-name">Cod. de Barras</th>
+                <th class="description-name">Cod. de Caixa</th>
+                <th class="description-name">Fabricação</th>
             </tr>
             </thead>
             <tbody>
             {% for valores in produtos %}
             <tr class="itens-tr">
-                <td class="product_name">{{ valores.produto }}</td>
+                <td class="product_name product">{{ valores.produto }}</td>
                 <td class="product_name">{{ valores.quantidade_unitaria }}</td>
                 <td class="product_name">{{ valores.quantidade_caixa }}</td>
                 <td class="product_name">{{ valores.lote }}</td>
                 <td class="product_name">{{ valores.codigo_barra_unidade }}</td>
                 <td class="product_name">{{ valores.codigo_barra_caixa }}</td>
                 <td class="product_name">{{ valores.data_fabricacao|date:"d/m/Y" }}</td>
-                <td class="product_name">{{ valores.validade|date:"d/m/Y" }}</td>
             </tr>
                 {% endfor %}
             </tbody>

@@ -12,6 +12,11 @@ urlpatterns = [
     path('listar_pedidos_para_gestao/', views.listar_pedidos, {'opcao': 'gestao'}, name='listar_pedidos_para_gestao'),
     path('aprovar_pedido/<int:pedido_id>/', views.aprovar_pedido, name='aprovar_pedido'),
 
+    #  AQUI A NOVA TELA DE PEDIDOS
+    path('pedidos/', views.listar_pedidos, name='listar_pedidos'),  # Página inicial com o HTML
+    path('pedidos/<str:status>/', views.listar_pedidos_por_status, name='listar_pedidos_por_status'),
+
+
     # AQUI COMEÇA A PARTE DE EXPEDICAO -- SEPARACAO DE PEDIDOS
     path('expedicao/', views.expedicao_list, name='expedicao_list'),
     path('expedicao/ver/<int:pedido_id>/', views.expedicao_ver, name='expedicao_ver'),

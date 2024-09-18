@@ -4,6 +4,8 @@ from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
+from django.views.decorators.http import require_POST
+
 from cadastros.models import Clientes, Products, TabelaPrecoProduto, Products_another_info
 
 from django.contrib.contenttypes.models import ContentType
@@ -204,7 +206,41 @@ def aprovar_pedido(request, pedido_id):
     return JsonResponse({'success': False, 'error': 'Método não permitido.'})
 
 
+@login_required
+def listar_pedidos_por_status(request, status):
+    # Filtra os pedidos com base no status passado como argumento
+    pedidos = Pedido.objects.filter(status=status).order_by('-data')
 
+    # Serializa os dados dos pedidos para JSON
+    data = [{
+        'numero_pedido': pedido.id,  # Usando o id como número do pedido
+        'cliente': pedido.cliente.name,
+        'data': pedido.data.strftime('%d/%m/%Y'),
+        'status': pedido.get_status_display(),
+    } for pedido in pedidos]
+
+    # Retorna a lista de pedidos como uma resposta JSON
+    return JsonResponse({'pedidos': data})
+
+
+
+def listar_pedidos(request):
+    return render(request, 'pedidos/lista_pedidos.html')  # Renderiza o template HTML
+
+
+
+def alterar_status_pedido(request, pedido_id):
+    if request.method == 'POST':
+        pedido = get_object_or_404(Pedido, id=pedido_id)
+        novo_status = request.POST.get('novo_status')
+
+        if novo_status:
+            pedido.status = novo_status
+            pedido.save()
+            return redirect('listar_pedidos_por_status',
+                            status=novo_status)  # Redireciona para a listagem com o novo status
+        else:
+            return HttpResponse("Status inválido", status=400)
 
 
 
