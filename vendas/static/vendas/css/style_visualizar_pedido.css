@@ -7,6 +7,23 @@ h2, h3 {
     color: #333;
 }
 
+
+.info_pedido{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding-top: 30px;
+}
+
+p{
+    font-weight: 300;
+    font-size: 18px
+}
+
+p strong {
+    font-weight: 600;
+}
+
 table {
     width: 100%;
     border-collapse: collapse;
@@ -20,6 +37,12 @@ table, th, td {
 th, td {
     padding: 10px;
     text-align: left;
+    font-weight: 100;
+    font-size: 16px
+}
+
+th{
+    color: #5b5b5b;
 }
 
 th {
@@ -39,7 +62,7 @@ th {
     transition: background-color 0.3s ease;
     position: absolute;
     right: 50px;
-    top: 70px;
+    top: 80px;
 }
 
 .edit-button:hover {

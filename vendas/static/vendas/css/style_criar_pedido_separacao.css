@@ -35,14 +35,31 @@ form {
 
 #input_titles {
     display: flex;
-    justify-content: space-between;
     margin-bottom: 0.5em;
     font-weight: bold;
 }
 
+.produto-span{
+    padding-right: 30%;
+}
+
+.codigo-span{
+    margin-right: 4%;
+}
+
+.caixa-span{
+    margin-right: 4%;
+}
+
+.quantcaixa-span{
+    padding-left: 4%;
+}
+
+
 #input_titles span {
     width: 20%; /* Ajuste conforme necessário */
     text-align: center;
+    padding-top: 20px;
 }
 
 #inputs_container .produto-linha {
@@ -123,7 +140,8 @@ button:hover {
 }
 
 .descricao-p {
-    margin-bottom: 1em;
+    text-align: center;
+    color: #858585;
 }
 
 #inputs_container .produto-linha {
@@ -156,6 +174,18 @@ button:hover {
     text-align: center;
     margin-top: 1em;
 }
+
+.input-disabled {
+    background-color: #e9ecef;
+    cursor: not-allowed;
+}
+
+.button-disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+
 
 @media (max-width: 768px) {
     #inputs_container .produto-linha {

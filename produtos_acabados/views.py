@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.core.paginator import Paginator
 from django.db.models import Q
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.urls import reverse
 from datetime import datetime
 
@@ -12,8 +12,8 @@ from .models import TransferenciaEstoqueSaidaInfo, TransferenciaEstoqueSaidaProd
 from cadastros.models import Products, Products_another_info
 
 
-
 # Aqui criamos a transferencia de estoque (motorista, etc)
+@permission_required('produtos_acabados.add_transferenciaestoquesaidainfo', raise_exception=True)
 @login_required
 def entrada_produtos_acabados(request):
     if request.method == 'GET':
@@ -47,6 +47,7 @@ def entrada_produtos_acabados(request):
     return HttpResponse(status=405)  # Método não permitido
 
 
+@permission_required('produtos_acabados.view_transferenciaestoquesaidainfo', raise_exception=True)
 @login_required
 def listar_transferencias_estoque(request):
     transferencias = TransferenciaEstoqueSaidaInfo.objects.filter(validado=False)
@@ -54,6 +55,7 @@ def listar_transferencias_estoque(request):
                   {'transferencias': transferencias, 'opcao': 'saida'})
 
 
+@permission_required('produtos_acabados.view_transferenciaestoquesaidaprodutos', raise_exception=True)
 @login_required
 def exibir_transferencias_estoque(request):
     if request.method == 'GET':
@@ -70,6 +72,7 @@ def exibir_transferencias_estoque(request):
                                                                                         'status': status})
 
 
+@permission_required('produtos_acabados.add_transferenciaestoquesaidaprodutos', raise_exception=True)
 def adicionar_produto_transferencia(request):
     if request.method == 'GET':
         id = request.GET.get('id')
@@ -151,6 +154,7 @@ def adicionar_produto_transferencia(request):
         return redirect(reverse('exibir_transferencia_estoque') + '?id=' + str(transferencia_id))
 
 
+@permission_required('produtos_acabados.listar_trans_para_conferencia', raise_exception=True)
 @login_required
 def listar_transferecias_para_conferencia(request):
     transferencias = TransferenciaEstoqueSaidaInfo.objects.filter(validado=False)
@@ -158,6 +162,7 @@ def listar_transferecias_para_conferencia(request):
                   {'transferencias': transferencias, 'opcao': 'entrada'})
 
 
+@permission_required('produtos_acabados.validar_transferencias', raise_exception=True)
 @login_required
 def receber_transferencia_estoque(request):
     if request.method == 'GET':
@@ -168,7 +173,6 @@ def receber_transferencia_estoque(request):
             'transferencia': transferencia,
             'produtos': produtos
         })
-
 
     if request.method == 'POST':
         pk = request.GET.get('id')
@@ -193,9 +197,7 @@ def receber_transferencia_estoque(request):
         return redirect('entradas_recebidas_estoque')
 
 
-
-
-
+@permission_required('produtos_acabados.listar_transferencias_recebidas', raise_exception=True)
 @login_required
 def listar_transferencias_recebidas(request):
     # Busca pelo número da transferência
@@ -239,6 +241,7 @@ def listar_transferencias_recebidas(request):
 
 
 
+@permission_required('produtos_acabados.listar_entradas_estoque', raise_exception=True)
 @login_required
 def lista_produtos_estoque(request):
     query = request.GET.get('q')
@@ -260,8 +263,20 @@ def lista_produtos_estoque(request):
     return render(request, 'produtos_acabados/lista_produtos_estoque.html', {'page_obj': page_obj, 'query': query})
 
 
+def verificar_lotes_componentes(produtos_componentes, lotes_componentes):
+    for idx in range(len(produtos_componentes)):
+        produto_component = produtos_componentes[idx]
+        lote_component = lotes_componentes[idx]
+
+        # Verificar se o lote existe e pertence ao produto selecionado
+        if not TransferenciaEstoqueSaidaProdutos.objects.filter(produto__name=produto_component,
+                                                                lote=lote_component).exists():
+            return False, f'Lote "{lote_component}" não encontrado para o produto "{produto_component}".'
+
+    return True, None
 
 
+@permission_required('produtos_acabados.add_mistoitem', raise_exception=True)
 @login_required
 def create_misto_item(request):
     if request.method == 'GET':
@@ -309,6 +324,18 @@ def create_misto_item(request):
             except Products_another_info.DoesNotExist:
                 errors.append('Produto não encontrado.')
 
+        # Processar componentes e gerar saídas de estoque
+        produtos_componentes = request.POST.getlist('produto_component')
+        lotes_componentes = request.POST.getlist('lote_component')
+        quantidades_caixa_componentes = request.POST.getlist('quantidade_caixa_component')
+
+        validacao_lotes, erro_lote = verificar_lotes_componentes(produtos_componentes, lotes_componentes)
+        if not validacao_lotes:
+            errors.append(erro_lote)
+            print(erro_lote)
+            return render(request, 'produtos_acabados/erro.html', {'error': errors})
+
+
         # Verificar erros antes de prosseguir
         if errors:
             return render(request, 'produtos_acabados/erro.html', {'errors': errors})
@@ -334,10 +361,6 @@ def create_misto_item(request):
             status=True  # True indica entrada de estoque
         )
 
-        # Processar componentes e gerar saídas de estoque
-        produtos_componentes = request.POST.getlist('produto_component')
-        lotes_componentes = request.POST.getlist('lote_component')
-        quantidades_caixa_componentes = request.POST.getlist('quantidade_caixa_component')
 
         componentes = []
         for idx in range(len(produtos_componentes)):
@@ -356,8 +379,6 @@ def create_misto_item(request):
                         errors.append(f'Produto componente "{produto_component}" não encontrado.')
                         continue
 
-
-
                 # Criar saída de estoque para o componente
                 Estoque.objects.create(
                     content_type=ContentType.objects.get_for_model(Products),
@@ -365,7 +386,8 @@ def create_misto_item(request):
                     fonte=misto_item,
                     cod_produto=produto_geral.product_code,
                     lote=lote_component,
-                    quantidade=-int(quantidade_caixa_component) * int(quantidade_caixas),  # Quantidade negativa indica saída de estoque
+                    quantidade=-int(quantidade_caixa_component) * int(quantidade_caixas),
+                    # Quantidade negativa indica saída de estoque
                     status=False  # False indica saída de estoque
                 )
 
@@ -386,9 +408,7 @@ def create_misto_item(request):
         return redirect('list_misto_item')
 
 
-
-
-
+@permission_required('produtos_acabados.view_mistoitem', raise_exception=True)
 @login_required
 def list_item_misto(request):
     misto_items = MistoItem.objects.all()
@@ -397,6 +417,7 @@ def list_item_misto(request):
                   {'misto_items': misto_items})
 
 
+@permission_required('produtos_acabados.view_mistocomponent', raise_exception=True)
 @login_required
 def visualizar_misto_item(request, misto_pk):
     misto_item = MistoItem.objects.get(pk=misto_pk)

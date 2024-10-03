@@ -3,15 +3,18 @@ from django.shortcuts import render
 from django.views.generic import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
+from django.contrib.auth.decorators import permission_required
 
 from .models import Products, Clientes, Vendedores
 from cadastros.cadastro_logica.estatico_dicionario_banco_titulos.dict_produtos_exibicao_em_lista import \
     dicionario_produtos, dicionario_clientes, dicionario_vendedeores
 
 
+
 # Create your views here.
 @login_required
+@permission_required('cadastros.view_clientes', raise_exception=True)
 def exbicao_cadastros_produtos_lista(request, modulo):
 
     if modulo == 'Produtos':
@@ -70,6 +73,7 @@ class CampoList(LoginRequiredMixin, ListView):
 
 
 @login_required
+@permission_required('cadastros.view_products', raise_exception=True)
 def exibir_cadastro_produto(request):
 
     if request.method == 'GET':
@@ -80,7 +84,9 @@ def exibir_cadastro_produto(request):
 
     return render(request, 'cadastros/exibir_cadastro_produto.html')
 
+
 @login_required
+@permission_required('cadastros.view_clientes', raise_exception=True)
 def exibir_cadastro_cliente(request):
 
     if request.method == 'GET':
@@ -93,11 +99,13 @@ def exibir_cadastro_cliente(request):
 
 
 
-class ClienteCreate(LoginRequiredMixin, CreateView):
+class ClienteCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = Clientes
     fields = ['name', 'regime', 'cnpj', 'ie', 'cep', 'estado', 'cidade', 'rua', 'numero', 'complemento']
     template_name = 'cadastros/cadastrar_novo_cliente.html'
     success_url = '/cadastro/clientes/'
+    permission_required = 'cadastros.add_clientes'
+
 
 
 

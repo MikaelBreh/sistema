@@ -1,0 +1,430 @@
+@charset "UTF-8";
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
+/* CSS Document */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    max-width: 100vw;
+    font-family: 'Inter', sans-serif
+}
+
+body, html {
+    width: 100vw;
+    height: 100vh;
+}
+
+body {
+    background-color: #f5f5f5;
+}
+
+.h1, .h2, .h3, p {
+        font-family: 'Inter', sans-serif
+}
+
+.alert{
+    color: #a60101;
+}
+
+
+
+@media screen and (min-width: 769px) and (max-width: 2000px) {
+
+
+    .button-pattern_final {
+        padding: 10px 15px;
+        background-color: #007bff;
+        border: none;
+        color: white;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1em;
+    }
+
+    .button-pattern_final:hover {
+        background-color: #0056b3;
+    }
+
+    .title, .subtitle {
+        text-align: center;
+        color: #5b5b5b;
+        font-size: 1.5rem;
+        font-weight: lighter;
+    }
+
+    .subtitle {
+        padding-bottom: 15px;
+    }
+
+
+    /* Estilo do container para organizar as informações em uma linha só */
+    .container {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr 1fr; /* Produto ocupa 2 colunas, os outros ocupam 1 */
+        grid-column-gap: 10px;
+    }
+
+    .item-product{
+        padding-right: 5px;
+        text-align: center;
+    }
+
+    .item-product p{
+        font-weight: 300;
+    }
+
+    .Produto p{
+        font-weight: 600;
+    }
+
+    .Produto{
+        align-items: start;
+        text-align: start;
+        padding-left: 8%
+    }
+
+
+
+
+    /* Estilo para exibir as informações dos lotes quando clicado */
+    .lote-entry {
+        display: flex;
+        justify-content: start;
+        padding-top: 2px;
+    }
+
+    .lote-entry input{
+        padding-right: 20px;
+        margin-right: 20px;
+        padding-top: 5px;
+        padding-bottom: 5px;
+        margin-left: 10px;
+        text-align: center;
+    }
+
+    .lote-entry button{
+        padding-right: 20px;
+        padding-left: 20px;
+
+        background: rgb(220, 120, 120); /* Remove o fundo */
+        border: none; /* Remove a borda */
+        color: #ffffff; /* Cor do texto */
+        font-size: 16px; /* Tamanho da fonte */
+        cursor: pointer; /* Cursor pointer ao passar o mouse */
+        text-decoration: none;
+    }
+
+    .lote-entry button:hover{
+        background: rgb(166, 1, 1);
+    }
+
+    .adiconar-faltando-div{
+        border-bottom: 1px solid #adadad;
+        margin-bottom: 10px;
+    }
+
+
+    .adiconar-faltando-div button{
+        padding-right: 20px;
+        padding-left: 20px;
+        margin-top: 10px;
+        margin-bottom: 10px ;
+
+        background: none; /* Remove o fundo */
+        border: none; /* Remove a borda */
+        color: #727272; /* Cor do texto */
+        font-size: 16px; /* Tamanho da fonte */
+        cursor: pointer; /* Cursor pointer ao passar o mouse */
+        text-decoration: underline;
+    }
+
+    .adiconar-faltando-div p{
+        padding-left: 10px;
+        padding-top: 8px;
+    }
+
+    .alerta-vermelho {
+    color: #c20606;
+}
+
+    .separado{
+        padding-right: 20px;
+        padding-left: 5%;
+    }
+
+    .lotes_quantidades{
+        padding-top: 5px;
+    }
+
+
+
+    /* Estilo para separar visualmente cada produto */
+    .produto-linha {
+        background-color: #e0e0e0;
+        padding-top: 5px;
+        padding-bottom: 7px;
+        padding-left: 10px;
+        margin-bottom: 2px;
+        border-radius: 2px;
+    }
+
+
+    .button-salvar-div{
+    padding-top: 30px;
+    }
+
+    .salvar_button{
+    width: 25%;
+    padding: 4px 8px;
+    background-color: #8d06b6;
+    border: none;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 15px;
+    margin-left: 10px;
+
+    }
+
+    .button-salvar-div{
+        padding-top: 90px;
+    }
+
+    .separado_restante{
+        display: flex;
+        flex-direction: row;
+        justify-content: start;
+    }
+
+    .toggle-lotes {
+    cursor: pointer;
+    display: inline-block;
+    margin-left: 10px;
+    }
+
+    .seta {
+        font-size: 14px;
+    }
+
+    .lotes_quantidades {
+        display: none; /* Começa escondido */
+    }
+
+    .codigos{
+        display: flex;
+        flex-direction: row;
+        justify-content: space-evenly;
+        margin-bottom: 20px;
+        border-bottom: 1px solid #adadad;
+    }
+
+
+
+
+
+}
+
+
+
+
+
+
+@media screen and (min-width: 320px) and (max-width: 480px) {
+
+    .title{
+        text-align: center;
+        color: #5b5b5b;
+        font-size: 1.2rem;
+        font-weight: lighter;
+    }
+
+    .subtitle{
+        text-align: center;
+        color: #5b5b5b;
+        padding-bottom: 15px;
+        font-size: 1.0rem;
+        font-weight: lighter;
+    }
+
+    .alert{
+        padding-top: 10px;
+        padding-left: 70px;
+        padding-right: 10px;
+        text-align: center;
+    }
+
+
+    .container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0px 0px;
+        grid-auto-flow: row;
+        grid-template-areas:
+            "Produto Produto"
+            "Codigo-Barra Codigo-Caixa"
+            "Quantidade Quantidade-Caixa";
+    }
+
+
+    .Produto { grid-area: Produto; }
+
+    .Codigo-Barra { grid-area: Codigo-Barra; }
+
+    .Codigo-Caixa { grid-area: Codigo-Caixa; }
+
+    .Quantidade { grid-area: Quantidade; }
+
+    .Quantidade-Caixa { grid-area: Quantidade-Caixa; }
+
+    .lote-entry {
+        display: flex;
+        justify-content: space-around;
+
+
+    }
+
+
+    .produto-linha{
+        background-color: #E4E4E4;
+        margin-top: 5px;
+        padding-bottom: 7px;
+
+    }
+
+    .item-product{
+        text-align: center;
+    }
+
+    .Produto{
+        padding-top: 10px;
+        text-align: center;
+        font-size: 17px;
+        font-weight: normal;
+        padding-bottom: 7px;
+    }
+
+    .Codigo-Barra, .Codigo-Caixa{
+        font-size: 13px;
+        font-weight: 300;
+    }
+
+    .Quantidade, .Quantidade-Caixa{
+        padding-top: 7px;
+        font-size: 13px;
+        font-weight: 300;
+        padding-bottom: 10px;
+    }
+
+    p .strong{
+        text-decoration: underline;
+    }
+
+    input{
+        border-radius: 4px;
+        padding: 7px;
+        border: 1px solid #b9b9b9;
+        text-align: center;
+    }
+
+
+    input:focus {
+        border-color: #8b0598; /* Cor da borda quando o campo está em foco */
+        outline: none; /* Remove a linha de contorno padrão */
+        box-shadow: 0 0 2px rgb(141, 6, 182); /* Sombra ao redor do campo */
+    }
+
+    .botao-adicionar-lote{
+            background: none; /* Remove o fundo */
+            border: none; /* Remove a borda */
+            color: #727272; /* Cor do texto */
+            font-size: 16px; /* Tamanho da fonte */
+            cursor: pointer; /* Cursor pointer ao passar o mouse */
+            padding: 10px; /* Espaçamento interno */
+        text-decoration: underline;
+    }
+
+    .remove-lote{
+        background: rgb(166, 1, 1); /* Remove o fundo */
+        border: none; /* Remove a borda */
+        color: #ffffff; /* Cor do texto */
+        font-size: 16px; /* Tamanho da fonte */
+        cursor: pointer; /* Cursor pointer ao passar o mouse */
+        padding: 5px; /* Espaçamento interno */
+        text-decoration: none;
+    }
+
+
+    .button-pattern_final {
+    padding: 4px 8px;
+    background-color: #007bff;
+    border: none;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 15px;
+    position: absolute;
+    margin-left: 10px;
+    }
+
+
+    .button-salvar-div{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding-top: 10px;
+    }
+
+    .salvar_button{
+    width: 80%;
+    padding: 4px 8px;
+    background-color: #8d06b6;
+    border: none;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 15px;
+    margin-left: 10px;
+
+    }
+
+    .button-salvar-div{
+        padding-top: 90px;
+    }
+
+    .adiconar-faltando-div{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding-top: 10px;
+    }
+
+    .lote-entry{
+        display: flex;
+        justify-content: space-around;
+    }
+
+    .lote-entry p{
+        font-size: 14px;
+    }
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

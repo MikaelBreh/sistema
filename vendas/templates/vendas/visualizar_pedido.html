@@ -6,28 +6,43 @@
 {% endblock %}
 
 {% block content %}
-
 <div class="button-pattern">
-<!-- Botão de Voltar -->
+    <!-- Botão de Voltar -->
     <button class="button-pattern_final" onclick="window.history.back()">Voltar</button>
 </div>
 
+{% if pedido.status == 'finalizados' or pedido.status == 'cancelado' %}
+
+{% else %}
 <a href="{% url 'editar_pedido' pedido.id %}" class="edit-button">Editar Pedido</a>
 
-<h2>Detalhes do Pedido</h2>
-<p><strong>ID do Pedido:</strong> {{ pedido.id }}</p>
-<p><strong>Cliente:</strong> {{ pedido.cliente.name }}</p>
-<p><strong>Data do Pedido:</strong> {{ pedido.data|date:"d/m/Y - H:i" }}</p>
+{% endif %}
+
+
+<div class="info_pedido">
+    <p><strong>ID do Pedido:</strong> {{ pedido.id }}</p>
+    <p><strong>Cliente:</strong> {{ pedido.cliente.name }}</p>
+    <p><strong>Data do Pedido:</strong> {{ pedido.data|date:"d/m/Y - H:i" }}</p>
+    <p><strong>Status: </strong> {{ pedido.status }}</p>
+</div>
 
 <table>
     <thead>
         <tr>
             <th>Produto</th>
-            <th>Código do Produto</th>
+            <th>Cód. do Produto</th>
             <th>Codigo de Barras</th>
-            <th>Codigo de Barras Caixas</th>
-            <th>Quantidade</th>
-            <th>Quantidade de Caixas</th>
+            <th>Codigo de Caixas</th>
+            <th>Unid.</th>
+            <th>Caixas</th>
+            {% if pedido.status == 'separando' or pedido.status == 'separacao_finalizada' %}
+                <th>Quant. Separada</th>
+                <th>Quant. Separar</th>
+            {% elif pedido.status == 'finalizados' %}
+                <th>Quant. Separada</th>
+                <th>Quant. Faltante</th>
+
+            {% endif %}
         </tr>
     </thead>
     <tbody>
@@ -39,10 +54,63 @@
             <td>{{ item.product_instance.box_bar_code }}</td>
             <td>{{ item.quantidade }}</td>
             <td>{{ item.quantidade_caixas }}</td>
+            {% if pedido.status == 'separando' or pedido.status == 'separacao_finalizada' %}
+                <td class="quant-separada" data-item-id="{{ item.id }}">0</td>
+                <td class="quant-restante" data-item-id="{{ item.id }}">{{ item.quantidade }}</td>
+            {% elif pedido.status == 'finalizados' %}
+                <td class="quant-separada" data-item-id="{{ item.id }}">0</td>
+                <td class="quant-restante" data-item-id="{{ item.id }}">{{ item.quantidade }}</td>
+            {% endif %}
         </tr>
         {% endfor %}
     </tbody>
 </table>
 
+<script>
+    // Função para atualizar a quantidade separada e quanto falta separar
+    function atualizarSeparacao(itensPedido, separacoes) {
+        itensPedido.forEach(function(item) {
+            let totalSeparado = 0;
 
+            separacoes.forEach(function(separacao) {
+                if (separacao.item_pedido == item.id) {
+                    totalSeparado += separacao.quantidade;
+                }
+            });
+
+            const separadaElem = document.querySelector('.quant-separada[data-item-id="' + item.id + '"]');
+            const restanteElem = document.querySelector('.quant-restante[data-item-id="' + item.id + '"]');
+
+            if (separadaElem && restanteElem) {
+                separadaElem.innerText = totalSeparado;
+                restanteElem.innerText = item.quantidade - totalSeparado;
+            }
+        });
+    }
+
+    // Dados dos itens do pedido
+    const itensPedido = [
+        {% for item in itens_pedido %}
+        {
+            id: {{ item.id }},
+            quantidade: {{ item.quantidade }},
+        },
+        {% endfor %}
+    ];
+
+    // Dados das separações
+    const separacoes = [
+        {% for separacao in separacoes %}
+        {
+            item_pedido: {{ separacao.item_pedido.id }},
+            quantidade: {{ separacao.quantidade }},
+        },
+        {% endfor %}
+    ];
+
+    // Atualizar as separações ao carregar a página
+    document.addEventListener("DOMContentLoaded", function() {
+        atualizarSeparacao(itensPedido, separacoes);
+    });
+</script>
 {% endblock %}

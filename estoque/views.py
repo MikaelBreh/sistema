@@ -1,241 +1,209 @@
-from django.shortcuts import render, get_object_or_404
-from cadastros.models import Products, Products_another_info
-from django.contrib.auth.decorators import login_required
+from django.contrib.contenttypes.models import ContentType
+from django.core.paginator import Paginator
+from django.db.models import Sum, F
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required, permission_required
 
-from cadastros.models import Products, Products_another_info
-from produtos_acabados.models import TransferenciaEstoqueSaidaProdutos, MistoItem
-from vendas.models import Pedido, PedidoSeparacao
+from produtos_acabados.models import MistoItem, TransferenciaEstoqueSaidaInfo
+from vendas.models import FaltandoSeparacao, PedidoItem, Pedido
+from .models import Estoque
+from cadastros.models import Products
 
 
 @login_required
+@permission_required('estoque.view_estoque', raise_exception=True)
 def visualizar_estoque(request):
+    # Filtro de busca por nome do produto
+    search_query = request.GET.get('search', '')
+    show_only_necessity = request.GET.get('necessidade', False)
+    order_by = request.GET.get('order_by', 'nome')  # Valor padrão: 'nome'
+    direction = request.GET.get('direction', 'asc')  # Direção padrão: 'asc' (crescente)
 
+    # Definir a ordem de classificação com base na direção
+    if direction == 'desc':
+        order_by = f'-{order_by}'
+
+    # Filtrar produtos por nome
+    produtos = Products.objects.all()
+    if search_query:
+        produtos = produtos.filter(name__icontains=search_query)
+
+    # Filtra estoques para os produtos encontrados
+    estoques = Estoque.objects.filter(cod_produto__in=produtos.values('product_code'))
+
+    # Agrupamento e soma do estoque por produto
+    produtos_quantidades = estoques.values('cod_produto').annotate(
+        estoque_total=Sum('quantidade')
+    )
+
+    # Filtrar itens de pedido relacionados aos produtos
+    product_content_type = ContentType.objects.get_for_model(Products)
+    pedido_itens = PedidoItem.objects.filter(
+        content_type=product_content_type,
+        object_id__in=produtos.values('id'),
+        pedido__status__in=['aprovados', 'separando', 'separacao_finalizada']
+    ).values('object_id').annotate(pedidos_total=Sum('quantidade'))
+
+    # Dicionário de pedidos por produto
+    pedidos_por_produto = {
+        item['object_id']: item['pedidos_total']
+        for item in pedido_itens
+    }
+
+    # Agora buscamos o nome, estoque mínimo, e aplicamos o filtro de necessidade
+    produtos_detalhes = []
+    for produto in produtos_quantidades:
+        try:
+            produto_detalhe = Products.objects.get(product_code=produto['cod_produto'])
+            pedidos = pedidos_por_produto.get(produto_detalhe.id, 0)
+            estoque_apos_pedidos = produto['estoque_total'] - pedidos
+
+            # Verifica se o estoque é menor que o estoque mínimo (se a opção de necessidade for marcada)
+            if not show_only_necessity or (produto['estoque_total'] < produto_detalhe.estoq_minimo):
+                produtos_detalhes.append({
+                    'nome': produto_detalhe.name,
+                    'estoque_minimo': produto_detalhe.estoq_minimo,
+                    'estoque_total': produto['estoque_total'],
+                    'pedidos': pedidos,
+                    'estoque_apos_pedidos': estoque_apos_pedidos,
+                })
+        except Products.DoesNotExist:
+            pass
+
+    # Ordenação dos produtos de acordo com o parâmetro escolhido
+    produtos_detalhes = sorted(produtos_detalhes, key=lambda x: x[order_by.lstrip('-')], reverse=(direction == 'desc'))
+
+    # Paginação
+    page = request.GET.get('page', 1)
+    paginator = Paginator(produtos_detalhes, 10)
+    estoque_page = paginator.get_page(page)
+
+    context = {
+        'produtos_quantidades': estoque_page,
+        'search_query': search_query,
+        'show_only_necessity': show_only_necessity,
+        'estoque': estoque_page,
+        'order_by': order_by.lstrip('-'),  # Passa o campo de ordenação atual
+        'direction': direction,  # Passa a direção atual
+    }
+
+    return render(request, 'estoque/visualizar_estoque.html', context)
+
+
+@login_required
+@permission_required('estoque.ver_necessidade_pedidos', raise_exception=True)
+def necessidade_pedidos(request):
+    search_query = request.GET.get('search', '')
+    order_by = request.GET.get('order_by', 'nome')
+    direction = request.GET.get('direction', 'asc')
+
+    # Filtro de busca por nome do produto
+    produtos = Products.objects.filter(name__icontains=search_query)
+
+    # Lista para armazenar as informações finais com pedidos separados e faltantes
+    produtos_quantidades = []
+
+    # Iterando pelos produtos para buscar os pedidos faltando separação
+    for produto in produtos:
+        faltando_separacao = FaltandoSeparacao.objects.filter(cod_produto=produto.product_code)
+        pedidos_separados = faltando_separacao.aggregate(total_separado=Sum('quantidade_separada'))['total_separado'] or 0
+        pedidos_faltando = faltando_separacao.aggregate(total_faltando=Sum(F('quantidade_pedido') - F('quantidade_separada')))['total_faltando'] or 0
+
+        produtos_quantidades.append({
+            'nome': produto.name,
+            'pedidos_separados': pedidos_separados,
+            'pedidos_faltando': pedidos_faltando,
+        })
+
+    # Ordenar a lista de produtos calculados
+    reverse_order = (direction == 'desc')
+    produtos_quantidades = sorted(produtos_quantidades, key=lambda x: x[order_by], reverse=reverse_order)
+
+    context = {
+        'produtos_quantidades': produtos_quantidades,
+        'search_query': search_query,
+        'order_by': order_by,
+        'direction': direction,
+    }
+
+    return render(request, 'necessidade_pedidos.html', context)
+
+
+
+
+@login_required
+@permission_required('estoque.ver_estoque_por_lotes', raise_exception=True)
+def estoque_lotes(request, lote):
+    # Filtra os registros de estoque para o lote específico
+    registros_estoque = Estoque.objects.filter(lote=lote)
+
+    # Verifica se existem registros e tenta pegar o código do produto
+    if registros_estoque.exists():
+        produto_code = registros_estoque.first().cod_produto  # Acesse o primeiro registro
+        nome_produto = Products.objects.filter(product_code=produto_code).first()
+    else:
+        produto_code = 'Produto não encontrado'
+        nome_produto = 'Nome não disponível'  # Adicionando um valor padrão
+
+    # Separar entradas e saídas (assumindo status=True para entrada e status=False para saída)
+    entradas = registros_estoque.filter(status=True)
+    saidas = registros_estoque.filter(status=False)
+
+    # Adiciona os detalhes das entradas
+    for entrada in entradas:
+        if entrada.fonte:
+            entrada.fonte_nome = entrada.fonte.__class__.__name__  # Obtém o nome da classe da fonte
+            if isinstance(entrada.fonte, TransferenciaEstoqueSaidaInfo):
+                entrada.fonte_id = entrada.fonte.numero_transferencia
+                entrada.fonte_info = entrada.fonte.numero_transferencia
+            elif isinstance(entrada.fonte, MistoItem):
+                entrada.fonte_id = entrada.fonte.id  # ID do misto item
+                entrada.fonte_info = entrada.fonte.name if hasattr(entrada.fonte, 'name') else 'Nome não disponível'
+            else:
+                entrada.fonte_nome = 'Fonte não encontrada'
+                entrada.fonte_info = 'Nome não disponível'
+        else:
+            entrada.fonte_nome = 'Fonte não encontrada'
+            entrada.fonte_id = None
+            entrada.fonte_info = 'Nome não disponível'
+
+    # Adiciona os detalhes das saídas
+    for saida in saidas:
+        if saida.fonte:
+            saida.fonte_nome = saida.fonte.__class__.__name__  # Obtém o nome da classe da fonte
+            if isinstance(saida.fonte, Pedido):
+                saida.fonte_id = saida.fonte.id  # ID do pedido
+                saida.fonte_info = saida.fonte.name if hasattr(saida.fonte, 'name') else 'Nome não disponível'
+            elif isinstance(saida.fonte, MistoItem):
+                saida.fonte_id = saida.fonte.id  # ID do misto item
+                saida.fonte_info = saida.fonte.name if hasattr(saida.fonte, 'name') else 'Nome não disponível'
+            else:
+                saida.fonte_id = None
+                saida.fonte_info = 'Fonte não reconhecida'
+        else:
+            saida.fonte_nome = 'Fonte não encontrada'
+            saida.fonte_id = None
+            saida.fonte_info = 'Nome não disponível'
+
+    context = {
+        'lote': lote,
+        'produto': nome_produto,
+        'entradas': entradas,
+        'saidas': saidas,
+        'detalhes': registros_estoque,
+    }
+
+    return render(request, 'estoque/estoque_lotes.html', context)
+
+@login_required
+@permission_required('estoque.ver_estoque_por_lotes', raise_exception=True)
+def pesquisar_lote(request):
     if request.method == 'GET':
-
-        # Consulta para trazer todos os produtos e produtos_another_info
-        produtos = Products.objects.all()
-        produtos_another_info = Products_another_info.objects.all()
-
-        # -------------------------------------------------------
-
-
-        # Consulta para filtrar os produtos e quantidades unitárias onde o a transferencia é validada
-        entrada_produtos_validados = TransferenciaEstoqueSaidaProdutos.objects.filter(
-            numero_transferencia__validado=True).values('produto__name', 'quantidade_unitaria')
-
-        dicionario_entrada_produtos = {}
-        for produto in entrada_produtos_validados:
-
-            if produto['produto__name'] in dicionario_entrada_produtos:
-                dicionario_entrada_produtos[produto['produto__name']] += produto['quantidade_unitaria']
-
-            else:
-                dicionario_entrada_produtos[produto['produto__name']] = produto['quantidade_unitaria']
-
-        # print(dicionario_entrada_produtos)
-
-        # -------------------------------------------------------
-
-        # Consulta para obter o produto e a quantidade unitaria do item misto criado
-        misto_items = MistoItem.objects.all()
-
-        # Exibir os resultados com o nome do produto em vez do objeto
-        dicionario_mistos_criados = {}
-        for item in misto_items:
-
-            if item.produto_misto.name in dicionario_mistos_criados:
-                dicionario_mistos_criados[item.produto_misto.name] += item.quantidade_unitaria
-
-            else:
-                dicionario_mistos_criados[item.produto_misto.name] = item.quantidade_unitaria
-
-        # print(dicionario_mistos_criados)
-
-        # -------------------------------------------------------
-
-        dicionario_mistos_componentes = {}
-        # Consulta para obter o produto, quantidade e quantidade de caixas dos componentes de misto_items
-        for misto_item in misto_items:
-            quantidade_de_caixas = misto_item.quantidade_de_caixas
-            components = misto_item.components.all()
-
-            for component in components:
-                produto = component.produto
-                quantidade = component.quantidade
-
-                if produto.name in dicionario_mistos_componentes:
-                    dicionario_mistos_componentes[produto.name] += quantidade * quantidade_de_caixas
-                else:
-                    dicionario_mistos_componentes[produto.name] = quantidade * quantidade_de_caixas
-
-        # print(dicionario_mistos_componentes)
-
-        # -------------------------------------------------------
-
-        pedidos = Pedido.objects.all()
-
-        # -------------------------------------------------------
-
-        dicionario_produtos_pedidos_finalizados = {}
-        # Pegar dads Pedidos
-        for pedido in pedidos:
-            status_pedido = pedido.status
-
-            pedido_itens = pedido.itens.all()
-
-            for item in pedido_itens:
-                componente = item.produto
-                quantidade = item.quantidade
-
-                if status_pedido == 12:
-                    if componente.name in dicionario_produtos_pedidos_finalizados:
-                        dicionario_produtos_pedidos_finalizados[componente.name] += quantidade
-                    else:
-                        dicionario_produtos_pedidos_finalizados[componente.name] = quantidade
-
-        # print(dicionario_produtos_pedidos_finalizados)
-
-        # -------------------------------------------------------
-
-        dicionario_produtos_pedidos_separados = {}
-        # pegar produtos que ja estao separados
-
-        produtos_separados = PedidoSeparacao.objects.all()
-
-        for produto_separado in produtos_separados:
-            produto = produto_separado.item_pedido.produto
-            quantidade = produto_separado.quantidade
-
-            if produto.name in dicionario_produtos_pedidos_separados:
-                dicionario_produtos_pedidos_separados[produto.name] += quantidade
-            else:
-                dicionario_produtos_pedidos_separados[produto.name] = quantidade
-
-        for produto_another in produtos_another_info:
-            produto_base_name = produto_another.produto_pertence.name
-            produto_another_name = produto_another.name  # Nome do produto no Products_another_info
-
-            # Verifica se o produto_another está no dicionário usando o nome do produto
-            if produto_another_name in dicionario_produtos_pedidos_separados:
-                # Se já existe uma entrada para o produto base, soma a quantidade
-                if produto_base_name in dicionario_produtos_pedidos_separados:
-                    dicionario_produtos_pedidos_separados[
-                        produto_base_name] += dicionario_produtos_pedidos_separados.pop(produto_another_name)
-                else:
-                    # Caso contrário, apenas mova o valor de produto_another para produto_base_name
-                    dicionario_produtos_pedidos_separados[
-                        produto_base_name] = dicionario_produtos_pedidos_separados.pop(produto_another_name)
-
-
-        print(dicionario_produtos_pedidos_separados)
-
-
-
-
-
-        # -------------------------------------------------------
-
-        # Corrigindo dicionario de entrada de produtos
-        for produto in produtos:
-            try:
-                tentativa = dicionario_entrada_produtos[produto.name]
-
-            except KeyError:
-                dicionario_entrada_produtos[produto.name] = 0
-
-        # print(dicionario_entrada_produtos)
-
-        # -------------------------------------------------------
-        # Corrigindo dicionario de componentes usados nos mistos
-        for produto in produtos:
-            try:
-                tentativa = dicionario_mistos_componentes[produto.name]
-
-            except KeyError:
-                dicionario_mistos_componentes[produto.name] = 0
-
-        # print(dicionario_mistos_componentes)
-        # -------------------------------------------------------
-
-        # Corrigindo dicionario de mistos criados
-        # Preenchendo o dicionário com os produtos principais
-        for produto in produtos:
-            try:
-                tentativa = dicionario_mistos_criados[produto.name]
-            except KeyError:
-                dicionario_mistos_criados[produto.name] = 0
-
-        # print(dicionario_mistos_criados)
-        # -------------------------------------------------------
-
-        # Aqui pegamos os produtos que sairam nos pedidos que estao finalizados, (status == 12) e somamos a quantidade
-        # incluindo os produtos que sao diferentes (products_another_info) e associamos ao produto base
-
-        dicionario_produtos_finalizados_corrigido = {}
-
-        # Corrigindo dicionário de produtos finalizados, associando produtos_another_info aos produtos base
-        for produto_another in produtos_another_info:
-            produto_base_name = produto_another.produto_pertence.name
-            if produto_base_name in dicionario_produtos_finalizados_corrigido:
-                dicionario_produtos_finalizados_corrigido[
-                    produto_base_name] += dicionario_produtos_pedidos_finalizados.get(produto_another.name, 0)
-            else:
-                dicionario_produtos_finalizados_corrigido[
-                    produto_base_name] = dicionario_produtos_pedidos_finalizados.get(produto_another.name, 0)
-
-        # Preenchendo o dicionário com os produtos principais
-        for produto in produtos:
-            produto_name = produto.name
-            if produto_name in dicionario_produtos_finalizados_corrigido:
-                dicionario_produtos_finalizados_corrigido[produto_name] += dicionario_produtos_pedidos_finalizados.get(
-                    produto_name, 0)
-            else:
-                dicionario_produtos_finalizados_corrigido[produto_name] = dicionario_produtos_pedidos_finalizados.get(
-                    produto_name, 0)
-
-        # print(dicionario_produtos_finalizados_corrigido)
-
-        # -------------------------------------------------------
-
-        # agora vamos criar um unico dicionario com os produtos e quantidades em estoque
-
-        lista_produtos = []
-        lista_quantidades = []
-        lista_quantidade_separadas= []
-
-        for produto in produtos:
-            produto_name = produto.name
-
-            quantidade_entrada = dicionario_entrada_produtos[produto_name]
-            quantidade_mistos = dicionario_mistos_criados[produto_name]
-            quantidade_componentes = dicionario_mistos_componentes[produto_name]
-            quantidade_finalizados = dicionario_produtos_finalizados_corrigido[produto_name]
-
-            try:
-                quantidade_separados = dicionario_produtos_pedidos_separados[produto_name]
-            except KeyError:
-                quantidade_separados = 0
-
-            quantidade_total = (quantidade_entrada + quantidade_mistos) - (quantidade_componentes + quantidade_finalizados + quantidade_separados)
-
-            lista_produtos.append(produto_name)
-            lista_quantidades.append(quantidade_total)
-            lista_quantidade_separadas.append(quantidade_separados)
-
-
-        # Criando a lista de pares (produto, quantidade)
-        produtos_quantidades = zip(lista_produtos, lista_quantidades, lista_quantidade_separadas)
-
-        return render(request, 'estoque/visualizar_estoque.html',
-                      {'produtos_quantidades': produtos_quantidades,})
-
-
-
-
-
-
-
-
-
-
-
+        return render(request, 'estoque/pesquisar_lote.html')
+
+    if request.method == 'POST':
+        lote = request.POST.get('lote', '')
+        if lote:
+            return estoque_lotes(request, lote)
+        else:
+            return render(request, 'estoque/pesquisar_lote.html', {'error': 'O campo de lote não pode estar vazio.'})

@@ -23,6 +23,7 @@ class Products(models.Model):
     net_weight = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
     ncm = models.CharField(max_length=14, null=True, blank=True)
     cest = models.CharField(max_length=14, null=True, blank=True)
+    estoq_minimo = models.IntegerField(null=True, blank=True)
 
     pedidos = GenericRelation('vendas.PedidoItem')
 
@@ -136,3 +137,4 @@ class Materiais_de_Trabalho(models.Model):
 
     def __str__(self):
         return self.name
+

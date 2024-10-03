@@ -16,8 +16,17 @@ class TransferenciaEstoqueSaidaInfo(models.Model):
     observacoes = models.TextField()
     validado = models.BooleanField(default=False)
 
+    class Meta:
+        permissions = [
+            ('listar_trans_para_conferencia', 'Can List Transfs to Confer'),
+            ('validar_transferencias', 'Can Validate Transfers'),
+            ('listar_transferencias_recebidas', 'Can List Received Transfers'),
+            ('listar_entradas_estoque', 'Can List Stock Entries'),
+        ]
+
     def __str__(self):
         return f'{self.numero_transferencia}'
+
 
 class TransferenciaEstoqueSaidaProdutos(models.Model):
     numero_transferencia = models.ForeignKey(TransferenciaEstoqueSaidaInfo, on_delete=models.CASCADE)

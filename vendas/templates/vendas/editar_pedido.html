@@ -20,6 +20,13 @@
 
 <form id="pedido_form" action="" method="POST">
     {% csrf_token %}
+
+    <script>
+    // IDs dos itens com separação associada passados pela view
+    const itensComSeparacao = {{ itens_com_separacao|safe }};
+    </script>
+
+
     <input type="text" id="cliente_input" name="cliente_input" list="nomes_clientes" placeholder="Selecione um Cliente" class="form_control" value="{{ pedido.cliente.name }}">
     <datalist id="nomes_clientes">
         {% for cliente in clientes %}
@@ -30,19 +37,20 @@
     <div id="info_cliente"></div>
 
     <h3 class="subtitle_h3">Edite seu Pedido:</h3>
-    <p class="descricao-p">Atualize apenas os campos que forem necessários para o seu pedido</p>
+    <p class="descricao-p">- Atualize apenas os campos que forem necessários para o seu pedido</p>
+    <p class="descricao-p">- Se um campo não for editavel ele provavelmente tem uma separação</p>
 
     <div id="input_titles">
-        <span>Produto</span>
-        <span>Código do Produto</span>
-        <span>Quantidade da Caixa</span>
-        <span>Quantidade</span>
-        <span>Quantidade de Caixas</span>
-        <span>Ações</span>
+        <span class="produto-span">Produto</span>
+        <span class="codigo-span">Código do Produto</span>
+        <span class="caixa-span">Quantidade na Caixa</span>
+        <span class="quant-span">Quantidade</span>
+        <span class="quantcaixa-span">Quantidade de Caixas</span>
+        <span class="acoes-span">Ações</span>
     </div>
     <div id="inputs_container">
         {% for item in itens_pedido %}
-        <div class="produto-linha">
+        <div class="produto-linha" data-item-id="{{ item.id }}">
             <input type="text" list="nomes_produtos" placeholder="Selecione um Produto" class="produto_input" name="nome_produto" value="{{ item.product_instance.name }}" oninput="setProductInfo(this)" onblur="validarProduto(this)">
             <input type="text" placeholder="Código do Produto" class="codigo_produto_input" name="codigo_produto" value="{{ item.product_instance.product_code }}" readonly tabindex="-1">
             <input type="text" placeholder="Quantidade da Caixa" class="quantidade_caixa_input" name="quantidade_caixa" value="{{ item.product_instance.box_quantity }}" readonly tabindex="-1">
@@ -53,6 +61,8 @@
         </div>
         {% endfor %}
     </div>
+
+
 
     <button type="button" class="add-product_button" onclick="adicionarInput()">Adicionar Produto</button>
     <datalist id="nomes_produtos">
@@ -68,4 +78,34 @@
     <p id="caixas_total"></p>
 
 </form>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Desabilita os campos dos itens que possuem separação associada
+        const produtoLinhas = document.querySelectorAll('.produto-linha');
+
+        produtoLinhas.forEach(function(linha) {
+            const itemId = linha.getAttribute('data-item-id');
+
+            if (itensComSeparacao.includes(parseInt(itemId))) {
+                // Desabilita todos os inputs da linha se o item estiver associado a uma separação
+                const inputs = linha.querySelectorAll('input');
+                inputs.forEach(function(input) {
+                    input.setAttribute('readonly', true);
+                    input.classList.add('input-disabled'); // Para adicionar estilo de desativado
+                });
+
+                // Opcionalmente desabilitar o botão de remoção
+                const removeButton = linha.querySelector('.remove-button');
+                if (removeButton) {
+                    removeButton.disabled = true;
+                    removeButton.classList.add('button-disabled'); // Adiciona estilo desativado ao botão
+                }
+            }
+        });
+    });
+</script>
+
+
 {% endblock %}

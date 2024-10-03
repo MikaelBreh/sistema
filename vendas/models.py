@@ -23,6 +23,11 @@ class Pedido(models.Model):
     data = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='em_aberto')
 
+    class Meta:
+        permissions = [
+            ('alterar_status', 'can chance status')
+        ]
+
 
     def __str__(self):
         return f" {self.cliente} de {self.data.strftime('%d/%m/%Y')} - situação: {self.status}"
@@ -50,5 +55,22 @@ class PedidoSeparacao(models.Model):
     lote = models.CharField(max_length=50)
     quantidade = models.PositiveIntegerField()
 
+    class Meta:
+        permissions = [
+            ('listar_pedidos_separacao', 'can list separations')
+        ]
+
     def __str__(self):
         return f"Pedido: {self.pedido} --- Lote {self.lote} - {self.quantidade} unidades do produto {self.item_pedido.produto}"
+
+
+# Essa model vai servir para sabermos o que falta das separacoes
+class FaltandoSeparacao(models.Model):
+    pedido = models.ForeignKey(Pedido, related_name='faltando_separacao', on_delete=models.CASCADE)
+    item_pedido = models.ForeignKey(PedidoItem, related_name='faltando_separacao', on_delete=models.CASCADE)
+    cod_produto = models.CharField(max_length=20)
+    quantidade_pedido = models.PositiveIntegerField()
+    quantidade_separada = models.PositiveIntegerField()
+
+    def __str__(self):
+        return f"Pedido: {self.pedido} ---pedido {self.quantidade_pedido} - separado: {self.quantidade_separada}  do item: {self.item_pedido.produto}"

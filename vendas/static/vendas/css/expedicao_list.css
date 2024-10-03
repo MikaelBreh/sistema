@@ -30,6 +30,8 @@ body {
     color: #5b5b5b;
 }
 
+
+/*para computadores*/
 @media screen and (min-width: 769px) and (max-width: 2000px) {
 
     * {
@@ -126,7 +128,7 @@ body {
 
 
 
-
+/*para celulares*/
 @media screen and (min-width: 320px) and (max-width: 480px) {
 
     * {
@@ -197,13 +199,11 @@ body {
 
     th, td {
         padding: 8px;
-        border-bottom: 1px solid #ddd;
-        white-space: nowrap; /* Evita quebra de linha */
+        vertical-align: center; /* Alinha o conteúdo ao topo */
     }
 
-    th {
-        background-color: #f2f2f2; /* Cor de fundo para cabeçalhos */
-        color: black; /* Cor do texto para cabeçalhos */
+    tr {
+        border-bottom: 1px solid #ddd; /* Move a borda para a linha completa */
     }
 
     .td-button {
@@ -212,4 +212,12 @@ body {
         align-items: center;
         justify-content: center;
     }
+
+
+    .product_name {
+        white-space: normal; /* Permite a quebra de linha */
+        word-break: break-word; /* Quebra as palavras longas que excedem o espaço */
+        overflow-wrap: break-word; /* Também auxilia na quebra de palavras longas */
+    }
+
 }

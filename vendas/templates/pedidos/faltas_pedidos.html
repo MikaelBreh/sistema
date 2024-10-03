@@ -1,0 +1,26 @@
+{% extends 'side_menu.html' %}
+{% load static %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'css/spedidos/faltas_pedidos.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<h1>Itens Faltando nos Pedidos</h1>
+
+
+{% for cod_produto, produto_info in produtos_faltantes.items %}
+    <h2>Produto: {{ produto_info.nome_produto }}</h2>
+    <ul>
+        {% for falta in produto_info.faltas %}
+            <li>
+                Pedido ID: {{ falta.pedido_id }} - Cliente: {{ falta.cliente }} - Quantidade Pedida: {{ falta.quantidade_pedido }} - Quantidade Separada: {{ falta.quantidade_separada }} - Faltando: {{ falta.quantidade_faltante }}
+            </li>
+        {% endfor %}
+    </ul>
+{% endfor %}
+
+
+{% endblock %}
+

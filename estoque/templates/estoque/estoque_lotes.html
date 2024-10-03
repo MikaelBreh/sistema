@@ -1,0 +1,73 @@
+{% extends 'side_menu.html' %}
+{% load static %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'css/style_estoque_lotes.css' %}">
+{% endblock %}
+
+{% block content %}
+
+
+    <h1 class="title-h1">Movimentação do Lote: {{ lote }} - {{ produto }}</h1>
+
+    <div class="container-father">
+
+
+        <div class="container">
+
+            <!-- Coluna de Entradas -->
+            <div class="column">
+                <h3>Entradas</h3>
+                {% if entradas %}
+                    {% for entrada in entradas %}
+                        <div class="saida">
+                            <p> {{ entrada.data|date:"d/m/Y" }}</p>
+                            <p class="entrada-quant">Quant: {{ entrada.quantidade }}</p>
+                            {% if entrada.fonte_nome == 'TransferenciaEstoqueSaidaInfo' %}
+                                <p class="fonte">
+                                    Transf. Estoque ID: {{ entrada.fonte_id }}
+                                </p>
+                            {% elif entrada.fonte_nome == 'MistoItem' %}
+                                <p class="fonte">
+                                    Misto Item ID: <a href="{% url 'visualizar_misto_item' entrada.fonte_id %}">{{ entrada.fonte_id }}</a>
+                                </p>
+                            {% else %}
+                                <p class="fonte">{{ entrada.fonte_nome }} - ID: {{ entrada.fonte_id }}</p>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p>Nenhuma saída registrada para este lote.</p>
+                {% endif %}
+            </div>
+
+            <!-- Coluna de Saídas -->
+            <div class="column">
+                <h3>Saídas</h3>
+                {% if saidas %}
+                    {% for saida in saidas %}
+                        <div class="saida">
+                            <p> {{ saida.data|date:"d/m/Y" }}</p>
+                            <p class="saida-quant">Quant: {{ saida.quantidade }}</p>
+                            {% if saida.fonte_nome == 'Pedido' %}
+                                <p class="fonte">
+                                    Pedido ID: <a href="{% url 'visualizar_pedido' saida.fonte_id %}">{{ saida.fonte_id }}</a>
+                                </p>
+                            {% elif saida.fonte_nome == 'MistoItem' %}
+                                <p class="fonte">
+                                    Misto Item ID: <a href="{% url 'visualizar_misto_item' saida.fonte_id %}">{{ saida.fonte_id }}</a>
+                                </p>
+                            {% else %}
+                                <p class="fonte">{{ saida.fonte_nome }} - ID: {{ saida.fonte_id }}</p>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p>Nenhuma saída registrada para este lote.</p>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+
+{% endblock %}

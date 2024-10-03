@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", function() {
-    adicionarInput();
     document.getElementById("pedido_form").addEventListener("submit", validarFormulario);
     document.getElementById("cliente_input").addEventListener("input", setClienteId);
 });

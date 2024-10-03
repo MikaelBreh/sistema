@@ -12,6 +12,13 @@ class Estoque(models.Model):
     status = models.BooleanField()
     data = models.DateField(auto_now_add=True)
 
+    class Meta:
+        permissions = [
+            ('ver_estoque_por_lotes', 'Can see stock by batches'),
+            ('ver_necessidade_pedidos', 'Can see the need for orders'),
+        ]
+
+
     def __str__(self):
         # Acessa a fonte para obter o nome do produto, caso exista
         produto_nome = self.fonte.name if hasattr(self.fonte, 'name') else 'Nome não disponível'

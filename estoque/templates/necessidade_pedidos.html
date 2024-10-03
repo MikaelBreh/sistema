@@ -11,7 +11,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visualização de Estoque</title>
+    <title>Necessidade de Pedidos</title>
     <style>
         table {
             width: 100%;
@@ -39,14 +39,11 @@
     </style>
 </head>
 <body>
-    <h1>Visualização de Estoque</h1>
+    <h1>Necessidade de Pedidos</h1>
 
     <!-- Formulário de Busca e Filtro -->
     <form method="GET" action="">
         <input type="text" name="search" placeholder="Buscar por produto..." value="{{ search_query }}">
-        <label>
-            <input type="checkbox" name="necessidade" value="true" {% if show_only_necessity %}checked{% endif %}> Mostrar apenas produtos abaixo do estoque minimo
-        </label>
         <button type="submit">Buscar</button>
     </form>
 
@@ -54,37 +51,20 @@
         <thead>
             <tr>
                 <th class="sortable {% if order_by == 'nome' %}sorted-{{ direction }}{% endif %}" onclick="sortTable('nome')">Produto</th>
-                <th class="sortable {% if order_by == 'estoque_minimo' %}sorted-{{ direction }}{% endif %}" onclick="sortTable('estoque_minimo')">Estoque Mínimo</th>
-                <th class="sortable {% if order_by == 'estoque_total' %}sorted-{{ direction }}{% endif %}" onclick="sortTable('estoque_total')">Estoque Atual</th>
-                <th class="sortable {% if order_by == 'pedidos' %}sorted-{{ direction }}{% endif %}" onclick="sortTable('estoque_total')">Pedidos</th>
-                <th class="sortable {% if order_by == 'estoque_apos_pedidos' %}sorted-{{ direction }}{% endif %}" onclick="sortTable('estoque_total')">Estoque após Saida Pedidos</th>
+                <th class="sortable {% if order_by == 'pedidos_separados' %}sorted-{{ direction }}{% endif %}" onclick="sortTable('pedidos_separados')">Pedidos Separados</th>
+                <th class="sortable {% if order_by == 'pedidos_faltando' %}sorted-{{ direction }}{% endif %}" onclick="sortTable('pedidos_faltando')">Pedidos Faltando</th>
             </tr>
         </thead>
         <tbody>
             {% for produto in produtos_quantidades %}
             <tr>
                 <td class="products_name">{{ produto.nome }}</td>
-                <td>{{ produto.estoque_minimo }}</td>
-                <td>{{ produto.estoque_total }}</td>
-                <td>{{ produto.pedidos }}</td>
-                <td>{{ produto.estoque_apos_pedidos }}</td>
+                <td>{{ produto.pedidos_separados }}</td>
+                <td>{{ produto.pedidos_faltando }}</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
-
-    <!-- Paginação -->
-    <div class="pagination_div">
-        <span>Página {{ estoque.number }} de {{ estoque.paginator.num_pages }}</span>
-        <div>
-            {% if estoque.has_previous %}
-                <a href="?page={{ estoque.previous_page_number }}&search={{ search_query }}&necessidade={{ show_only_necessity }}&order_by={{ order_by }}&direction={{ direction }}">Anterior</a>
-            {% endif %}
-            {% if estoque.has_next %}
-                <a href="?page={{ estoque.next_page_number }}&search={{ search_query }}&necessidade={{ show_only_necessity }}&order_by={{ order_by }}&direction={{ direction }}">Próxima</a>
-            {% endif %}
-        </div>
-    </div>
 
     <script>
         function sortTable(order_by) {
@@ -105,6 +85,7 @@
             window.location.search = params.toString();
         }
     </script>
+
 </body>
 </html>
 {% endblock %}

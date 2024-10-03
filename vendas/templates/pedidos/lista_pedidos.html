@@ -1,66 +1,34 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Listagem de Pedidos</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
-        .tabs {
-            display: flex;
-            border-bottom: 2px solid #ccc;
-            margin-bottom: 20px;
-        }
-        .tabs a {
-            padding: 10px 20px;
-            cursor: pointer;
-            text-decoration: none;
-            color: black;
-            border: 1px solid #ccc;
-            border-bottom: none;
-            background-color: #f9f9f9;
-        }
-        .tabs a.active {
-            background-color: white;
-            border-top: 2px solid #007bff;
-            font-weight: bold;
-        }
-        .tabs a:hover {
-            background-color: #f1f1f1;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        th, td {
-            padding: 15px;
-            border: 1px solid #ccc;
-            text-align: left;
-        }
-        th {
-            background-color: #f9f9f9;
-        }
-        tbody tr:nth-child(odd) {
-            background-color: #f9f9f9;
-        }
-        tbody tr:nth-child(even) {
-            background-color: #fff;
-        }
+{% extends 'side_menu.html' %}
+{% load static %}
 
-        /* Estilos para o carregamento */
-        #loading {
-            display: none;  /* Inicialmente escondido */
-            text-align: center;
-            margin: 20px 0;
-        }
-        #loading img {
-            width: 50px;
-        }
-    </style>
-</head>
-<body>
+{% block head %}
+
+    <link rel="stylesheet" href="{% static 'vendas/css/pedidos/lista_pedidos.css' %}">
+    <title>Listagem de Pedidos</title>
+
+{% endblock %}
+
+{% block content %}
+
+    <div class="filtros">
+
+        <form id="filtros-pedidos" method="GET">
+            <label id="titulo-busca" for="busca">Buscar:</label>
+            <input type="text" id="busca" name="busca" placeholder="Num. Pedido ou Cliente">
+
+            <label for="data-inicial">Data Inicial:</label>
+            <input type="date" id="data-inicial" name="data_inicial">
+
+            <label for="data-final">Data Final:</label>
+            <input type="date" id="data-final" name="data_final">
+
+            <!-- Campo oculto para enviar o status atual ---------------------------------- -----------------------   --------->
+            <input type="hidden" name="status" value="{{ status_atual }}">
+
+            <button class="button_search" type="submit">Buscar</button>
+        </form>
+
+    </div>
 
     <div class="tabs">
         <a href="#" class="active" data-status="em_aberto">Em Aberto</a>
@@ -69,10 +37,10 @@
         <a href="#" data-status="separacao_finalizada">Separação Finalizada</a>
         <a href="#" data-status="finalizados">Finalizados</a>
         <a href="#" data-status="cancelado">Cancelado</a>
+        <a href="#" data-status="todos">Todos</a>
     </div>
 
-    <!-- Elemento de carregamento -->
-    <div id="loading">
+    <div id="loading" style="display: none;">
         <img src="https://i.gifer.com/YCZH.gif" alt="Carregando...">
         <p>Carregando...</p>
     </div>
@@ -83,6 +51,8 @@
                 <th>Número do Pedido</th>
                 <th>Cliente</th>
                 <th>Data</th>
+                <th>Ações</th>
+                <th>Ver Pedido</th>
             </tr>
         </thead>
         <tbody id="tabela-pedidos">
@@ -90,61 +60,91 @@
         </tbody>
     </table>
 
-   <script>
+    <div id="paginacao">
+        <!-- Botões de paginação serão gerados via JS -->
+    </div>
+
+<script>
     document.addEventListener('DOMContentLoaded', function () {
         const tabs = document.querySelectorAll('.tabs a');
         const tabelaPedidos = document.getElementById('tabela-pedidos');
-        const loading = document.getElementById('loading');  // Referência ao elemento de carregamento
+        const loading = document.getElementById('loading');
+        const paginacaoDiv = document.getElementById('paginacao');
+        const filtrosForm = document.getElementById('filtros-pedidos');
 
-        // Carrega os pedidos da aba ativa na inicialização
-        carregarPedidos('em_aberto');
-
-        tabs.forEach(tab => {
-            tab.addEventListener('click', function (e) {
-                e.preventDefault();
-
-                // Remove classe active de todas as abas
-                tabs.forEach(t => t.classList.remove('active'));
-                this.classList.add('active');  // Adiciona classe active na aba clicada
-
-                // Carrega os pedidos correspondentes ao status
-                const status = this.getAttribute('data-status');
-                carregarPedidos(status);
-            });
-        });
-
-        function carregarPedidos(status) {
-            // Mostra o elemento de carregamento
+        function carregarPedidos(status, page = 1) {
             loading.style.display = 'block';
 
-            // Construindo a URL correta usando Django template
-            const url = '' + status;
+            const formData = new FormData(filtrosForm);
+            formData.append('page', page);
+            formData.append('status', status);
 
-            // Fazendo requisição AJAX
+            const queryString = new URLSearchParams(formData).toString();
+            const url = `/vendas/pedidos/${status}?${queryString}`;
+
             fetch(url)
                 .then(response => response.json())
                 .then(data => {
-                    tabelaPedidos.innerHTML = '';  // Limpa a tabela antes de inserir os novos dados
+                    tabelaPedidos.innerHTML = '';
                     data.pedidos.forEach(pedido => {
                         const row = `<tr>
                             <td>${pedido.numero_pedido}</td>
                             <td>${pedido.cliente}</td>
                             <td>${pedido.data}</td>
+                            <td>
+                                <div class="menu">
+                                    <span>⋮</span>
+                                    <div class="menu-content">
+                                        <a href="/vendas/pedidos/alterar-status/${pedido.numero_pedido}/em_aberto">Em Aberto</a>
+                                        <a href="/vendas/pedidos/alterar-status/${pedido.numero_pedido}/aprovados">Aprovados</a>
+                                        <a href="/vendas/pedidos/alterar-status/${pedido.numero_pedido}/separando">Separando</a>
+                                        <a href="/vendas/pedidos/alterar-status/${pedido.numero_pedido}/separacao_finalizada">Separação Finalizada</a>
+                                        <a href="/vendas/pedidos/alterar-status/${pedido.numero_pedido}/finalizados">Finalizados</a>
+                                        <a href="/vendas/pedidos/alterar-status/${pedido.numero_pedido}/cancelado">Cancelado</a>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>  <a href="/vendas/visualizar_pedido/${pedido.numero_pedido}"><button class="acessar-button">Acessar</button></a> </td>
                         </tr>`;
                         tabelaPedidos.insertAdjacentHTML('beforeend', row);
                     });
 
-                    // Esconde o elemento de carregamento após a conclusão
+                    paginacaoDiv.innerHTML = '';
+                    if (data.paginacao.num_pages > 1) {
+                        for (let i = 1; i <= data.paginacao.num_pages; i++) {
+                            const pageBtn = `<button onclick="carregarPedidos('${status}', ${i})" ${i === data.paginacao.current_page ? 'disabled' : ''}>${i}</button>`;
+                            paginacaoDiv.insertAdjacentHTML('beforeend', pageBtn);
+                        }
+                    }
+
                     loading.style.display = 'none';
                 })
                 .catch(error => {
                     console.error('Erro ao carregar pedidos:', error);
-                    // Esconde o elemento de carregamento mesmo se houver um erro
                     loading.style.display = 'none';
                 });
         }
+
+        filtrosForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const status = document.querySelector('.tabs a.active').getAttribute('data-status');
+            carregarPedidos(status);
+        });
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function (e) {
+                e.preventDefault();
+                tabs.forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+
+                const status = this.getAttribute('data-status');
+                carregarPedidos(status);
+            });
+        });
+
+        const statusAtual = "{{ status_atual }}";
+        carregarPedidos(statusAtual);
     });
 </script>
 
-</body>
-</html>
+{% endblock %}

@@ -8,18 +8,24 @@
 
 {% block content %}
 
-{% if separando %}
-    <h1 class="titulo_lista">Pedidos Separando</h1>
-{% else %}
+{% if status == 'aprovados' %}
     <h1 class="titulo_lista">Pedidos Não Separados</h1>
+{% elif status == 'separando' %}
+    <h1 class="titulo_lista">Pedidos Separando</h1>
+{% elif status == 'separacao_finalizada' %}
+    <h1 class="titulo_lista">Pedidos Finalizados</h1>
 
 {% endif %}
 
 <div class="titulo-botoes">
-    {% if separando %}
-        <form method="GET" action="{% url 'expedicao_separando_list_view' %}" class="search-form">
-    {% else %}
-        <form method="GET" action="{% url 'expedicao_list' %}" class="search-form">
+    {% if status == 'aprovados' %}
+        <form method="GET" action="{% url 'expedicao_list' 'aprovados' %}" class="search-form">
+    {% elif status == 'separando' %}
+        <form method="GET" action="{% url 'expedicao_list' 'separando' %}" class="search-form">
+    {% elif status == 'separacao_finalizada' %}
+        <form method="GET" action="{% url 'expedicao_list' 'separacao_finalizada' %}" class="search-form">
+
+
     {% endif %}
             <input type="text" name="search" placeholder="Buscar por cliente" value="{{ request.GET.search }}">
             <button class="pesquisar-botao" type="submit">Buscar</button>
@@ -43,12 +49,12 @@
                         <td class="product_name">{{ pedido.cliente }}</td>
                         <td class="td-button">
 
-                            {% if separando %}
+                            {% if status == 'aprovados' or status == 'separando' %}
                                 <a href="{% url 'expedicao_separar_editar' pedido.id %}"><button class="acessar-button">Separar</button></a>
                                 <a href="{% url 'expedicao_ver_separacao' pedido.id %}"><button class="acessar-button">Ver</button></a>
-                            {% else %}
-                                <a href="{% url 'expedicao_separar' pedido.id %}"><button class="acessar-button">Separar</button></a>
-                                <a href="{% url 'expedicao_ver' pedido.id %}"><button class="acessar-button">Ver</button></a>
+                            {% elif status == 'separacao_finalizada' %}
+                                <a href="{% url 'expedicao_ver_separacao' pedido.id %}"><button class="acessar-button">Ver</button></a>
+
 
                             {% endif %}
 

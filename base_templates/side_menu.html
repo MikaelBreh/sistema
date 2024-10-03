@@ -309,8 +309,8 @@ header .up-menu{
 @media screen and (min-width: 769px) and (max-width: 2000px) {
 
     main{
-        padding-left: 20vh;
-        padding-right: 20vh;
+        padding-left: 14vh;
+        padding-right: 2vh;
     }
 
     .menu-mobile{
@@ -333,9 +333,9 @@ header .up-menu{
 
 <div class="menu_up_mobile">
     <div class="menu-mobile">
-        <a href="{% url 'expedicao_list' %}">Não Separado</a>
-        <a href="{% url 'expedicao_separando_list_view' %}" >Separando</a>
-        <a>Finalizados</a>
+        <a href="{% url 'expedicao_list' 'aprovados' %}">Não Separado</a>
+        <a href="{% url 'expedicao_list' 'separando' %}">Não Separado</a>
+        <a href="{% url 'expedicao_list' 'separacao_finalizada' %}">Não Separado</a>
     </div>
 </div>
 
@@ -346,7 +346,7 @@ header .up-menu{
     </div>
     <ul class="nav-links">
         <li>
-            <a href="#">
+            <a href="{% url 'home_dashboard' %}">
                 <i class="bi bi-ui-radios-grid"></i>
                 <span class="link_name">Dashboard</span>
             </a>
@@ -363,11 +363,17 @@ header .up-menu{
                 <i class="bi bi-caret-down"></i>
             </div>
             <ul class="sub-menu">
-                <li><a class="link_name" href="{% url 'cadastros_produtos' %}">Cadastros</a></li>
-                <li><a href="{% url 'cadastros_produtos' %}">Produtos</a></li>
+
+                <li><a class="link_name" href="#">Cadastros</a></li>
+
+                {% if 'cadastros.view_products' in user.get_all_permissions %}
+                    <li><a href="{% url 'cadastros_produtos' %}">Produtos</a></li>
+                {% endif %}
 <!--                <li><a href="">Materias de trabalho</a></li>-->
 <!--                <li><a href="">Fornecedores</a></li>-->
-                <li><a href="{% url 'cadastros_clientes' %}">Clientes</a></li>
+                {% if 'cadastros.view_clientes' in user.get_all_permissions %}
+                    <li><a href="{% url 'cadastros_clientes' %}">Clientes</a></li>
+                {% endif %}
 <!--                <li><a href="">Vendedores</a></li>-->
             </ul>
         </li>
@@ -381,13 +387,33 @@ header .up-menu{
                 <i class="bi bi-caret-down"></i>
             </div>
             <ul class="sub-menu">
+
                 <li><a class="link_name" href="#">Produtos Acabados</a></li>
-                <li><a href="{% url 'listar_transferencias_estoque' %}">Lançar Entrada P.A</a></li>
-                <li><a href="{% url 'listar_transferecias_para_conferencia' %}">Conferencia Entrada P.A</a></li>
-                <li><a href="{% url 'entradas_recebidas_estoque' %}">Entradas Conferidas P.A</a></li>
-                <li><a href="{% url 'lista_produtos_estoque' %}">Estoque P.A</a></li>
-                <li><a href="#">Necessidade Estoque P.A</a></li>
-                <li><a href="{% url 'list_misto_item' %}">Itens Mistos</a></li>
+
+                {% if 'produtos_acabados.view_transferenciaestoquesaidainfo' in user.get_all_permissions %}
+                    <li><a href="{% url 'listar_transferencias_estoque' %}">Lançar Entrada P.A</a></li>
+                {% endif %}
+
+                {% if 'produtos_acabados.listar_trans_para_conferencia' in user.get_all_permissions %}
+                    <li><a href="{% url 'listar_transferecias_para_conferencia' %}">Conferencia Entrada P.A</a></li>
+                {% endif %}
+
+                {% if 'produtos_acabados.listar_transferencias_recebidas' in user.get_all_permissions %}
+                    <li><a href="{% url 'entradas_recebidas_estoque' %}">Entradas Conferidas P.A</a></li>
+                {% endif %}
+
+                {% if 'produtos_acabados.listar_entradas_estoque' in user.get_all_permissions %}
+                    <li><a href="{% url 'lista_produtos_estoque' %}">Estoque P.A</a></li>
+                {% endif %}
+
+<!--                {% if 'produtos_acabados.listar_transferencias_recebidas' in user.get_all_permissions %}-->
+<!--                    <li><a href="#">Necessidade Estoque P.A</a></li>-->
+<!--                {% endif %}-->
+
+                {% if 'produtos_acabados.view_mistoitem' in user.get_all_permissions %}
+                    <li><a href="{% url 'list_misto_item' %}">Itens Mistos</a></li>
+                {% endif %}
+
 
             </ul>
         </li>
@@ -397,17 +423,59 @@ header .up-menu{
             <div class="iocn-link">
                 <a href="#">
                     <i class="bi bi-cart-check"></i>
+                    <span class="link_name">Pedidos</span>
+                </a>
+                <i class="bi bi-caret-down"></i>
+            </div>
+            <ul class="sub-menu">
+
+                {% if 'vendas.view_pedido' in user.get_all_permissions %}
+                    <li><a class="link_name" href="{% url 'listar_pedidos' %}">Pedidos</a></li>
+                {% endif %}
+
+                {% if 'vendas.add_pedido' in user.get_all_permissions %}
+                    <li><a href="{% url 'criar_pedido_separacao' %}">Criar Pedido de Separação</a></li>
+                {% endif %}
+
+                {% if 'vendas.view_pedido' in user.get_all_permissions %}
+                    <li><a href="{% url 'listar_pedidos' %}">Ver Pedidos</a></li>
+                {% endif %}
+
+            </ul>
+        </li>
+
+
+
+        <li>
+            <div class="iocn-link">
+                <a href="#">
+                    <i class="bi bi-basket"></i>
                     <span class="link_name">Separação</span>
                 </a>
                 <i class="bi bi-caret-down"></i>
             </div>
             <ul class="sub-menu">
-                <li><a class="link_name" href="#">Separação</a></li>
-                <li><a href="{% url 'expedicao_list' %}">Não Separado</a></li>
-                <li><a href="{% url 'expedicao_separando_list_view' %}">Separando</a></li>
-                <li><a href="#">Finalizados</a></li>
+                {% if 'vendas.view_pedidoseparacao' in user.get_all_permissions %}
+                    <li><a class="link_name" href="{% url 'expedicao_list' 'separando' %}">Separação</a></li>
+                {% endif %}
+
+                {% if 'vendas.view_pedidoseparacao' in user.get_all_permissions %}
+                    <li><a href="{% url 'expedicao_list' 'aprovados' %}">Não Separado</a></li>
+                {% endif %}
+
+                {% if 'vendas.view_pedidoseparacao' in user.get_all_permissions %}
+                    <li><a href="{% url 'expedicao_list' 'separando' %}">Separando</a></li>
+                {% endif %}
+
+                {% if 'vendas.view_pedidoseparacao' in user.get_all_permissions %}
+                    <li><a href="{% url 'expedicao_list' 'separacao_finalizada' %}">Finalizados</a></li>
+                {% endif %}
+
+
             </ul>
         </li>
+
+
 
 
         <li>
@@ -421,29 +489,31 @@ header .up-menu{
             <ul class="sub-menu">
                 <li><a class="link_name" href="#">Estoque</a></li>
                 <li><a href="{% url 'visualizar_estoque' %}">Estoque Atual</a></li>
-                <li><a href="">Estoque Lotes</a></li>
+                <li><a href="{% url 'visualizar_necessidade_pedidos_estoque' %}">Necessidade Pedidos</a></li>
+                <li><a href="{% url 'pesquisar_lote' %}">Estoque Lotes</a></li>
             </ul>
         </li>
 
 
 
-        <li>
-            <div class="iocn-link">
-                <a href="{% url 'vendas_home' %}">
-                    <i class="bi bi-cash-coin"></i>
-                    <span class="link_name">Vendas</span>
-                </a>
-                <i class="bi bi-caret-down"></i>
-            </div>
-            <ul class="sub-menu">
-                <li><a class="link_name" href="#">Vendas</a></li>
-                <li><a href="{% url 'listar_pedidos' %}">Pedido de Separação</a></li>
-                <li><a href="{% url 'listar_pedidos_para_gestao' %}">Gestão Pedido Separação</a></li>
-                <li><a href="{% url 'vendas_home' %}">Pedido de Venda</a></li>
-<!--                <li><a href="#">Saida Venda</a></li>-->
-<!--                <li><a href="#">Comissoes</a></li>-->
-            </ul>
-        </li>
+
+
+<!--        <li>-->
+<!--            <div class="iocn-link">-->
+<!--                <a href="{% url 'vendas_home' %}">-->
+<!--                    <i class="bi bi-cash-coin"></i>-->
+<!--                    <span class="link_name">Vendas</span>-->
+<!--                </a>-->
+<!--                <i class="bi bi-caret-down"></i>-->
+<!--            </div>-->
+<!--            <ul class="sub-menu">-->
+<!--                <li><a class="link_name" href="#">Vendas</a></li>-->
+<!--                <li><a href="{% url 'listar_pedidos' %}">Pedido de Separação</a></li>-->
+<!--                <li><a href="{% url 'vendas_home' %}">Pedido de Venda</a></li>-->
+<!--&lt;!&ndash;                <li><a href="#">Saida Venda</a></li>&ndash;&gt;-->
+<!--&lt;!&ndash;                <li><a href="#">Comissoes</a></li>&ndash;&gt;-->
+<!--            </ul>-->
+<!--        </li>-->
 
 
 
@@ -486,7 +556,6 @@ header .up-menu{
     }
     let sidebar = document.querySelector(".sidebar");
     let sidebarBtn = document.querySelector(".bi-list");
-    console.log(sidebarBtn);
     sidebarBtn.addEventListener("click", ()=>{
         sidebar.classList.toggle("close");
     });

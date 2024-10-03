@@ -1,0 +1,42 @@
+h1{
+    text-align: center;
+    margin-top: 6%;
+}
+
+.div_pesquisa{
+    margin-top: 3%;
+    text-align: center;
+}
+
+.lote-digitar {
+    width: 30%;
+    font-size: 1.2em;
+    border: 1px solid #ccc; /* Borda cinza clara */
+    border-radius: 5px; /* Cantos arredondados */
+    padding: 10px; /* Espaçamento interno */
+    transition: border-color 0.3s; /* Efeito de transição ao focar */
+    text-align: center;
+}
+
+.lote-digitar:focus {
+    border-color: #007bff; /* Mudança de cor da borda ao focar */
+    outline: none; /* Remove a borda padrão do navegador ao focar */
+}
+
+.pesquisar-botao {
+    margin-top: 10px;
+    width: 30%;
+    font-size: 1.2em;
+    border: 1px solid #ccc; /* Borda cinza clara */
+    border-radius: 5px; /* Cantos arredondados */
+    padding: 10px; /* Espaçamento interno */
+    transition: border-color 0.3s; /* Efeito de transição ao focar */
+    text-align: center;
+    background-color: #8d06b6; /* Mudança de cor ao passar o mouse */
+    color: #fff; /* Cor do texto ao passar o mouse */
+}
+
+.pesquisar-botao:hover {
+    background-color: #5d0377; /* Mudança de cor ao passar o mouse */
+    color: #fff; /* Cor do texto ao passar o mouse */
+}
