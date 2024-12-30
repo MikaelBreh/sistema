@@ -169,9 +169,14 @@ def receber_transferencia_estoque(request):
         id = request.GET.get('id')
         transferencia = TransferenciaEstoqueSaidaInfo.objects.get(numero_transferencia=id)
         produtos = TransferenciaEstoqueSaidaProdutos.objects.filter(numero_transferencia=transferencia)
+
+        # Verificando se o usuário tem a permissão especial
+        is_admin_transfer = request.user.has_perm('produtos_acabados.is_admin_transfer')
+
         return render(request, 'produtos_acabados/receber_transferencia_estoque.html', {
             'transferencia': transferencia,
-            'produtos': produtos
+            'produtos': produtos,
+            'is_admin_transfer': is_admin_transfer  # Passa flag para o template
         })
 
     if request.method == 'POST':
@@ -187,14 +192,16 @@ def receber_transferencia_estoque(request):
         content_type = ContentType.objects.get_for_model(TransferenciaEstoqueSaidaInfo)
         for produto_saida in produtos:
             Estoque.objects.create(
-                content_type=content_type,  # Define o tipo do modelo relacionado
-                object_id=transferencia.pk,  # ID do objeto relacionado
+                content_type=content_type,
+                object_id=transferencia.pk,
                 cod_produto=produto_saida.produto.product_code,
                 lote=produto_saida.lote,
                 quantidade=produto_saida.quantidade_unitaria,
-                status=True  # Indica que é uma entrada no estoque
+                status=True
             )
         return redirect('entradas_recebidas_estoque')
+
+
 
 
 @permission_required('produtos_acabados.listar_transferencias_recebidas', raise_exception=True)

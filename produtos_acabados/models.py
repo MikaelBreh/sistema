@@ -22,6 +22,7 @@ class TransferenciaEstoqueSaidaInfo(models.Model):
             ('validar_transferencias', 'Can Validate Transfers'),
             ('listar_transferencias_recebidas', 'Can List Received Transfers'),
             ('listar_entradas_estoque', 'Can List Stock Entries'),
+            ('is_admin_transfer', 'Can skip barcode and date validation for transfers'),
         ]
 
     def __str__(self):

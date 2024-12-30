@@ -18,6 +18,11 @@
     <form id="item_misto_form" method="post">
         {% csrf_token %}
 
+        <div class="input_kit">
+            <p class="kit_check">Kit</p>
+            <input type="checkbox" id="kit_checkbox" name="kit_checkbox" class="kit_input_check">
+        </div>
+
         <p class="datas-p">Produto</p>
         <input type="text" id="produto_input" name="produto_input" list="produtos"
         placeholder="Selecione um Produto" class="form_control">
@@ -98,71 +103,89 @@
     }
 
     document.getElementById('item_misto_form').addEventListener('submit', function(event) {
-        var produtoInput = document.getElementById('produto_input');
-        var loteInput = document.getElementById('lote');
-        var quantidadeUnitariaInput = document.getElementById('quantidade_unitaria');
+    var produtoInput = document.getElementById('produto_input');
+    var loteInput = document.getElementById('lote');
+    var quantidadeUnitariaInput = document.getElementById('quantidade_unitaria');
+    var kitCheckbox = document.getElementById('kit_checkbox'); // Adicionando o checkbox
 
-        // Verifica se todos os campos principais estão preenchidos
-        if (!produtoInput.value || !loteInput.value || !quantidadeUnitariaInput.value) {
-            alert('Por favor, preencha todos os campos principais.');
-            event.preventDefault();
-            return;
+    // Verifica se todos os campos principais estão preenchidos
+    if (!produtoInput.value || !loteInput.value || !quantidadeUnitariaInput.value) {
+        alert('Por favor, preencha todos os campos principais.');
+        event.preventDefault();
+        return;
+    }
+
+    // Obtém a quantidade da caixa do produto selecionado
+    var selectedProduto = document.querySelector('option[value="' + produtoInput.value + '"]');
+    if (!selectedProduto) {
+        alert('Produto selecionado não encontrado.');
+        event.preventDefault();
+        return;
+    }
+    var quantidadeCaixaProduto = parseFloat(selectedProduto.dataset.quantidadeCaixa);
+
+    // Verifica se a quantidade unitaria é válida
+    var quantidadeUnitaria = parseFloat(quantidadeUnitariaInput.value);
+    if (isNaN(quantidadeUnitaria)) {
+        alert('Quantidade Unitária inválida.');
+        event.preventDefault();
+        return;
+    }
+
+    var quantidadeCaixas = parseFloat(document.getElementById('quantidade_caixas').value);
+    if (isNaN(quantidadeCaixas)) {
+        alert('Quantidade de Caixas inválida.');
+        event.preventDefault();
+        return;
+    }
+
+    if (quantidadeUnitaria / quantidadeCaixaProduto !== quantidadeCaixas) {
+        alert('Quantidade de Caixas deve ser igual à quantidade unitária dividida pela quantidade na caixa do produto.');
+        event.preventDefault();
+        return;
+    }
+
+    // Verifica se a quantidade unitaria é divisível pela quantidade da caixa
+    if (quantidadeUnitaria % quantidadeCaixaProduto !== 0) {
+        alert('Quantidade Unitária deve ser múltiplo da Quantidade na Caixa do produto.');
+        event.preventDefault();
+        return;
+    }
+
+    // Soma as quantidades das caixas dos componentes
+    var quantidadeTotalCaixa = 0;
+    var componentes = document.querySelectorAll('#inputs_container .field_input input[name="quantidade_caixa_component"]');
+    componentes.forEach(function(input) {
+        var valor = parseFloat(input.value);
+        if (!isNaN(valor)) {
+            quantidadeTotalCaixa += valor;
         }
+    });
 
-        // Obtém a quantidade da caixa do produto selecionado
-        var selectedProduto = document.querySelector('option[value="' + produtoInput.value + '"]');
-        if (!selectedProduto) {
-            alert('Produto selecionado não encontrado.');
-            event.preventDefault();
-            return;
-        }
-        var quantidadeCaixaProduto = parseFloat(selectedProduto.dataset.quantidadeCaixa);
+    // Verifica o checkbox "Kit" e ajusta o cálculo
+    if (kitCheckbox.checked) {
+        // Caso o checkbox "Kit" esteja marcado
 
-        // Verifica se a quantidade unitaria é válida
-        var quantidadeUnitaria = parseFloat(quantidadeUnitariaInput.value);
-        if (isNaN(quantidadeUnitaria)) {
-            alert('Quantidade Unitária inválida.');
-            event.preventDefault();
-            return;
-        }
-
-        var quantidadeCaixas = parseFloat(document.getElementById('quantidade_caixas').value);
-        if (isNaN(quantidadeCaixas)) {
-            alert('Quantidade de Caixas inválida.');
-            event.preventDefault();
-            return;
-        }
-
-        if (quantidadeUnitaria / quantidadeCaixaProduto !== quantidadeCaixas) {
-            alert('Quantidade de Caixas deve ser igual à quantidade unitária dividida pela quantidade na caixa do produto.');
-            event.preventDefault();
-            return;
-        }
-
-
-        // Verifica se a quantidade unitaria é divisível pela quantidade da caixa
-        if (quantidadeUnitaria % quantidadeCaixaProduto !== 0) {
-            alert('Quantidade Unitária deve ser múltiplo da Quantidade na Caixa do produto.' + quantidadeCaixaProduto + quantidadeUnitaria);
-            event.preventDefault();
-            return;
-        }
-
-        // Soma as quantidades das caixas dos componentes
-        var quantidadeTotalCaixa = 0;
-        var componentes = document.querySelectorAll('#inputs_container .field_input input[name="quantidade_caixa_component"]');
-        componentes.forEach(function(input) {
-            var valor = parseFloat(input.value);
-            if (!isNaN(valor)) {
-                quantidadeTotalCaixa += valor;
+        var componentes_kits = document.querySelectorAll('#inputs_container .field_input input[name="quantidade_caixa_component"]');
+        componentes_kits.forEach(function(input) {
+            var quantidade_componente = parseFloat(input.value);
+            if (quantidade_componente !== quantidadeCaixaProduto) {
+                alert('A Quantidade na caixa dos componentes deve ser a mesma que a quantidade total da caixa.(para Kit).');
+                event.preventDefault();
+                return;
             }
         });
 
-        // Verifica se a quantidade total das caixas corresponde à quantidade da caixa do produto selecionado
+    } else {
+        // Caso o checkbox "Kit" não esteja marcado
         if (quantidadeTotalCaixa !== quantidadeCaixaProduto) {
             alert('A soma das quantidades nas caixas dos componentes deve corresponder à quantidade na caixa do produto selecionado.');
             event.preventDefault();
+            return;
         }
-    });
+    }
+});
+
 </script>
 
 {% endblock %}

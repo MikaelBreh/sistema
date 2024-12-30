@@ -34,6 +34,7 @@
         <a href="#" class="active" data-status="em_aberto">Em Aberto</a>
         <a href="#" data-status="aprovados">Aprovados</a>
         <a href="#" data-status="separando">Separando</a>
+        <a href="#" data-status="conf_separacao">Conferencia Separacao</a>
         <a href="#" data-status="separacao_finalizada">Separação Finalizada</a>
         <a href="#" data-status="finalizados">Finalizados</a>
         <a href="#" data-status="cancelado">Cancelado</a>
@@ -65,86 +66,100 @@
     </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const tabs = document.querySelectorAll('.tabs a');
-        const tabelaPedidos = document.getElementById('tabela-pedidos');
-        const loading = document.getElementById('loading');
-        const paginacaoDiv = document.getElementById('paginacao');
-        const filtrosForm = document.getElementById('filtros-pedidos');
+document.addEventListener('DOMContentLoaded', function () {
+    const tabs = document.querySelectorAll('.tabs a');
+    const tabelaPedidos = document.getElementById('tabela-pedidos');
+    const loading = document.getElementById('loading');
+    const paginacaoDiv = document.getElementById('paginacao');
+    const filtrosForm = document.getElementById('filtros-pedidos');
 
-        function carregarPedidos(status, page = 1) {
-            loading.style.display = 'block';
+    function carregarPedidos(status, page = 1) {
+        loading.style.display = 'block';
 
-            const formData = new FormData(filtrosForm);
-            formData.append('page', page);
-            formData.append('status', status);
+        const formData = new FormData(filtrosForm);
+        formData.append('page', page);
+        formData.append('status', status);
 
-            const queryString = new URLSearchParams(formData).toString();
-            const url = `/vendas/pedidos/${status}?${queryString}`;
+        const queryString = new URLSearchParams(formData).toString();
+        const url = `/vendas/pedidos/${status}?${queryString}`;
 
-            fetch(url)
-                .then(response => response.json())
-                .then(data => {
-                    tabelaPedidos.innerHTML = '';
-                    data.pedidos.forEach(pedido => {
-                        const row = `<tr>
-                            <td>${pedido.numero_pedido}</td>
-                            <td>${pedido.cliente}</td>
-                            <td>${pedido.data}</td>
-                            <td>
-                                <div class="menu">
-                                    <span>⋮</span>
-                                    <div class="menu-content">
-                                        <a href="/vendas/pedidos/alterar-status/${pedido.numero_pedido}/em_aberto">Em Aberto</a>
-                                        <a href="/vendas/pedidos/alterar-status/${pedido.numero_pedido}/aprovados">Aprovados</a>
-                                        <a href="/vendas/pedidos/alterar-status/${pedido.numero_pedido}/separando">Separando</a>
-                                        <a href="/vendas/pedidos/alterar-status/${pedido.numero_pedido}/separacao_finalizada">Separação Finalizada</a>
-                                        <a href="/vendas/pedidos/alterar-status/${pedido.numero_pedido}/finalizados">Finalizados</a>
-                                        <a href="/vendas/pedidos/alterar-status/${pedido.numero_pedido}/cancelado">Cancelado</a>
-                                    </div>
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                tabelaPedidos.innerHTML = '';
+                data.pedidos.forEach(pedido => {
+                    const row = `<tr>
+                        <td>${pedido.numero_pedido}</td>
+                        <td>${pedido.cliente}</td>
+                        <td>${pedido.data}</td>
+                        <td>
+                            <div class="menu">
+                                <span class="menu-toggle">⋮</span>
+                                <div class="menu-content">
+                                    <a href="/vendas/pedidos/alterar-status/${pedido.numero_pedido}/em_aberto">Em Aberto</a>
+                                    <a href="/vendas/pedidos/alterar-status/${pedido.numero_pedido}/aprovados">Aprovados</a>
+                                    <a href="/vendas/pedidos/alterar-status/${pedido.numero_pedido}/separando">Separando</a>
+                                    <a href="/vendas/pedidos/alterar-status/${pedido.numero_pedido}/conf_separacao">Conferencia Separacao</a>
+                                    <a href="/vendas/pedidos/alterar-status/${pedido.numero_pedido}/separacao_finalizada">Separação Finalizada</a>
+                                    <a href="/vendas/pedidos/alterar-status/${pedido.numero_pedido}/finalizados">Finalizados</a>
+                                    <a href="/vendas/pedidos/alterar-status/${pedido.numero_pedido}/cancelado">Cancelado</a>
                                 </div>
-                            </td>
-                            <td>  <a href="/vendas/visualizar_pedido/${pedido.numero_pedido}"><button class="acessar-button">Acessar</button></a> </td>
-                        </tr>`;
-                        tabelaPedidos.insertAdjacentHTML('beforeend', row);
-                    });
-
-                    paginacaoDiv.innerHTML = '';
-                    if (data.paginacao.num_pages > 1) {
-                        for (let i = 1; i <= data.paginacao.num_pages; i++) {
-                            const pageBtn = `<button onclick="carregarPedidos('${status}', ${i})" ${i === data.paginacao.current_page ? 'disabled' : ''}>${i}</button>`;
-                            paginacaoDiv.insertAdjacentHTML('beforeend', pageBtn);
-                        }
-                    }
-
-                    loading.style.display = 'none';
-                })
-                .catch(error => {
-                    console.error('Erro ao carregar pedidos:', error);
-                    loading.style.display = 'none';
+                            </div>
+                        </td>
+                        <td>  <a href="/vendas/visualizar_pedido/${pedido.numero_pedido}"><button class="acessar-button">Acessar</button></a> </td>
+                    </tr>`;
+                    tabelaPedidos.insertAdjacentHTML('beforeend', row);
                 });
-        }
 
-        filtrosForm.addEventListener('submit', function (e) {
+                paginacaoDiv.innerHTML = '';
+                if (data.paginacao.num_pages > 1) {
+                    for (let i = 1; i <= data.paginacao.num_pages; i++) {
+                        const pageBtn = `<button onclick="carregarPedidos('${status}', ${i})" ${i === data.paginacao.current_page ? 'disabled' : ''}>${i}</button>`;
+                        paginacaoDiv.insertAdjacentHTML('beforeend', pageBtn);
+                    }
+                }
+
+                loading.style.display = 'none';
+
+                document.querySelectorAll('.menu-toggle').forEach(button => {
+                    button.addEventListener('click', function (e) {
+                        e.stopPropagation();
+                        const menuContent = this.nextElementSibling;
+                        menuContent.style.display = menuContent.style.display === 'block' ? 'none' : 'block';
+                    });
+                });
+
+                document.addEventListener('click', function () {
+                    document.querySelectorAll('.menu-content').forEach(menu => menu.style.display = 'none');
+                });
+            })
+            .catch(error => {
+                console.error('Erro ao carregar pedidos:', error);
+                loading.style.display = 'none';
+            });
+    }
+
+    filtrosForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        const status = document.querySelector('.tabs a.active').getAttribute('data-status');
+        carregarPedidos(status);
+    });
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', function (e) {
             e.preventDefault();
-            const status = document.querySelector('.tabs a.active').getAttribute('data-status');
+            tabs.forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+
+            const status = this.getAttribute('data-status');
             carregarPedidos(status);
         });
-
-        tabs.forEach(tab => {
-            tab.addEventListener('click', function (e) {
-                e.preventDefault();
-                tabs.forEach(t => t.classList.remove('active'));
-                this.classList.add('active');
-
-                const status = this.getAttribute('data-status');
-                carregarPedidos(status);
-            });
-        });
-
-        const statusAtual = "{{ status_atual }}";
-        carregarPedidos(statusAtual);
     });
+
+    const statusAtual = "{{ status_atual }}";
+    carregarPedidos(statusAtual);
+});
+
 </script>
 
 {% endblock %}

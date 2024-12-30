@@ -45,7 +45,9 @@ INSTALLED_APPS = [
     # app Estoque Produtos Acabados
     'produtos_acabados.apps.ProdutosAcabadosConfig',
     # app de visuzalicao de estoque
-    'estoque.apps.EstoqueConfig'
+    'estoque.apps.EstoqueConfig',
+    # app de Dashboards
+    'dashboard.apps.DashboardConfig',
 ]
 
 MIDDLEWARE = [

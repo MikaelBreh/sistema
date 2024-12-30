@@ -1,6 +1,6 @@
 {% extends 'side_menu.html' %}
-{% load static %}
 
+{% load static %}
 {% block head %}
     <link rel="stylesheet" href="{% static 'produtos_acabados/css/receber_tranferencia_estoque.css' %}">
 {% endblock %}
@@ -8,7 +8,6 @@
 {% block content %}
 
 <div class="button-pattern">
-<!-- Botão de Voltar -->
     <button class="button-pattern_final" onclick="window.history.back()">Voltar</button>
 </div>
 
@@ -42,13 +41,14 @@
              data-dateFab="{{ produto.data_fabricacao|date:'Y-m-d' }}" data-dateValid="{{ produto.validade|date:'Y-m-d' }}"
              data-codigoBarraUnidade="{{ produto.codigo_barra_unidade }}" data-codigoBarraCaixa="{{ produto.codigo_barra_caixa }}">
 
-
             <div class="product-name-lot">
                 <p>Produto</p>
                 <input type="text" name="produto_input" placeholder="{{ produto.produto }}" readonly class="nome_produto">
                 <p>Unidades</p>
                 <input type="number" name="quantidade_produto" placeholder="Unidades" class="quantidade_produto">
             </div>
+
+            {% if not is_admin_transfer %}
             <div class="product-quantities">
                 <p>Lote</p>
                 <input type="text" name="lote_produto" placeholder="{{ produto.lote }}" readonly class="lote_produto">
@@ -69,6 +69,7 @@
                 <p>Data de Validade</p>
                 <input type="date" name="data_validade_produto" placeholder="dd/mm/aaaa" class="data_validade_produto">
             </div>
+            {% endif %}
         </div>
         {% endfor %}
     </div>
@@ -80,6 +81,7 @@
     function totestando() {
         const produtos = document.querySelectorAll('.product-row');
         let allFieldsFilled = true;
+        const isAdmin = {{ is_admin_transfer|yesno:"true,false" }}; // Obtém a flag do backend
 
         produtos.forEach((produto) => {
 
@@ -91,31 +93,31 @@
             const codigoBarraCaixaEsperada = produto.dataset.codigobarracaixa;
 
             const quantidade = produto.querySelector('.quantidade_produto').value;
-            const quantidade_caixas = produto.querySelector('.quantidade_caixas_produto').value;
-            const data_fabricacao = produto.querySelector('.data_fabricacao_produto').value;
-            const data_validade = produto.querySelector('.data_validade_produto').value;
-            const codigo_barra_unidade = produto.querySelector('.codigo_barra_unidade').value;
-            const codigo_barra_caixa = produto.querySelector('.codigo_barra_caixa').value;
+            const quantidade_caixas = produto.querySelector('.quantidade_caixas_produto') ? produto.querySelector('.quantidade_caixas_produto').value : null;
+            const data_fabricacao = produto.querySelector('.data_fabricacao_produto') ? produto.querySelector('.data_fabricacao_produto').value : null;
+            const data_validade = produto.querySelector('.data_validade_produto') ? produto.querySelector('.data_validade_produto').value : null;
+            const codigo_barra_unidade = produto.querySelector('.codigo_barra_unidade') ? produto.querySelector('.codigo_barra_unidade').value : null;
+            const codigo_barra_caixa = produto.querySelector('.codigo_barra_caixa') ? produto.querySelector('.codigo_barra_caixa').value : null;
 
-            if (!quantidade || !quantidade_caixas || !data_fabricacao || !data_validade || !codigo_barra_unidade || !codigo_barra_caixa) {
+            if (!quantidade || (!isAdmin && (!quantidade_caixas || !data_fabricacao || !data_validade || !codigo_barra_unidade || !codigo_barra_caixa))) {
                 allFieldsFilled = false;
             } else if (quantidade != quantidadeEsperadUnitaria) {
                 alert("A quantidade de unidades não confere com a quantidade do produto." + quantidadeEsperadUnitaria + " != " + quantidade);
                 allFieldsFilled = false;
-            } else if (quantidade_caixas != quantidadeEsperadaCaixa) {
+            } else if (!isAdmin && quantidade_caixas != quantidadeEsperadaCaixa) {
                 alert("A quantidade de caixas não confere com a quantidade do produto." + quantidadeEsperadaCaixa + " != " + quantidade_caixas);
                 allFieldsFilled = false;
-            } else if (data_fabricacao != dateFabEsperada) {
+            } else if (!isAdmin && data_fabricacao != dateFabEsperada) {
                 alert("A data de fabricação não confere com a data do produto." + dateFabEsperada + " != " + data_fabricacao);
                 allFieldsFilled = false;
-            } else if (data_validade != dateValidEsperada) {
+            } else if (!isAdmin && data_validade != dateValidEsperada) {
                 alert("A data de validade não confere com a data do produto." + dateValidEsperada + " != " + data_validade);
                 allFieldsFilled = false;
-            } else if (codigo_barra_unidade != codigoBarraUnidadeEsperada) {
-                alert("O código de barras da unidade não confere com o código do produto." + codigoBarraUnidadeEsperada + " != " + codigo_barra_unidade);
+            } else if (!isAdmin && codigo_barra_unidade != codigoBarraUnidadeEsperada) {
+                alert("O código de barra da unidade não confere com o do produto." + codigoBarraUnidadeEsperada + " != " + codigo_barra_unidade);
                 allFieldsFilled = false;
-            } else if (codigo_barra_caixa != codigoBarraCaixaEsperada) {
-                alert("O código de barras da caixa não confere com o código do produto." + codigoBarraCaixaEsperada + " != " + codigo_barra_caixa);
+            } else if (!isAdmin && codigo_barra_caixa != codigoBarraCaixaEsperada) {
+                alert("O código de barra da caixa não confere com o do produto." + codigoBarraCaixaEsperada + " != " + codigo_barra_caixa);
                 allFieldsFilled = false;
             }
         });
@@ -123,8 +125,9 @@
         if (allFieldsFilled) {
             document.getElementById('transferencia-form').submit();
         } else {
-            alert("Por favor, preencha todos os campos obrigatórios corretamente.");
+            alert("Preencha todos os campos corretamente.");
         }
     }
 </script>
-{% endblock content %}
+
+{% endblock %}

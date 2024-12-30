@@ -18,6 +18,12 @@
 
 {% endif %}
 
+{% if pedido.status == 'conf_separacao' %}
+    <a href="{% url 'imprimir_conferencia' pedido.id %}" class="conf_button" target="_blank">Imprimir conferência</a>
+{% else %}
+
+{% endif %}
+
 
 <div class="info_pedido">
     <p><strong>ID do Pedido:</strong> {{ pedido.id }}</p>
@@ -35,7 +41,7 @@
             <th>Codigo de Caixas</th>
             <th>Unid.</th>
             <th>Caixas</th>
-            {% if pedido.status == 'separando' or pedido.status == 'separacao_finalizada' %}
+            {% if pedido.status == 'separando' or pedido.status == 'separacao_finalizada' or pedido.status == 'conf_separacao'%}
                 <th>Quant. Separada</th>
                 <th>Quant. Separar</th>
             {% elif pedido.status == 'finalizados' %}
@@ -54,7 +60,7 @@
             <td>{{ item.product_instance.box_bar_code }}</td>
             <td>{{ item.quantidade }}</td>
             <td>{{ item.quantidade_caixas }}</td>
-            {% if pedido.status == 'separando' or pedido.status == 'separacao_finalizada' %}
+            {% if pedido.status == 'separando' or pedido.status == 'separacao_finalizada' or pedido.status == 'conf_separacao'%}
                 <td class="quant-separada" data-item-id="{{ item.id }}">0</td>
                 <td class="quant-restante" data-item-id="{{ item.id }}">{{ item.quantidade }}</td>
             {% elif pedido.status == 'finalizados' %}

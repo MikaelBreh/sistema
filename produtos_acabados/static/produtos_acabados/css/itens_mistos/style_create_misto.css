@@ -33,6 +33,14 @@ h1, h2 {
     box-sizing: border-box;
 }
 
+.input_kit{
+    display: inline;
+    flex-direction: row;
+    text-align: start;
+    background-color: black;
+}
+
+
 /* Estilização dos botões */
 .button-pattern_final,
 .add-product_button,

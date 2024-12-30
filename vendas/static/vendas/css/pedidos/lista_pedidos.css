@@ -87,8 +87,8 @@ th {
 }
 
 td{
-    padding: 15px;
-    border-bottom: 1px #000000 inset;
+    padding: 7px;
+    border-bottom: 1px #9a9a9a inset;
     text-align: left;
 
 }
@@ -99,30 +99,50 @@ tbody tr:nth-child(odd) {
 tbody tr:nth-child(even) {
     background-color: #fff;
 }
+
+
 .menu {
     position: relative;
     display: inline-block;
 }
+
 .menu-content {
     display: none;
     position: absolute;
-    right: 0;
-    background-color: white;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    background-color: #7c7c7c; /* Cor de fundo do menu, por exemplo, verde */
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
     z-index: 1;
+    width: 200px; /* Aumenta a largura do menu */
+    border-radius: 8px; /* Bordas arredondadas para um visual mais moderno */
 }
+
 .menu-content a {
-    padding: 10px 20px;
+    padding: 15px 25px; /* Aumenta o padding para botões maiores */
     text-decoration: none;
     display: block;
-    color: black;
+    color: white; /* Cor do texto no menu */
+    font-size: 16px; /* Aumenta o tamanho da fonte */
+    cursor: pointer; /* Altera o cursor para pointer */
+    transition: background-color 0.3s ease; /* Transição suave */
 }
+
 .menu-content a:hover {
-    background-color: #f1f1f1;
+    background-color: #5d0377; /* Cor de fundo no hover */
 }
-.menu:hover .menu-content {
-    display: block;
+
+.menu-toggle {
+    cursor: pointer; /* Altera o cursor para pointer para indicar interatividade */
+    font-size: 20px; /* Aumenta o tamanho do botão de três pontos */
+    color: white;
+    background-color: #5d0377;
+    padding: 1px 10px;
+    border-radius: 15px; /* Bordas arredondadas para um visual mais moderno */
 }
+
+.menu-toggle:hover {
+    background-color: #7f2fb7;
+}
+
 
 .acessar-button {
     font-size: 14px;
@@ -135,7 +155,7 @@ tbody tr:nth-child(even) {
     border: 2px solid #a53be7;
     border-radius: 5px;
     background-color: transparent;
-    padding: 8px 10px;
+    padding: 2px 5px;
     min-height: 20px;
 }
 

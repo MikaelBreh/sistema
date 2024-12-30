@@ -16,6 +16,8 @@ urlpatterns = [
     path('pedidos/alterar-status/<int:numero_pedido>/<str:novo_status>/', views.alterar_status,
          name='alterar_status_pedido'),
 
+    path('pedidos/<int:pedido_id>/imprimir/', views.imprimir_conferencia, name='imprimir_conferencia'),
+
 
     # AQUI COMEÇA A PARTE DE EXPEDICAO -- SEPARACAO DE PEDIDOS
     path('expedicao/<str:status>', views.expedicao_list, name='expedicao_list'),

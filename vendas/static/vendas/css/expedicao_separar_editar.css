@@ -190,7 +190,23 @@ body {
     }
 
     .button-salvar-div{
-        padding-top: 90px;
+        padding-top: 140px;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+
+    }
+
+    .finalizar_button{
+        width: 14%;
+        padding: 4px 8px;
+        background-color: #a60101;
+        border: none;
+        color: white;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 15px;
+
     }
 
     .separado_restante{

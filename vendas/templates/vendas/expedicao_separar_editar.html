@@ -87,7 +87,9 @@
 
     <div class="button-salvar-div">
         <button class="salvar_button" type="submit">Salvar</button>
+        <button class="finalizar_button" type="submit" name="finalizar_pedido" onclick="return confirmarFinalizacao()">Finalizar Pedido</button>
     </div>
+
 
 </form>
 
@@ -184,6 +186,10 @@ window.onload = function() {
             lotesDiv.style.display = "none";
             seta.innerHTML = "&#9660;"; // Seta para baixo
         }
+    }
+
+    function confirmarFinalizacao() {
+        return confirm("Tem certeza que deseja finalizar o pedido? Essa ação não poderá ser desfeita.");
     }
 
 

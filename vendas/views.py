@@ -19,6 +19,11 @@ from .models import Pedido, PedidoItem, PedidoSeparacao, FaltandoSeparacao
 from django.contrib.auth.decorators import login_required, permission_required
 from django.db.models import F
 
+from django.http import FileResponse
+from io import BytesIO
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+
 
 @login_required
 def home(request):
@@ -131,6 +136,96 @@ def visualizar_pedido(request, pedido_id):
         item.product_instance = model_class.objects.get(id=item.object_id)
 
     return render(request, 'vendas/visualizar_pedido.html', {'pedido': pedido, 'itens_pedido': itens_pedido, 'separacoes': separacoes})
+
+
+@login_required
+def imprimir_conferencia(request, pedido_id):
+    pedido = get_object_or_404(Pedido, id=pedido_id)
+    itens_pedido = PedidoItem.objects.filter(pedido=pedido)
+    separacoes = PedidoSeparacao.objects.filter(pedido=pedido)
+
+    # Carregar o objeto relacionado para cada item do pedido, adicionando o product_instance
+    for item in itens_pedido:
+        content_type = ContentType.objects.get_for_id(item.content_type_id)
+        model_class = content_type.model_class()
+        item.product_instance = model_class.objects.get(id=item.object_id)
+
+    # Gerar o PDF
+    buffer = BytesIO()
+    pdf = canvas.Canvas(buffer, pagesize=letter)
+    pdf.setTitle(f"Conferência do Pedido {pedido.id}")
+
+    pdf.setFont("Helvetica", 30)
+    pdf.drawString(145, 650, "Conferência de Pedido")
+
+
+    pdf.setFont("Helvetica", 12)
+    # Cabeçalho do PDF
+    pdf.drawString(100, 750, f"Pedido ID: {pedido.id}")
+    pdf.drawString(320, 750, f"Cliente: {pedido.cliente.name}")
+    pdf.drawString(320, 735, f"Data do Pedido: {pedido.data.strftime('%d/%m/%Y - %H:%M')}")
+    pdf.drawString(100, 735, f"Status: {pedido.status}")
+
+    pdf.line(100, 700, 500, 700)
+
+    # Tabela dos itens
+    y_position = 590
+    pdf.drawString(60, y_position, "Produto")
+    pdf.drawString(380, y_position, "Caixas")
+    pdf.drawString(440, y_position, "Lote")
+
+
+    y_position -= 20
+    y_position -= 20  # Definindo a posição vertical inicial
+
+    soma_caixas_total = 0
+    soma_peso_liquido_total = 0
+    soma_peso_bruto_total = 0
+
+    # Exibir total de caixas separadas
+    for item in itens_pedido:
+        # Soma total da quantidade separada para o item atual
+        total_separado = sum(separacao.quantidade for separacao in item.separacoes.all())
+
+        # Calcula o número de caixas separadas dividindo pela quantidade de produtos por caixa
+        total_caixas_separadas = total_separado / item.product_instance.box_quantity
+
+        soma_peso_liquido_total += total_separado * item.product_instance.net_weight
+        soma_peso_bruto_total += total_separado * item.product_instance.gross_weight
+
+        soma_caixas_total += total_caixas_separadas
+
+        # Exibe o nome do produto e a quantidade de caixas separadas no PDF
+        pdf.drawString(60, y_position, item.product_instance.name)
+        pdf.drawString(385, y_position, f"  {str(int(total_caixas_separadas))} (  ) ")
+
+        # Exibe os lotes usados
+        lotes = ", ".join([separacao.lote for separacao in item.separacoes.all() if separacao.lote])
+        pdf.drawString(440, y_position, lotes if lotes else "Sem lote")
+
+        # Movendo para a próxima linha no PDF
+        y_position -= 20
+
+        # Adicionando uma nova página se a posição estiver muito baixa
+        if y_position < 100:
+            pdf.showPage()
+            y_position = 750  # Resetando a posição para o topo da nova página
+
+
+    # Exibir o total de caixas separadas
+    pdf.drawString(60, y_position-80, f"Total de caixas: {int(soma_caixas_total)}  (  )       "
+                        f" Peso Liquido: {int(soma_peso_liquido_total)} KG       Peso Bruto: {int(soma_peso_bruto_total)} KG")
+    pdf.drawString(60, y_position-130, "Nome Conferente: _______________    Assinatura do conferente:  ____________________")
+    pdf.drawString(60, y_position-180, "Separado Por: __________________    Assinatura do separador:  _____________________")
+
+
+
+
+    pdf.save()
+    buffer.seek(0)
+
+    # Retornar o PDF como resposta
+    return FileResponse(buffer, as_attachment=True, filename=f"Conferencia_Pedido_{pedido.id}.pdf")
 
 
 @login_required
@@ -334,7 +429,7 @@ def listar_pedidos_por_status(request, status):
         pedidos = pedidos.filter(data__lte=data_final)
 
     # Paginação
-    paginator = Paginator(pedidos, 40)  # 40 itens por página
+    paginator = Paginator(pedidos, 60)  # 40 itens por página
     paginated_pedidos = paginator.get_page(page)
 
     # Preparando os dados para enviar via JSON
@@ -364,50 +459,31 @@ def listar_pedidos_por_status(request, status):
 def expedicao_list(request, status):
 
     search_query = request.GET.get('search', '')
+
+    # Filtra os pedidos pelo status
     if status == 'aprovados':
-
-        if search_query:
-            pedidos = Pedido.objects.filter(
-                Q(cliente__name__icontains=search_query) &
-                Q(status='aprovados')
-            )
-        else:
-            pedidos = Pedido.objects.filter(
-                Q(status='aprovados')
-            )
-
-
+        pedidos = Pedido.objects.filter(status='aprovados')
     elif status == 'separando':
-
-        if search_query:
-            pedidos = Pedido.objects.filter(
-                Q(cliente__name__icontains=search_query) &
-                Q(status='separando')
-            )
-        else:
-            pedidos = Pedido.objects.filter(
-                Q(status='separando')
-            )
-
-
+        pedidos = Pedido.objects.filter(status='separando')
     elif status == 'separacao_finalizada':
+        pedidos = Pedido.objects.filter(status='separacao_finalizada')
+    else:
+        pedidos = Pedido.objects.none()  # Caso de status inválido
 
-        if search_query:
-            pedidos = Pedido.objects.filter(
-                Q(cliente__name__icontains=search_query) &
-                Q(status='separacao_finalizada')
-            )
-        else:
-            pedidos = Pedido.objects.filter(
-                Q(status='separacao_finalizada')
-            )
+    # Aplica filtro de busca, se houver
+    if search_query:
+        pedidos = pedidos.filter(cliente__name__icontains=search_query)
 
+    # Se o usuário não é admin, mostra apenas os pedidos sem responsável ou atribuídos a ele
+    if not request.user.is_superuser:
+        pedidos = pedidos.filter(Q(usuario_responsavel=request.user) | Q(usuario_responsavel__isnull=True))
 
     paginator = Paginator(pedidos, 10)  # Mostra 10 pedidos por página
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
     return render(request, 'vendas/expedicao_list.html', {'pedidos': page_obj, 'status': status})
+
 
 
 
@@ -434,63 +510,6 @@ def expedicao_separando_list_view(request):
     return render(request, 'vendas/expedicao_list.html', {'pedidos': page_obj})
 
 
-# @permission_required('vendas.change_pedidoseparacao', raise_exception=True)
-# @login_required
-# def expedicao_separar(request, pedido_id):
-#     pedido = get_object_or_404(Pedido, id=pedido_id)
-#
-#     if request.method == 'POST':
-#         try:
-#             for item in pedido.itens.all():
-#                 lotes = request.POST.getlist(f'lotes_{item.id}')
-#                 quantidades = request.POST.getlist(f'quantidades_{item.id}')
-#                 total_quantidade = 0  # Controle do total de quantidades para cada item
-#
-#                 for lote, quantidade in zip(lotes, quantidades):
-#                     if lote and quantidade:
-#                         try:
-#                             # Valida o lote e o produto correspondente
-#                             lote_produto = validar_lote(lote, item)
-#                         except ValueError as e:
-#                             # Adiciona a mensagem de erro
-#                             messages.error(request, str(e))
-#                             # Recarrega a página com a mensagem de erro
-#                             return render(request, 'vendas/expedicao_separar.html', {'pedido': pedido})
-#
-#                         # Acumula a quantidade separada
-#                         quantidade_int = int(quantidade)
-#                         total_quantidade += quantidade_int
-#
-#                         if total_quantidade > item.quantidade:
-#                             raise ValidationError(
-#                                 f"A quantidade separada para {item.produto.name} excede a quantidade do pedido."
-#                             )
-#
-#                         # Cria o registro na tabela PedidoSeparacao
-#                         PedidoSeparacao.objects.create(
-#                             pedido=pedido,
-#                             item_pedido=item,
-#                             lote=lote,
-#                             quantidade=quantidade_int
-#                         )
-#
-#             messages.success(request, "Pedido salvo com sucesso!")
-#             # Se tudo der certo, salvar e mostar novamente a tela de separacao
-#             return redirect('expedicao_separar_editar', pedido_id=pedido_id)
-#
-#         except ValidationError as e:
-#             # Captura a exceção de validação e adiciona uma mensagem de erro
-#             messages.error(request, str(e))
-#
-#     # Recarrega a página com a mensagem de erro (se houver)
-#     return render(request, 'vendas/expedicao_separar.html', {'pedido': pedido})
-#
-#
-# @permission_required('vendas.view_pedidoseparacao', raise_exception=True)
-# @login_required
-# def expedicao_ver(request, pedido_id):
-#     pedido = get_object_or_404(Pedido, id=pedido_id)
-#     return render(request, 'vendas/expedicao_ver.html', {'pedido': pedido})
 
 
 
@@ -506,6 +525,7 @@ def expedicao_ver_separacao(request, pedido_id):
     })
 
 
+
 @login_required
 @permission_required('vendas.change_pedidoseparacao', raise_exception=True)
 def expedicao_separar_editar(request, pedido_id):
@@ -513,10 +533,13 @@ def expedicao_separar_editar(request, pedido_id):
     separacoes = PedidoSeparacao.objects.filter(pedido=pedido).select_related('item_pedido')
 
     if request.method == 'POST':
+        is_finalizar = 'finalizar_pedido' in request.POST  # Checa se o pedido é para finalizar
+
         try:
             # Verifica o status do pedido e atualiza para 'separando' se necessário
             if pedido.status != 'separando':
                 pedido.status = 'separando'
+                pedido.usuario_responsavel = request.user  # Atribui o usuário atual como responsável
                 pedido.save()
 
             for item in pedido.itens.all():
@@ -570,18 +593,27 @@ def expedicao_separar_editar(request, pedido_id):
                     }
                 )
 
+                # Verifica se a ação é para finalizar e atualiza o status para 'conf_separacao'
+                if is_finalizar:
+                    pedido.status = 'conf_separacao'
+                    pedido.save()
+
+                    # Adiciona mensagem de sucesso e redireciona
+                    return redirect('expedicao_list', status='separando')
+
             # Adiciona mensagem de sucesso e redireciona
             messages.success(request, 'Separação do pedido atualizada com sucesso.')
-            return redirect('expedicao_separar_editar', pedido_id=pedido_id)
+
 
         except ValidationError as e:
-            # Captura a exceção de validação e adiciona uma mensagem de erro
             messages.error(request, str(e))
 
+    # Renderiza a página caso não seja uma requisição POST ou haja um erro
     return render(request, 'vendas/expedicao_separar_editar.html', {
         'pedido': pedido,
         'separacoes': separacoes,
     })
+
 
 
 

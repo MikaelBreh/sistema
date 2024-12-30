@@ -1,4 +1,5 @@
 # models.py
+from django.contrib.auth.models import User
 from django.db import models
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
@@ -14,6 +15,7 @@ class Pedido(models.Model):
         ('em_aberto', 'Em Aberto'),
         ('aprovados', 'Aprovados'),
         ('separando', 'Separando'),
+        ('conf_separacao', 'Conferência Separação'),
         ('separacao_finalizada', 'Separação Finalizada'),
         ('finalizados', 'Finalizados'),
         ('cancelado', 'Cancelado'),
@@ -22,6 +24,7 @@ class Pedido(models.Model):
     cliente = models.ForeignKey(Clientes, on_delete=models.CASCADE)
     data = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='em_aberto')
+    usuario_responsavel = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
 
     class Meta:
         permissions = [
@@ -46,6 +49,7 @@ class PedidoItem(models.Model):
 
     def __str__(self):
         return f"{self.quantidade} of {self.produto}"
+
 
 
 
