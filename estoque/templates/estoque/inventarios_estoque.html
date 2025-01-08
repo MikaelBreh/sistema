@@ -1,0 +1,47 @@
+{% extends 'side_menu.html' %}
+{% load static %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'css/inventarios_estoque.css' %}">
+{% endblock %}
+
+{% block content %}
+
+
+    <a href="{% url 'criar_inventario_estoque' %}"> <button class="criar_inventario">Criar Inventario Estoque</button></a>
+
+    <h2>Inventarios de estoque criados</h2>
+    <p>Linhas cinza e branco significa que esta finalizado, não podendo mais ser alterados</p>
+    <p>Linhas em azul significa que esta em aberto, podendo ser alterado</p>
+
+    <div class="invetarios_criados">
+
+        <table>
+            <tr>
+                <th>Numero Inventario</th>
+                <th>Conferente</th>
+                <th>Data</th>
+                <th>Quant. de Produtos</th>
+                <th>Quant. unitaria</th>
+            </tr>
+
+                {% for inventario in Inventarios %}
+                    {% if inventario.5 == 0 %}
+                        <tr class="nao-finalizado-tr" onclick="window.location.href='{% url 'visualizar_inventario_estoque' inventario.0 %}'" style="cursor: pointer;">
+                    {% else %}
+                        <tr class="finalizado-tr" onclick="window.location.href='{% url 'visualizar_inventario_estoque' inventario.0 %}'" style="cursor: pointer;">
+                    {% endif %}
+                            <td>{{ inventario.0 }}</td> <!-- Número do inventário -->
+                            <td>{{ inventario.1 }}</td> <!-- Data formatada -->
+                            <td>{{ inventario.2 }}</td> <!-- Conferente -->
+                            <td>{{ inventario.3 }}</td> <!-- Conferente -->
+                            <td>{{ inventario.4 }}</td> <!-- Conferente -->
+                        </tr>
+
+                {% endfor %}
+        </table>
+
+    </div>
+
+
+{% endblock %}

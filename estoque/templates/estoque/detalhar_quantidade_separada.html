@@ -1,0 +1,27 @@
+<h1>Quantidade Separada - {{ produto.name }}</h1>
+<table>
+    <thead>
+        <tr>
+            <th>ID do Pedido</th>
+            <th>Nome do Pedido</th>
+            <th>Cliente</th>
+            <th>Lote</th>
+            <th>Quantidade</th>
+            <th>Data do Pedido</th>
+            <th>Status do Pedido</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for detalhe in detalhes_separados %}
+        <tr>
+            <td>{{ detalhe.pedido_id }}</td>
+            <td>{{ detalhe.pedido_nome }}</td>
+            <td>{{ detalhe.cliente }}</td>
+            <td>{{ detalhe.lote }}</td>
+            <td>{{ detalhe.quantidade }}</td>
+            <td>{{ detalhe.data_pedido }}</td>
+            <td>{{ detalhe.status_pedido }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

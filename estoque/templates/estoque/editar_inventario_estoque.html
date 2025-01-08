@@ -1,0 +1,91 @@
+{% extends 'side_menu.html' %}
+{% load static %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'css/criar_inventario_estoque.css' %}">
+{% endblock %}
+
+{% block content %}
+
+    <div class="button-pattern">
+        <a href="/estoque/visualizar_inventario_estoque/{{ numero_inventario }}/"><button class="button-pattern_final">Voltar</button></a>
+    </div>
+
+    <h2>Editar Inventário de Estoque numero: {{ numero_inventario }}</h2>
+    <p class="lead">Modifique as informações abaixo ou adicione novos produtos ao inventário.</p>
+    <p class="aviso">{{ error_message }}</p>
+
+    <form id="pedido_form" action="" method="POST">
+    {% csrf_token %}
+
+        <div id="input_titles">
+            <span>Produto</span>
+            <span>Código</span>
+            <span>Quantidade</span>
+            <span class="lote">Lote</span>
+        </div>
+
+        <div id="inputs_container">
+            {% for item in inventario %}
+            <div class="produto-linha">
+                <input type="text" id="produto_input" name="produto_input" list="nomes_produtos"
+                       value="{{ item.nome_produtos }}" placeholder="Selecione um Produto"
+                       class="form_control" readonly>
+                <input type="text" placeholder="Código do Produto" class="codigo_produto_input"
+                       name="codigo_produto" value="{{ item.cod_produto }}" readonly>
+                <input type="text" class="input quantidade" id="quantidade" placeholder="Quantidade Unitaria"
+                       name="quantidade" value="{{ item.quantidade }}">
+                <input type="text" class="input lote" id="lote" placeholder="Lote" name="lote"
+                       value="{{ item.lote }}">
+                <button type="button" class="remove-button" onclick="removerLinha(this)">X</button>
+            </div>
+            {% endfor %}
+        </div>
+        <button type="button" class="add-product_button" onclick="adicionarInput()">Adicionar Produto</button>
+
+        <div class="produtos_lançados">
+            <datalist id="nomes_produtos">
+                {% for produto in Produtos %}
+                    <option value="{{ produto.name }}" data-id="{{ produto.product_code }}">
+                {% endfor %}
+            </datalist>
+        </div>
+
+        <button type="submit" class="finalizar-button">Salvar Alterações</button>
+    </form>
+
+<script>
+    // Reutilizando os mesmos scripts da página de criação
+    function adicionarInput() {
+        var container = document.getElementById("inputs_container");
+        var novoInput = document.createElement("div");
+        novoInput.classList.add("produto-linha");
+
+        novoInput.innerHTML = `
+            <input type="text" id="produto_input" name="produto_input" list="nomes_produtos" placeholder="Selecione um Produto" class="form_control" oninput="setProductInfo(this)">
+            <input type="text" placeholder="Código do Produto" class="codigo_produto_input" name="codigo_produto" readonly tabindex="-1">
+            <input type="text" class="input quantidade" id="quantidade" placeholder="Quantidade Unitaria" name="quantidade">
+            <input type="text" class="input lote" id="lote" placeholder="Lote" name="lote">
+            <button type="button" class="remove-button" onclick="removerLinha(this)">X</button>
+        `;
+
+        container.appendChild(novoInput);
+    }
+
+    function removerLinha(button) {
+        var linha = button.parentElement;
+        linha.remove();
+    }
+
+    function setProductInfo(input) {
+        var datalist = document.getElementById("nomes_produtos");
+        var options = datalist.options;
+        for (var i = 0; i < options.length; i++) {
+            if (options[i].value === input.value) {
+                input.nextElementSibling.value = options[i].getAttribute('data-id');
+                break;
+            }
+        }
+    }
+</script>
+{% endblock %}

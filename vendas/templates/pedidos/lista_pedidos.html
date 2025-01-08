@@ -10,6 +10,12 @@
 
 {% block content %}
 
+    {% if messages %}
+        <script>
+            alert("{% for message in messages %}{{ message }}{% endfor %}");
+        </script>
+    {% endif %}
+
     <div class="filtros">
 
         <form id="filtros-pedidos" method="GET">
@@ -51,6 +57,7 @@
             <tr>
                 <th>Número do Pedido</th>
                 <th>Cliente</th>
+                <th>Regime</th>
                 <th>Data</th>
                 <th>Ações</th>
                 <th>Ver Pedido</th>
@@ -91,6 +98,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     const row = `<tr>
                         <td>${pedido.numero_pedido}</td>
                         <td>${pedido.cliente}</td>
+                        <td>${pedido.regime_venda}</td>
                         <td>${pedido.data}</td>
                         <td>
                             <div class="menu">

@@ -1,0 +1,96 @@
+{% extends 'side_menu.html' %}
+{% load static %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'css/criar_inventario_estoque.css' %}">
+{% endblock %}
+
+{% block content %}
+
+    <div class="button-pattern">
+        <a href="/estoque/inventarios_estoque/"><button class="button-pattern_final">Voltar</button></a>
+    </div>
+
+    <h2>Vamos inicialmente Criar um inventario.</h2>
+    <p class="lead">Preencha as informacoes com atencao, salve quantas vezes for necessario ate estar completo. Adicione quantos lotes existirem dos produtos.</p>
+
+    <p class="aviso">{{ error_message }}</p>
+
+    <form id="pedido_form" action="" method="POST">
+    {% csrf_token %}
+
+        <h2 class="h2-title">Inventario de estoque</h2>
+
+        <div id="input_titles">
+            <span>Produto</span>
+            <span>Código</span>
+            <span>Quantidade</span>
+            <span class="lote">Lote</span>
+        </div>
+
+        <div id="inputs_container"></div>
+        <button type="button" class="add-product_button" onclick="adicionarInput()">Adicionar Produto</button>
+
+        <div class="produtos_lançados">
+
+                <datalist id="nomes_produtos">
+                    {% for produto in Produtos %}
+                        <option value="{{ produto.name }}" data-id="{{ produto.product_code }}">
+                    {% endfor %}
+                </datalist>
+
+
+        </div>
+
+
+        <button type="submit" class="finalizar-button">Salvar Inventario</button>
+
+
+
+    </form>
+
+<script>
+    function adicionarInput() {
+    var container = document.getElementById("inputs_container");
+    var novoInput = document.createElement("div");
+    novoInput.classList.add("produto-linha");
+
+    novoInput.innerHTML = `
+        <input type="text" id="produto_input" name="produto_input" list="nomes_produtos" placeholder="Selecione um Produto" class="form_control" oninput="setProductInfo(this)">
+        <input type="text" placeholder="Código do Produto" class="codigo_produto_input" name="codigo_produto" readonly tabindex="-1">
+        <input type="text" class="input quantidade" id="quantidade" placeholder="Quantidade Unitaria" name="quantidade">
+        <input type="text" class="input lote" id="lote" placeholder="Lote" name="lote">
+        <button type="button" class="remove-button" onclick="removerLinha(this)">X</button>
+    `;
+
+    container.appendChild(novoInput);
+}
+
+function removerLinha(button) {
+    var linha = button.parentElement;
+    linha.remove();
+}
+
+function setProductInfo(input) {
+    var datalist = document.getElementById("nomes_produtos");
+    var options = datalist.options;
+    for (var i = 0; i < options.length; i++) {
+        if (options[i].value === input.value) {
+            input.nextElementSibling.value = options[i].getAttribute('data-id'); // Corrigi para 'data-id'
+            break;
+        }
+    }
+}
+
+
+document.addEventListener('DOMContentLoaded', function () {
+    adicionarInput();
+});
+
+
+
+</script>
+
+
+
+{% endblock %}

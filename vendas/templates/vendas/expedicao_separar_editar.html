@@ -30,7 +30,8 @@
 
 
 <h2 class="title">Separando</h2>
-<h3 class="subtitle">{{ pedido.id }}  -  {{ pedido.cliente }}</h3>
+<h3 class="subtitle">{{ pedido.id }}  -  {{ pedido.cliente }}  - {{pedido.regime_venda}}</h3>
+<h2 class="subtitle">Caixas: {{pedido.quantidade_inicial_caixas}}</h2>
 <form method="POST">
     {% csrf_token %}
 

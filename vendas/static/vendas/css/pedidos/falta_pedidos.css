@@ -6,38 +6,41 @@ body {
     padding: 0;
 }
 
-h1 {
-    text-align: center;
-    padding: 20px;
+h1{
+    color: #5b5b5b;
+    font-weight: 600;
 }
 
-.produto {
-    background-color: #fff;
-    margin: 20px auto;
-    padding: 20px;
-    border: 1px solid #ccc;
-    max-width: 600px;
-    border-radius: 5px;
+.faltas-tabela {
+    width: 100%;
+    border-collapse: collapse;
 }
 
-h2 {
-    color: #007bff;
+.faltas-tabela th, .faltas-tabela td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
 }
 
-ul {
-    list-style-type: none;
-    padding: 0;
+.faltas-tabela th {
+    background-color: #f4f4f4;
+    font-weight: 600;
+
 }
 
-li {
-    padding: 10px 0;
-    border-bottom: 1px solid #ccc;
+.faltas-tabela tr:nth-child(even) {
+    background-color: #f9f9f9;
 }
 
-li:last-child {
-    border-bottom: none;
+.faltas-tabela tr:hover {
+    background-color: #f1f1f1;
 }
 
-strong {
-    color: #ff0000;
+.produtos {
+    margin-top: 20px;
+    font-weight: 200;
+}
+
+.quant_falta{
+    color: red;
 }

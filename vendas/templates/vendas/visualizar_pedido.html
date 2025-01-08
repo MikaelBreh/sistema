@@ -28,6 +28,7 @@
 <div class="info_pedido">
     <p><strong>ID do Pedido:</strong> {{ pedido.id }}</p>
     <p><strong>Cliente:</strong> {{ pedido.cliente.name }}</p>
+    <p><strong>Regime:</strong> {{ pedido.regime_venda }}</p>
     <p><strong>Data do Pedido:</strong> {{ pedido.data|date:"d/m/Y - H:i" }}</p>
     <p><strong>Status: </strong> {{ pedido.status }}</p>
 </div>
@@ -75,24 +76,36 @@
 <script>
     // Função para atualizar a quantidade separada e quanto falta separar
     function atualizarSeparacao(itensPedido, separacoes) {
-        itensPedido.forEach(function(item) {
-            let totalSeparado = 0;
+    itensPedido.forEach(function(item) {
+        let totalSeparado = 0;
 
-            separacoes.forEach(function(separacao) {
-                if (separacao.item_pedido == item.id) {
-                    totalSeparado += separacao.quantidade;
-                }
-            });
-
-            const separadaElem = document.querySelector('.quant-separada[data-item-id="' + item.id + '"]');
-            const restanteElem = document.querySelector('.quant-restante[data-item-id="' + item.id + '"]');
-
-            if (separadaElem && restanteElem) {
-                separadaElem.innerText = totalSeparado;
-                restanteElem.innerText = item.quantidade - totalSeparado;
+        separacoes.forEach(function(separacao) {
+            if (separacao.item_pedido == item.id) {
+                totalSeparado += separacao.quantidade;
             }
         });
-    }
+
+        const separadaElem = document.querySelector('.quant-separada[data-item-id="' + item.id + '"]');
+        const restanteElem = document.querySelector('.quant-restante[data-item-id="' + item.id + '"]');
+
+        if (separadaElem && restanteElem) {
+            const quantidade = parseFloat(item.quantidade) || 0;
+            const totalSeparadoNum = parseFloat(totalSeparado) || 0;
+            const restante = quantidade - totalSeparadoNum;
+
+            separadaElem.innerText = totalSeparadoNum;
+            restanteElem.innerText = restante;
+
+            // Adicionar ou remover a classe restante-red
+            if (restante === 0) {
+                restanteElem.classList.remove("restante-red");
+            } else {
+                restanteElem.classList.add("restante-red");
+            }
+        }
+    });
+}
+
 
     // Dados dos itens do pedido
     const itensPedido = [

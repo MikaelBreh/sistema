@@ -354,6 +354,9 @@ header .up-menu{
                 <li><a class="link_name" href="#">Cadastros</a></li>
             </ul>
         </li>
+
+
+        {% if 'cadastros.view_products' in user.get_all_permissions %}
         <li>
             <div class="iocn-link">
                 <a href="{% url 'home_cadastros' %}">
@@ -377,7 +380,11 @@ header .up-menu{
 <!--                <li><a href="">Vendedores</a></li>-->
             </ul>
         </li>
+        {% endif %}
 
+
+
+        {% if 'produtos_acabados.view_transferenciaestoquesaidainfo' in user.get_all_permissions %}
         <li>
             <div class="iocn-link">
                 <a href="#">
@@ -414,11 +421,13 @@ header .up-menu{
                     <li><a href="{% url 'list_misto_item' %}">Itens Mistos</a></li>
                 {% endif %}
 
-
             </ul>
         </li>
+        {% endif %}
 
 
+
+        {% if 'vendas.view_pedido' in user.get_all_permissions %}
         <li>
             <div class="iocn-link">
                 <a href="#">
@@ -441,11 +450,18 @@ header .up-menu{
                     <li><a href="{% url 'listar_pedidos' %}">Ver Pedidos</a></li>
                 {% endif %}
 
+                {% if 'vendas.view_faltandoseparacao' in user.get_all_permissions %}
+                    <li><a href="{% url 'expedicao_ver_faltas_pedidos' %}">Ver Faltas Separações</a></li>
+                {% endif %}
+
+
             </ul>
         </li>
+        {% endif %}
 
 
 
+        {% if 'vendas.view_pedidoseparacao' in user.get_all_permissions %}
         <li>
             <div class="iocn-link">
                 <a href="#">
@@ -474,10 +490,11 @@ header .up-menu{
 
             </ul>
         </li>
+        {% endif %}
 
 
 
-
+        {% if 'estoque.view_estoque' in user.get_all_permissions %}
         <li>
             <div class="iocn-link">
                 <a href="{% url 'vendas_home' %}">
@@ -488,11 +505,31 @@ header .up-menu{
             </div>
             <ul class="sub-menu">
                 <li><a class="link_name" href="#">Estoque</a></li>
-                <li><a href="{% url 'visualizar_estoque' %}">Estoque Atual</a></li>
-                <li><a href="{% url 'visualizar_necessidade_pedidos_estoque' %}">Necessidade Pedidos</a></li>
-                <li><a href="{% url 'pesquisar_lote' %}">Estoque Lotes</a></li>
+
+                {% if 'estoque.view_estoque' in user.get_all_permissions %}
+                    <li><a href="{% url 'nova_view_estoque' %}">Visualizacao Estoque</a></li>
+                {% endif %}
+
+<!--                {% if 'estoque.view_estoque' in user.get_all_permissions %}-->
+<!--                    <li><a href=" url 'visualizar_estoque' ">Estoque Atual</a></li>-->
+<!--                {% endif %}-->
+
+                {% if 'estoque.ver_necessidade_pedidos' in user.get_all_permissions %}
+                    <li><a href="{% url 'visualizar_necessidade_pedidos_estoque' %}">Necessidade Pedidos</a></li>
+                {% endif %}
+
+                {% if 'estoque.ver_estoque_por_lotes' in user.get_all_permissions %}
+                    <li><a href="{% url 'pesquisar_lote' %}">Estoque Lotes</a></li>
+                {% endif %}
+
+                {% if 'estoque.ver_inventario_estoque' in user.get_all_permissions %}
+                    <li><a href="{% url 'inventarios_estoque' %}">Inventario Estoque</a></li>
+                {% endif %}
+
             </ul>
         </li>
+        {% endif %}
+
 
 
 

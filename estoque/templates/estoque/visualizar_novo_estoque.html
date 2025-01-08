@@ -1,0 +1,115 @@
+{% extends 'side_menu.html' %}
+{% load static %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'css/style_view_estoque.css' %}">
+{% endblock %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualização de Estoque</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+            cursor: pointer;
+        }
+        th.sortable:after {
+            content: ' ⬍';
+            font-size: 0.8em;
+        }
+        th.sorted-asc:after {
+            content: ' ⬆';
+        }
+        th.sorted-desc:after {
+            content: ' ⬇';
+        }
+    </style>
+</head>
+<body>
+    <h1>Visualização de Estoque</h1>
+
+    <!-- Formulário de Busca e Filtro -->
+    <form method="GET" action="">
+        <input type="text" name="search" placeholder="Buscar por produto..." value="{{ search_query }}">
+        <label>
+            <input type="checkbox" name="necessidade" value="true" {% if show_only_necessity %}checked{% endif %}> Mostrar apenas produtos abaixo do estoque minimo
+        </label>
+        <button type="submit">Buscar</button>
+    </form>
+
+    <table>
+        <thead>
+            <tr>
+                <th class="sortable {% if order_by == 'nome' %}sorted-{{ direction }}{% endif %}" onclick="sortTable('nome')">Produto</th>
+                <th class="sortable {% if order_by == 'estoque_minimo' %}sorted-{{ direction }}{% endif %}" onclick="sortTable('estoque_minimo')">Estoque Mínimo</th>
+                <th class="sortable {% if order_by == 'estoque_total' %}sorted-{{ direction }}{% endif %}" onclick="sortTable('estoque_total')">Estoque Atual</th>
+                <th class="sortable {% if order_by == 'quantidade_separada' %}sorted-{{ direction }}{% endif %}" onclick="sortTable('estoque_total')">Quant Separada</th>
+                <th class="sortable {% if order_by == 'pedidos_separar' %}sorted-{{ direction }}{% endif %}" onclick="sortTable('estoque_total')">Pedidos Separar</th>
+                <th class="sortable {% if order_by == 'componentes_kits' %}sorted-{{ direction }}{% endif %}" onclick="sortTable('estoque_total')">Componentes Kits</th>
+                <th class="sortable {% if order_by == 'estoque_virtual' %}sorted-{{ direction }}{% endif %}" onclick="sortTable('estoque_total')">Estoque Virtual</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for produto in produtos_quantidades %}
+            <tr>
+                <td class="products_name">{{ produto.nome }}</td>
+                <td>{{ produto.estoque_minimo }}</td>
+                <td>{{ produto.estoque_total }}</td>
+                <td><a href="{% url 'detalhar_quantidade_separada' produto.codigo %}">{{ produto.quantidade_separada }}</a></td>
+                <td><a href="{% url 'detalhar_pedidos_separar' produto.codigo %}">{{ produto.pedidos_separar }} </a></td>
+                <td>{{ produto.componentes_kits }}</td>
+                <td>{{ produto.estoque_virtual }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Paginação -->
+    <div class="pagination_div">
+        <span>Página {{ estoque.number }} de {{ estoque.paginator.num_pages }}</span>
+        <div>
+            {% if estoque.has_previous %}
+                <a href="?page={{ estoque.previous_page_number }}&search={{ search_query }}&necessidade={% if show_only_necessity %}true{% endif %}&order_by={{ order_by }}&direction={{ direction }}">Anterior</a>
+            {% endif %}
+            {% if estoque.has_next %}
+                <a href="?page={{ estoque.next_page_number }}&search={{ search_query }}&necessidade={% if show_only_necessity %}true{% endif %}&order_by={{ order_by }}&direction={{ direction }}">Próxima</a>
+            {% endif %}
+        </div>
+
+    </div>
+
+    <script>
+        function sortTable(order_by) {
+            const params = new URLSearchParams(window.location.search);
+            const current_order_by = params.get('order_by');
+            const current_direction = params.get('direction') || 'asc';
+
+            // Se já está ordenado pela mesma coluna, inverte a direção
+            if (current_order_by === order_by) {
+                const new_direction = current_direction === 'asc' ? 'desc' : 'asc';
+                params.set('direction', new_direction);
+            } else {
+                // Se é uma nova coluna, define a direção como ascendente
+                params.set('direction', 'asc');
+            }
+
+            params.set('order_by', order_by);
+            window.location.search = params.toString();
+        }
+    </script>
+</body>
+</html>
+{% endblock %}

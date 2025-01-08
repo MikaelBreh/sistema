@@ -16,6 +16,9 @@ urlpatterns = [
     path('pedidos/alterar-status/<int:numero_pedido>/<str:novo_status>/', views.alterar_status,
          name='alterar_status_pedido'),
 
+    # Lançar saida do pedido com base no id do pedido
+    path('expedicao/lancar_saida/<int:pedido_id>/', views.lancar_saida, name='lancar_saida'),
+
     path('pedidos/<int:pedido_id>/imprimir/', views.imprimir_conferencia, name='imprimir_conferencia'),
 
 
@@ -28,7 +31,8 @@ urlpatterns = [
     path('expedicao/separando_ver/<int:pedido_id>/', views.expedicao_ver_separacao, name='expedicao_ver_separacao'),
     path('expedicao/separar_editar/<int:pedido_id>/', views.expedicao_separar_editar, name='expedicao_separar_editar'),
 
-    path('expedicao/ver_faltas_pedidos/', views.ver_faltas_pedidos, name='expedicao_separar'),
+    path('expedicao/ver_faltas_pedidos/', views.ver_faltas_pedidos, name='expedicao_ver_faltas_pedidos'),
+
 
 
 ]

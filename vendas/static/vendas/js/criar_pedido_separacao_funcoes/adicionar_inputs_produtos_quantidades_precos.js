@@ -72,7 +72,30 @@ function calcularQuantidadeCaixas(input) {
         quantidadeCaixasInput.value = '';
         iconeErro.style.display = 'none';
     }
+
 }
+
+
+function calcularTotal() {
+    var inputsQuantidade = document.querySelectorAll('.quantidade_input');
+    var inputsCaixa = document.querySelectorAll('.quantidade_caixas_calculada');
+    var quantidades_somas = 0;
+    var quantidades_caixas_somadas = 0;
+
+    for (var i = 0; i < inputsQuantidade.length; i++) {
+        var quantidade = parseFloat(inputsQuantidade[i].value) || 0; // Converter para número ou 0 se não for válido
+        var quantidadeCaixa = parseFloat(inputsCaixa[i].value) || 0; // Converter para número ou 0 se não for válido
+
+        quantidades_somas += quantidade;
+        quantidades_caixas_somadas += quantidadeCaixa;
+    }
+
+    document.getElementById('quantidade_total').innerText = 'Quantidade Total Unidades: ' + quantidades_somas.toString();
+    document.getElementById('caixas_total').innerText = 'Quantidade Total Caixas: ' + quantidades_caixas_somadas.toString();
+
+    document.getElementById('quant_caixas_total').value = quantidades_caixas_somadas.toString();
+}
+
 
 function setClienteId() {
     var clienteInput = document.getElementById("cliente_input");
@@ -92,10 +115,20 @@ function removerLinha(button) {
 }
 
 function validarFormulario(event) {
+    var inputsRegime = document.getElementById('regime_input');
     var inputsProduto = document.querySelectorAll(".produto_input");
     var inputsQuantidade = document.querySelectorAll(".quantidade_input");
     var iconesErro = document.querySelectorAll(".icone-erro");
     var clienteId = document.getElementById("cliente_id").value;
+    const checkbox = document.getElementById('amostra_checkbox');
+
+    calcularTotal();
+
+    if (!inputsRegime.value) {
+        alert("Selecione um regime.");
+        event.preventDefault();
+        return;
+    }
 
     var todosPreenchidos = true;
     inputsProduto.forEach(function(input) {
@@ -116,9 +149,13 @@ function validarFormulario(event) {
         }
     });
 
-    var erroCaixa = Array.from(iconesErro).some(function(icone) {
+    if (checkbox.checked) {
+        console.log('modo de amostras - nao respeitar quantidade caixa')
+    } else {
+        var erroCaixa = Array.from(iconesErro).some(function(icone) {
         return icone.style.display === 'inline';
     });
+    }
 
     if (!clienteId) {
         alert("Selecione um cliente.");

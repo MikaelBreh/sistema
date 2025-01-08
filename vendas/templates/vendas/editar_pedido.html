@@ -4,7 +4,6 @@
 {% block head %}
 <link rel="stylesheet" href="{% static 'vendas/css/style_criar_pedido_separacao.css' %}">
 <script src="{% static 'vendas/js/criar_pedido_separacao_funcoes/adicionar_inputs_produtos_quantidades_precos.js' %}"></script>
-<script src="{% static 'vendas/js/criar_pedido_separacao_funcoes/calcular_valores_quantidades_pedido.js' %}"></script>
 <script src="{% static 'vendas/js/criar_pedido_separacao_funcoes/exibir_info_cliente_tela.js' %}"></script>
 {% endblock %}
 
@@ -70,6 +69,9 @@
             <option value="{{ produto.name }}" data-code="{{ produto.product_code }}" data-box-quantity="{{ produto.box_quantity }}">
         {% endfor %}
     </datalist>
+
+    <input type="hidden" id="quant_caixas_total" name="quant_caixas_total">
+
     <button type="button" class="calcular-button" onclick="calcularTotal()">Calcular Total</button>
 
     <button type="submit" class="finalizar-button">Salvar Pedido</button>

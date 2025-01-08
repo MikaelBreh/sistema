@@ -275,9 +275,12 @@ def verificar_lotes_componentes(produtos_componentes, lotes_componentes):
         produto_component = produtos_componentes[idx]
         lote_component = lotes_componentes[idx]
 
-        # Verificar se o lote existe e pertence ao produto selecionado
-        if not TransferenciaEstoqueSaidaProdutos.objects.filter(produto__name=produto_component,
-                                                                lote=lote_component).exists():
+        # verificar o codigo do produto componente
+        produto_consulta = Products.objects.get(name=produto_component)
+        product_code = produto_consulta.product_code
+
+        # Verificar se o lote existe no estoque para o produto encontrado
+        if not Estoque.objects.filter(cod_produto=product_code, lote=lote_component).exists():
             return False, f'Lote "{lote_component}" não encontrado para o produto "{produto_component}".'
 
     return True, None
@@ -289,7 +292,7 @@ def create_misto_item(request):
     if request.method == 'GET':
         produtos_principal = Products.objects.all()
         produtos_misto_another_info = Products_another_info.objects.filter(produto_pertence__category='misto')
-        produtos_geral = Products.objects.filter(category='fabricado')
+        produtos_geral = Products.objects.all()
         produtos_outra_info = Products_another_info.objects.filter(produto_pertence__category='fabricado')
         produtos_combinados = list(produtos_principal) + list(produtos_misto_another_info)
         produtos_geral_combinados = list(produtos_geral) + list(produtos_outra_info)

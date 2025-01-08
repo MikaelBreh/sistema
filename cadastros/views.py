@@ -19,7 +19,6 @@ def exbicao_cadastros_produtos_lista(request, modulo):
 
     if modulo == 'Produtos':
         produtos = Products.objects.all()
-
         return render(request, 'cadastros/exibicao_cadastros.html', {'valores': produtos, 'modulo': modulo,
                                                                      'dicionario': dicionario_produtos})
 

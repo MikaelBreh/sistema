@@ -49,6 +49,15 @@ class Products_another_info(models.Model):
         return self.name + '  | PERTENCE: ' + self.produto_pertence.name + ' - ' + self.produto_pertence.product_code
 
 
+class KitItem(models.Model):
+    produto_kit = models.ForeignKey(Products, related_name="itens_kit", on_delete=models.CASCADE)
+    produto_componente = models.ForeignKey(Products, on_delete=models.CASCADE)
+    quantidade = models.DecimalField(max_digits=10, decimal_places=2)  # Quantidade decimal do produto no kit
+
+    def __str__(self):
+        return f"{self.quantidade}x {self.produto_componente.name} no {self.produto_kit.name}"
+
+
 
 class Vendedores(models.Model):
     name = models.CharField(max_length=40)

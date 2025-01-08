@@ -2,23 +2,37 @@
 {% load static %}
 
 {% block head %}
-    <link rel="stylesheet" href="{% static 'css/spedidos/faltas_pedidos.css' %}">
+    <link rel="stylesheet" href="{% static 'vendas/css/pedidos/falta_pedidos.css' %}">
 {% endblock %}
 
 {% block content %}
 
 <h1>Itens Faltando nos Pedidos</h1>
 
-
 {% for cod_produto, produto_info in produtos_faltantes.items %}
-    <h2>Produto: {{ produto_info.nome_produto }}</h2>
-    <ul>
-        {% for falta in produto_info.faltas %}
-            <li>
-                Pedido ID: {{ falta.pedido_id }} - Cliente: {{ falta.cliente }} - Quantidade Pedida: {{ falta.quantidade_pedido }} - Quantidade Separada: {{ falta.quantidade_separada }} - Faltando: {{ falta.quantidade_faltante }}
-            </li>
-        {% endfor %}
-    </ul>
+    <h2 class="produtos">Produto: {{ produto_info.nome_produto }}</h2>
+    <table class="faltas-tabela">
+        <thead>
+            <tr>
+                <th>Pedido ID</th>
+                <th>Cliente</th>
+                <th>Quantidade Pedida</th>
+                <th>Quantidade Separada</th>
+                <th class="quant_falta">Quantidade Faltante</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for falta in produto_info.faltas %}
+                <tr>
+                    <td>{{ falta.pedido_id }}</td>
+                    <td>{{ falta.cliente }}</td>
+                    <td>{{ falta.quantidade_pedido }}</td>
+                    <td>{{ falta.quantidade_separada }}</td>
+                    <td>{{ falta.quantidade_faltante }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 {% endfor %}
 
 

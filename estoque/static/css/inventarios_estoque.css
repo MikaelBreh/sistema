@@ -1,0 +1,89 @@
+    .nao-finalizado-tr:hover {
+        background-color: #dac4e7; /* Cor de destaque ao passar o mouse */
+    }
+
+    body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h2, p{
+            font-weight: 200;
+            color: #5b5b5b;
+        }
+
+        header {
+            padding: 20px;
+            background-color: #007bff;
+            color: white;
+            text-align: center;
+        }
+
+        .criar_inventario {
+            display: inline-block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background-color: #8d06b6;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        .criar_inventario:hover {
+            background-color: #5d0377;
+        }
+
+        .inventarios_criados {
+            max-width: 90%;
+            margin: 20px auto;
+            overflow-x: auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 12px;
+            border: 1px solid #989898;
+        }
+
+        th {
+            background-color: rgba(143, 143, 143, 0.34);
+            color: #000000;
+        }
+
+        .nao-finalizado-tr{
+            background-color: #c2e2f6;
+        }
+
+        .finalizado-tr:nth-child(even) {
+            background-color: #eaeaea;
+        }
+
+
+        .finalizado-tr:hover {
+            background-color: #e6f7ff;
+        }
+
+        td {
+            cursor: pointer;
+        }

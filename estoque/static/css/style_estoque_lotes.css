@@ -1,7 +1,9 @@
 
-.title-h1{
+.title-h2{
     text-align: center;
     margin-bottom: 30px;
+    font-weight: 400;
+    padding-top: 30px;
 }
 
 .container-father{
@@ -11,9 +13,35 @@
     align-items: center;
 }
 
+        .button-pattern{
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            padding-top: 15px;
+            width: 97%;
+        }
+
+        .button-pattern_final{
+            width: 150px;
+            margin: 8px 0;
+            display: inline-block;
+            border: 1px solid #494949;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 15px;
+            background-color: #5d0377;
+            color: white;
+            overflow: inherit;
+        }
+
+        .button-pattern_final:hover {
+            background-color: #8b0598;
+            cursor: pointer;
+        }
+
 /* Container centralizado */
 .container {
-    width: 60%;
+    width: 90%;
     display: flex;
     justify-content: space-evenly;
     background-color: white;
@@ -24,7 +52,7 @@
 
 /* Colunas de entradas e saídas */
 .column {
-    width: 60%;
+    width: 90%;
 }
 
 /* Estilo para as seções de entradas e saídas */

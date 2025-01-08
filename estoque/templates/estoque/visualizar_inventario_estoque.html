@@ -1,0 +1,84 @@
+{% extends 'side_menu.html' %}
+{% load static %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'css/criar_inventario_estoque.css' %}">
+{% endblock %}
+
+{% block content %}
+
+    <div class="button-pattern">
+        <a href="/estoque/inventarios_estoque/"><button class="button-pattern_final">Voltar</button></a>
+        {% if algum_finalizado%}
+            <p>Inventario concluido e não editavel.</p>
+        {% else %}
+            <p>Inventario em aberto e editavel.</p>
+        {% endif %}
+
+        {% if algum_finalizado == 0 %}
+        <a href="/estoque/editar_inventario_estoque/{{numero_inventario}}"><button class="editar_button">Editar</button></a>
+        {% endif %}
+    </div>
+
+
+
+    <h2>Visualizar Inventário de Estoque numero: {{ numero_inventario }} </h2>
+    <p class="aviso">{{ error_message }}</p>
+
+
+    <form id="pedido_form" action="" method="POST">
+    {% csrf_token %}
+
+
+        <div id="input_titles">
+            <span>Produto</span>
+            <span>Código</span>
+            <span>Quantidade</span>
+            <span class="lote">Lote</span>
+        </div>
+
+        <div id="inputs_container">
+            {% for item in inventario %}
+            <div class="produto-linha">
+                <input type="text" id="produto_input" name="produto_input" list="nomes_produtos"
+                       value="{{ item.nome_produtos }}" placeholder="Selecione um Produto"
+                       class="form_control" readonly>
+                <input type="text" placeholder="Código do Produto" class="codigo_produto_input"
+                       name="codigo_produto" value="{{ item.cod_produto }}" readonly>
+                <input type="text" class="input quantidade" id="quantidade" placeholder="Quantidade Unitaria"
+                       name="quantidade" value="{{ item.quantidade }}">
+                <input type="text" class="input lote" id="lote" placeholder="Lote" name="lote"
+                       value="{{ item.lote }}">
+                <button type="button" class="remove-button-blue" onclick=""></button>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="produtos_lançados">
+            <datalist id="nomes_produtos">
+                {% for produto in Produtos %}
+                    <option value="{{ produto.name }}" data-id="{{ produto.product_code }}">
+                {% endfor %}
+            </datalist>
+        </div>
+
+        {% if not algum_finalizado%}
+        {% if usuario_pode_editar%}
+            <div class="button-finalizar">
+                <button type="submit" onclick="return confirmarAcao()" class="button-finalizar-final">Finalizar Inventario</button>
+            </div>
+
+            <p class="finalizar-p">Ao clicar em finalizar o inventario não poderá mais ser editado, e será lançado em estoque.</p>
+        {% endif %}
+        {% endif %}
+
+    </form>
+
+<script>
+function confirmarAcao() {
+    return confirm("Essa ação não poderá ser desfeita, deseja continuar?");
+}
+</script>
+
+
+{% endblock %}

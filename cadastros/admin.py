@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import Products, Clientes, Fornecedores, Materiais_de_Trabalho, Vendedores, TabelaPreco, \
-    TabelaPrecoProduto, Products_another_info
+    TabelaPrecoProduto, Products_another_info, KitItem
 
 
 class TabelaPrecoProdutoInline(admin.TabularInline):
@@ -20,6 +20,7 @@ class ClientesAdmin(admin.ModelAdmin):
 
 admin.site.register(Products, ProductsAdmin)
 admin.site.register(Products_another_info)
+admin.site.register(KitItem)
 admin.site.register(Clientes, ClientesAdmin)
 admin.site.register(Fornecedores)
 admin.site.register(Materiais_de_Trabalho)

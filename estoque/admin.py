@@ -1,13 +1,13 @@
 from django.contrib import admin
-from .models import Estoque
-
+from .models import Estoque, InventariosEstoque
 
 from django.utils.html import format_html
 from django.urls import reverse
 
 class EstoqueAdmin(admin.ModelAdmin):
-    list_display = ['cod_produto', 'lote', 'quantidade', 'fonte_link', 'data', 'status']
-    search_fields = ['cod_produto', 'lote']  # Exemplo: cod_produto, lote
+    list_display = ['cod_produto', 'lote', 'quantidade', 'fonte_link', 'data', 'status', 'inventario']
+    search_fields = ['cod_produto', 'lote']
+    list_filter = ['status', 'inventario']
 
     def fonte_link(self, obj):
         if obj.fonte:
@@ -19,6 +19,9 @@ class EstoqueAdmin(admin.ModelAdmin):
 
 
 
+
+
 # Registre o modelo com a classe personalizada
-admin.site.register(Estoque, EstoqueAdmin)
+admin.site.register(Estoque, EstoqueAdmin),
+admin.site.register(InventariosEstoque)
 

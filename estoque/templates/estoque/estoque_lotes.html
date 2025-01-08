@@ -7,8 +7,11 @@
 
 {% block content %}
 
+    <div class="button-pattern">
+        <a href="/estoque/pesquisar_lote/"><button class="button-pattern_final">Voltar</button></a>
+    </div>
 
-    <h1 class="title-h1">Movimentação do Lote: {{ lote }} - {{ produto }}</h1>
+    <h2 class="title-h2">Movimentação do Lote: {{ lote }} - {{ produto }}</h2>
 
     <div class="container-father">
 
@@ -31,6 +34,11 @@
                                 <p class="fonte">
                                     Misto Item ID: <a href="{% url 'visualizar_misto_item' entrada.fonte_id %}">{{ entrada.fonte_id }}</a>
                                 </p>
+                            {% elif entrada.fonte_nome == 'InventariosEstoque' %}
+                                <p class="fonte">
+                                    Inventário ID: <a href="{% url 'visualizar_inventario_estoque' entrada.fonte_id %}">{{ entrada.fonte_id }}</a>
+                                </p>
+
                             {% else %}
                                 <p class="fonte">{{ entrada.fonte_nome }} - ID: {{ entrada.fonte_id }}</p>
                             {% endif %}

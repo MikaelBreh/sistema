@@ -8,6 +8,85 @@
 
 {% block content %}
 
-<h1>aqui vamos ter dashboards</h1>
+<h1>Pedidos - {{ esse_mes }}</h1>
+
+
+<div class="pedidos-block">
+
+    <div class="situacao-quantidade tema">
+        <p class="situacao">Situãçao</p>
+        <p class="quantidade">Quantidade</p>
+    </div>
+
+    <div class="situacao-quantidade">
+        <p class="situacao">Pedidos Total</p>
+        <p class="quantidade">{{ quantidade_pedidos_total }}</p>
+    </div>
+    <div class="situacao-quantidade">
+        <p class="situacao">Pedidos Pendentes</p>
+        <p class="quantidade">{{ quantidade_pedidos_pendentes }}</p>
+    </div>
+    <div class="situacao-quantidade">
+        <p class="situacao">Pedidos Separando</p>
+        <p class="quantidade">{{ quantidade_pedidos_separacao }}</p>
+    </div>
+    <div class="situacao-quantidade">
+        <p class="situacao">Pedidos Prontos</p>
+        <p class="quantidade">{{ quantidade_pedidos_prontos }}</p>
+    </div>
+    <div class="situacao-quantidade">
+        <p class="situacao">Pedidos Enviados ou entregues</p>
+        <p class="quantidade">{{ pedidos_finalizados }}</p>
+    </div>
+
+</div>
+
+
+<style>
+
+    .pedidos-block{
+        display: flex;
+        flex-direction: column;
+        justify-content: left;
+        align-items: start;
+        margin-top: 20px;
+        width: 40%;
+        padding: 50px;
+        border: #1f618d 1px solid;
+        border-radius: 2%;
+    }
+
+    .situacao-quantidade {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+        width: 100%;
+        border-bottom: #e5e5e5 1px solid;
+    }
+
+    .tema{
+        background-color: #8b0598;
+        padding: 10px;
+    }
+
+    .tema p{
+        color: white;
+    }
+
+    .situacao {
+        font-size: 16px;
+        color: #333;
+    }
+
+    .quantidade {
+        font-size: 16px;
+        font-weight: bold;
+        color: #333;
+        text-align: right;
+        width: 100px; /* Ajuste essa largura conforme necessário */
+    }
+
+</style>
 
 {% endblock %}

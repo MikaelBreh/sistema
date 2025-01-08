@@ -15,7 +15,7 @@ from django.db.models import Q
 
 from estoque.models import Estoque
 from .functions.validar_separacao import validar_lote
-from .models import Pedido, PedidoItem, PedidoSeparacao, FaltandoSeparacao
+from .models import Pedido, PedidoItem, PedidoSeparacao, FaltandoSeparacao, SaidaPedido
 from django.contrib.auth.decorators import login_required, permission_required
 from django.db.models import F
 
@@ -61,7 +61,6 @@ def listar_pedidos(request, *args, **kwargs):
     return render(request, 'vendas/listagem_pedidos.html', {'pedidos': page_obj, 'opcao': opcao})
 
 
-
 @login_required
 @permission_required('vendas.add_pedido', raise_exception=True)
 def criar_pedido_separacao(request):
@@ -69,7 +68,13 @@ def criar_pedido_separacao(request):
         cliente_id = request.POST.get('cliente_id')
         cliente = get_object_or_404(Clientes, id=cliente_id)
 
-        pedido = Pedido.objects.create(cliente=cliente)
+        quantidade_caixas_total = request.POST.getlist('quant_caixas_total')
+        regime_venda = request.POST.get('regime_input')
+        pedido = Pedido.objects.create(
+            cliente=cliente,
+            regime_venda=regime_venda,
+            quantidade_inicial_caixas=int(quantidade_caixas_total[0]),
+        )
 
         produtos = request.POST.getlist('nome_produto')
         quantidades = request.POST.getlist('quantidade_produto')
@@ -94,7 +99,6 @@ def criar_pedido_separacao(request):
             try:
 
                 if content_type and object_id:
-
                     quantidade_caixa_correta = int(float(quantidade_caixa))
 
                     PedidoItem.objects.create(
@@ -109,7 +113,6 @@ def criar_pedido_separacao(request):
                 print(e)
                 return HttpResponse("Erro ao criar pedido")
 
-
         return redirect('listar_pedidos')
 
 
@@ -117,10 +120,10 @@ def criar_pedido_separacao(request):
     else:
         nomes_clientes_all = Clientes.objects.all()
         nome_produtos_all = list(chain(Products.objects.all(), Products_another_info.objects.all()))
+        user_criar_amostra = request.user.has_perm('Pedido.criar_pedido_amostra')
 
         return render(request, 'vendas/criar_pedido_separacao.html',
-                      {'clientes': nomes_clientes_all, 'produtos': nome_produtos_all})
-
+                      {'clientes': nomes_clientes_all, 'produtos': nome_produtos_all, 'user_criar_amostra': user_criar_amostra})
 
 
 @login_required
@@ -135,7 +138,8 @@ def visualizar_pedido(request, pedido_id):
         model_class = content_type.model_class()
         item.product_instance = model_class.objects.get(id=item.object_id)
 
-    return render(request, 'vendas/visualizar_pedido.html', {'pedido': pedido, 'itens_pedido': itens_pedido, 'separacoes': separacoes})
+    return render(request, 'vendas/visualizar_pedido.html',
+                  {'pedido': pedido, 'itens_pedido': itens_pedido, 'separacoes': separacoes})
 
 
 @login_required
@@ -158,7 +162,6 @@ def imprimir_conferencia(request, pedido_id):
     pdf.setFont("Helvetica", 30)
     pdf.drawString(145, 650, "Conferência de Pedido")
 
-
     pdf.setFont("Helvetica", 12)
     # Cabeçalho do PDF
     pdf.drawString(100, 750, f"Pedido ID: {pedido.id}")
@@ -173,7 +176,6 @@ def imprimir_conferencia(request, pedido_id):
     pdf.drawString(60, y_position, "Produto")
     pdf.drawString(380, y_position, "Caixas")
     pdf.drawString(440, y_position, "Lote")
-
 
     y_position -= 20
     y_position -= 20  # Definindo a posição vertical inicial
@@ -211,15 +213,13 @@ def imprimir_conferencia(request, pedido_id):
             pdf.showPage()
             y_position = 750  # Resetando a posição para o topo da nova página
 
-
     # Exibir o total de caixas separadas
-    pdf.drawString(60, y_position-80, f"Total de caixas: {int(soma_caixas_total)}  (  )       "
-                        f" Peso Liquido: {int(soma_peso_liquido_total)} KG       Peso Bruto: {int(soma_peso_bruto_total)} KG")
-    pdf.drawString(60, y_position-130, "Nome Conferente: _______________    Assinatura do conferente:  ____________________")
-    pdf.drawString(60, y_position-180, "Separado Por: __________________    Assinatura do separador:  _____________________")
-
-
-
+    pdf.drawString(60, y_position - 80, f"Total de caixas: {int(soma_caixas_total)}  (  )       "
+                                        f" Peso Liquido: {int(soma_peso_liquido_total)} KG       Peso Bruto: {int(soma_peso_bruto_total)} KG")
+    pdf.drawString(60, y_position - 130,
+                   "Nome Conferente: _______________    Assinatura do conferente:  ____________________")
+    pdf.drawString(60, y_position - 180,
+                   "Separado Por: __________________    Assinatura do separador:  _____________________")
 
     pdf.save()
     buffer.seek(0)
@@ -236,8 +236,11 @@ def editar_pedido(request, pedido_id):
     if request.method == 'POST':
         # Atualiza o cliente do pedido
         cliente_id = request.POST.get('cliente_id')
+        quantidade_total_caixas = request.POST.get('quant_caixas_total')
+
         cliente = get_object_or_404(Clientes, id=cliente_id)
         pedido.cliente = cliente
+        pedido.quantidade_inicial_caixas = int(quantidade_total_caixas)
         pedido.save()
 
         # Obtém os produtos e quantidades enviados no form
@@ -316,12 +319,12 @@ def editar_pedido(request, pedido_id):
             item.product_instance = model_class.objects.get(id=item.object_id)
 
         # Pega os itens que possuem separações associadas
-        itens_com_separacao = PedidoItem.objects.filter(pedido=pedido, separacoes__isnull=False).values_list('id', flat=True)
+        itens_com_separacao = PedidoItem.objects.filter(pedido=pedido, separacoes__isnull=False).values_list('id',
+                                                                                                             flat=True)
 
         return render(request, 'vendas/editar_pedido.html',
                       {'pedido': pedido, 'clientes': nomes_clientes_all, 'produtos': nome_produtos_all,
                        'itens_pedido': itens_pedido, 'itens_com_separacao': list(itens_com_separacao)})
-
 
 
 def lancar_itens_no_estoque(pedido):
@@ -355,20 +358,39 @@ def remover_itens_do_estoque(pedido):
     ).delete()
 
 
-
-
 @login_required
 @permission_required('vendas.alterar_status', raise_exception=True)
 def alterar_status(request, numero_pedido, novo_status):
     # Obter o pedido
     pedido = get_object_or_404(Pedido, id=numero_pedido)
+    pedido_separacao = PedidoSeparacao.objects.filter(pedido=pedido)
 
     # Verifica o status anterior antes de alterar
     status_anterior = pedido.status
 
+    # Nao permitir alterar o status para 'separando' ou outros status acima desse se o pedido nao tiver itens separados
+    if novo_status != 'aprovados' and novo_status != 'em_aberto':
+        if not pedido_separacao:
+            messages.error(request, 'Não é possível alterar o status para Separando ou superiores por que o pedido não '
+                                    'tem uma separação.')
+            return redirect('listar_pedidos')
+
     # Alterar o status do pedido
     pedido.status = novo_status
     pedido.save()
+
+    # Caso o pedido seja movido como finalizado, deve ser removidas as faltas das separacoes relacionadas ao pedido
+    if novo_status != 'separacao_finalizada' or novo_status != 'finalizados':
+        # Remover todos os itens da model FaltandoSeparacao relacionados ao pedido
+        FaltandoSeparacao.objects.filter(pedido=pedido).delete()
+
+    # Caso o pedido seja movido para cancelado, deve ser removidas as separacoes e faltas relacionadas ao pedido
+    if novo_status == 'cancelado':
+        # Remover todas as separações relacionadas ao pedido
+        PedidoSeparacao.objects.filter(pedido=pedido).delete()
+
+        # Remover todos os itens da model FaltandoSeparacao relacionados ao pedido
+        FaltandoSeparacao.objects.filter(pedido=pedido).delete()
 
     # Lançar ou remover os itens no estoque dependendo do status
     if status_anterior != 'finalizados' and novo_status == 'finalizados':
@@ -376,11 +398,15 @@ def alterar_status(request, numero_pedido, novo_status):
         lancar_itens_no_estoque(pedido)
 
         # Remover todos os itens da model FaltandoSeparacao relacionados ao pedido
-        FaltandoSeparacao.objects.filter(pedido=pedido).delete()
+        FaltandoSeparacao.objects.filter(pedido_id=pedido).delete()
+
+        # redirecionar para a tela de lançar saida com base no id do pedido
+        return redirect('lancar_saida', pedido_id=pedido.id)
+
 
     elif status_anterior == 'finalizados' and novo_status != 'finalizados':
-        # O pedido está saindo de finalizado, remove os itens do estoque
-        remover_itens_do_estoque(pedido)
+        messages.error(request, 'Não é possível alterar o status de Finalizado pois o pedido esta encerrado.')
+        return redirect('listar_pedidos')
 
     # Armazenar o novo status na sessão para garantir que a aba correta seja selecionada após o redirecionamento
     request.session['status_atual'] = novo_status
@@ -389,15 +415,12 @@ def alterar_status(request, numero_pedido, novo_status):
     return redirect('listar_pedidos')
 
 
-
-
 @login_required
 @permission_required('vendas.view_pedido', raise_exception=True)
 def listar_pedidos(request):
     # Recuperar o status atual da sessão, ou usar 'em_aberto' como padrão
     status_atual = request.session.get('status_atual', 'em_aberto')
     return render(request, 'pedidos/lista_pedidos.html', {'status_atual': status_atual})
-
 
 
 @login_required
@@ -437,6 +460,7 @@ def listar_pedidos_por_status(request, status):
         {
             'numero_pedido': pedido.id,
             'cliente': pedido.cliente.name,
+            'regime_venda': pedido.regime_venda,
             'data': pedido.data.strftime('%d/%m/%Y'),
         } for pedido in paginated_pedidos
     ]
@@ -449,15 +473,12 @@ def listar_pedidos_por_status(request, status):
     return JsonResponse({'pedidos': pedidos_data, 'paginacao': paginacao_data})
 
 
-
-
 # EXPEDICAO -- AQUI COMECA A PARTE DA SEPARACAO DE PEDIDOS
 
 
 @login_required
 @permission_required('vendas.listar_pedidos_separacao', raise_exception=True)
 def expedicao_list(request, status):
-
     search_query = request.GET.get('search', '')
 
     # Filtra os pedidos pelo status
@@ -485,13 +506,10 @@ def expedicao_list(request, status):
     return render(request, 'vendas/expedicao_list.html', {'pedidos': page_obj, 'status': status})
 
 
-
-
 @login_required
 @permission_required('vendas.listar_pedidos_separacao', raise_exception=True)
 def expedicao_separando_list_view(request):
     search_query = request.GET.get('search', '')
-
 
     if search_query:
         pedidos = Pedido.objects.filter(
@@ -510,9 +528,6 @@ def expedicao_separando_list_view(request):
     return render(request, 'vendas/expedicao_list.html', {'pedidos': page_obj})
 
 
-
-
-
 @login_required
 @permission_required('vendas.view_pedidoseparacao', raise_exception=True)
 def expedicao_ver_separacao(request, pedido_id):
@@ -523,7 +538,6 @@ def expedicao_ver_separacao(request, pedido_id):
         'pedido': pedido,
         'separacoes': separacoes
     })
-
 
 
 @login_required
@@ -615,8 +629,6 @@ def expedicao_separar_editar(request, pedido_id):
     })
 
 
-
-
 @login_required
 @permission_required('vendas.view_pedidoseparacao', raise_exception=True)
 def ver_faltas_pedidos(request):
@@ -631,7 +643,6 @@ def ver_faltas_pedidos(request):
 
         # Tenta pegar o produto a partir do código no modelo Products
         produto = Products.objects.filter(product_code=falta.cod_produto).first()
-
 
         # Se o produto não for encontrado no Products, tenta no Products_another_info
         if not produto:
@@ -660,13 +671,26 @@ def ver_faltas_pedidos(request):
 
 
 
+def lancar_saida(request, pedido_id):
+    pedido = get_object_or_404(Pedido, id=pedido_id)
 
+    if request.method == "POST":
+        transportadora = request.POST.get("transportadora")
+        data_saida = request.POST.get("data_saida")
+        valor_frete = request.POST.get("valor_frete")
+        observacoes = request.POST.get("observacoes")
 
+        # Salvar no banco de dados
+        SaidaPedido.objects.create(
+            pedido=pedido,
+            transportadora=transportadora,
+            data_saida=data_saida,
+            valor_frete=valor_frete,
+            observacoes=observacoes,
+        )
 
+        messages.success(request, "Saída registrada com sucesso!")
+        return redirect('listar_pedidos')
 
-
-
-
-
-
+    return render(request, 'pedidos/lancar_saida.html', {'pedido': pedido})
 

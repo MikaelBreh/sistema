@@ -10,7 +10,6 @@ from cadastros.models import Clientes
 
 
 class Pedido(models.Model):
-
     STATUS_CHOICES = [
         ('em_aberto', 'Em Aberto'),
         ('aprovados', 'Aprovados'),
@@ -25,12 +24,14 @@ class Pedido(models.Model):
     data = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='em_aberto')
     usuario_responsavel = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    regime_venda = models.CharField(max_length=50, null=True, blank=True)
+    quantidade_inicial_caixas = models.PositiveIntegerField(null=True, blank=True)
 
     class Meta:
         permissions = [
-            ('alterar_status', 'can chance status')
+            ('alterar_status', 'can chance status'),
+            ('criar_pedido_amostra', 'can create sample order')
         ]
-
 
     def __str__(self):
         return f" {self.cliente} de {self.data.strftime('%d/%m/%Y')} - situação: {self.status}"
@@ -49,8 +50,6 @@ class PedidoItem(models.Model):
 
     def __str__(self):
         return f"{self.quantidade} of {self.produto}"
-
-
 
 
 class PedidoSeparacao(models.Model):
@@ -78,3 +77,15 @@ class FaltandoSeparacao(models.Model):
 
     def __str__(self):
         return f"Pedido: {self.pedido} ---pedido {self.quantidade_pedido} - separado: {self.quantidade_separada}  do item: {self.item_pedido.produto}"
+
+
+class SaidaPedido(models.Model):
+    pedido = models.ForeignKey(Pedido, on_delete=models.CASCADE)
+    transportadora = models.CharField(max_length=255)
+    data_saida = models.DateField()
+    valor_frete = models.DecimalField(max_digits=10, decimal_places=2)
+    observacoes = models.TextField(null=True, blank=True)
+    criado_em = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Saída - Pedido {self.pedido.id}"

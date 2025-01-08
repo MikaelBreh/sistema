@@ -21,7 +21,8 @@
 
 
 <h2 class="title">Pedido Separado</h2>
-<h3 class="subtitle">{{ pedido.id }}  -  {{ pedido.cliente }}  -  {{pedido.status}}</h3>
+<h3 class="subtitle">{{ pedido.id }}  -  {{ pedido.cliente }}</h3>
+<h3 class="subtitle-regime">{{pedido.regime_venda}} - Caixas: {{pedido.quantidade_inicial_caixas}}</h3>
 
 <form method="POST">
     {% csrf_token %}
